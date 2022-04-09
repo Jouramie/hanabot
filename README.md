@@ -15,3 +15,9 @@
 - prompts
 - 2 save
 - finesse (1 card)
+
+
+# Backlog
+- Play on the website
+- Multiple bots play against each other
+- Replay game seed with bot
