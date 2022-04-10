@@ -21,3 +21,5 @@
 - Play on the website
 - Multiple bots play against each other
 - Replay game seed with bot
+- Start bot on started game
+- Bot review
