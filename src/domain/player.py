@@ -20,3 +20,18 @@ class Hand:
 @dataclass(frozen=True)
 class Player:
     hand: Hand
+
+
+class PlayerBot:
+    def bot_play_turn(self):
+        """
+        Algo:
+
+        interpret hand (all clues + all hands + stacks)
+
+        choose action (all hands + interpreted hands + stacks
+
+        perform action
+
+        """
+        pass

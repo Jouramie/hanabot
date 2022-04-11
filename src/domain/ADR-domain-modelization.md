@@ -10,7 +10,7 @@ Clue and Card are in separated aggregates.
 
 ## Clue
 
-A Clue is given by a Player (or PlayerPosition) to another with a Suit or a Rank on a HandPosition.
+A Clue is given by a Player (or PlayerPosition) to another with a Suit or a Rank on a ~~HandPosition~~ drawId.
 ClueInterpretation contains
 - Focus
 
@@ -31,7 +31,10 @@ DeckGenerated based on a seed.
 A Player has a Hand.
 
 A PlayerHand contains PlayerCards. 
-- PlayerCards = knownCard or ProbableCards + drawnTurn
+- PlayerCards = knownCard or ProbableCards + drawTurn + drawId
+
+### drawnId
+- Identify uniquely a card in a player hand. 
 
 ## Stack
 

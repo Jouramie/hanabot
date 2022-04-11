@@ -1,24 +1,29 @@
+from domain.game import GameState
+
+
 class GameStateReader:
     def __init__(self):
         self.first_turn = True
 
-    def see_current_state(self):
+    def see_current_state(self) -> GameState | None:
         """
         algo:
-        read state
 
-        if first turn:
+        if previous state is None
+          previous state = read state()
+          return previous state
+
+        if previous state is first turn:
           left arrow
+          previous state = read state()
           if nothing changed
-            return
+            return None
 
-        right arrow until nothing changes
-        -> for each right arrow read state
+        right arrow
+        previous state = read state()
+        if nothing changed
+          return None
 
-        add all new state to history
-
-        return global all states
-
-        :return: multiple game states
+        return previous state
         """
         pass

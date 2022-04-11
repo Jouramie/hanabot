@@ -17,7 +17,7 @@
 - finesse (1 card)
 
 
-# Backlog
+# Feature creep
 - Play on the website
 - Multiple bots play against each other
 - Replay game seed with bot

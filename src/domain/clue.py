@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from bot import Rank, Suit
+from driver.bot import Rank, Suit
 
 
 @dataclass(frozen=True)
