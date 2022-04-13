@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import cv2
 import numpy as np
 
-for filename in os.listdir("target"):
+for filename in os.listdir("../../target"):
     file_path = f"target/{filename}"
     try:
         if os.path.isfile(file_path) or os.path.islink(file_path):
@@ -14,7 +14,7 @@ for filename in os.listdir("target"):
 
 
 # Load image, grayscale, median blur, sharpen image
-image = cv2.imread("test/resources/first-turn-3-players.png")
+image = cv2.imread("../../test/resources/first-turn-3-players.png")
 
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 filtered = cv2.fastNlMeansDenoising(hsv, h=10, templateWindowSize=7, searchWindowSize=21)
@@ -32,7 +32,7 @@ color_boundaries = [
     ColorBoundary("blue", np.array([105, 20, 100]), np.array([110, 255, 255])),
     ColorBoundary("purple", np.array([120, 40, 100]), np.array([140, 255, 255])),
     ColorBoundary("yellow", np.array([30, 120, 100]), np.array([50, 200, 200])),
-    ColorBoundary("green", np.array([50, 0, 0]), np.array([60, 255, 220]))
+    ColorBoundary("green", np.array([50, 0, 0]), np.array([60, 255, 220])),
 ]
 
 total_card = 0
@@ -68,4 +68,3 @@ for color in color_boundaries:
     find_cards(color)
 
 print(f"Found {total_card} cards in total.")
-

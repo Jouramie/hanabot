@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 # Load image, grayscale, median blur, sharpen image
-image = cv2.imread("target/red-3.png")
+image = cv2.imread("../../target/red-3.png")
 
 border = 4
 upper_crop = 24
@@ -13,7 +13,7 @@ cropped = image[border + upper_crop : -border - upper_crop, border:-border]
 # Convert the image to gray scale
 hsv = cv2.cvtColor(cropped, cv2.COLOR_BGR2HSV)
 filtered = cv2.fastNlMeansDenoising(hsv, h=10, templateWindowSize=7, searchWindowSize=21)
-cv2.imwrite("target/imread/1-filtered.png", filtered)
+cv2.imwrite("../../target/imread/1-filtered.png", filtered)
 
 
 @dataclass(frozen=True)
@@ -32,9 +32,9 @@ green = ColorBoundary("green", np.array([50, 200, 0]), np.array([60, 255, 220]))
 boundary = red
 
 mask = cv2.inRange(filtered, boundary.lower_bound, boundary.upper_bound)
-cv2.imwrite("target/imread/2-mask.png", mask)
+cv2.imwrite("../../target/imread/2-mask.png", mask)
 inv = cv2.bitwise_not(mask)
-cv2.imwrite("target/imread/2-1-inv.png", inv)
+cv2.imwrite("../../target/imread/2-1-inv.png", inv)
 
 cnts = cv2.findContours(inv, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 cnts = cnts[0] if len(cnts) == 2 else cnts[1]
@@ -50,5 +50,5 @@ for c in cnts:
         cv2.rectangle(image, (x + border, y + border + upper_crop), (x + w + border, y + h + border + upper_crop), (0, 0, 0), 2)
         image_number += 1
 
-cv2.imwrite("target/imread/3-contour.png", image)
+cv2.imwrite("../../target/imread/3-contour.png", image)
 print(f"This card is {boundary.color} {image_number}")
