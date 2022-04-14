@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 # Load image, grayscale, median blur, sharpen image
-image = cv2.imread("../../target/red-3.png")
+image = cv2.imread("../../target/green-0.png")
 
 border = 4
 upper_crop = 24
@@ -29,7 +29,7 @@ purple = ColorBoundary("purple", np.array([120, 200, 100]), np.array([140, 255, 
 yellow = ColorBoundary("yellow", np.array([0, 0, 0]), np.array([255, 150, 255]))
 green = ColorBoundary("green", np.array([50, 200, 0]), np.array([60, 255, 220]))
 
-boundary = red
+boundary = green
 
 mask = cv2.inRange(filtered, boundary.lower_bound, boundary.upper_bound)
 cv2.imwrite("../../target/imread/2-mask.png", mask)

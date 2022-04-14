@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Set
 
-from domain.card import Card
+from bot.domain.card import Card, all_cards
 
 
 @dataclass(frozen=True)
@@ -17,8 +17,13 @@ class Hand:
     cards: List[PlayerCard]
 
 
+def generate_unknown_hand() -> Hand:
+    return Hand([PlayerCard(all_cards, i, 0) for i in range(5)])
+
+
 @dataclass(frozen=True)
 class Player:
+    playerId: int
     hand: Hand
 
 

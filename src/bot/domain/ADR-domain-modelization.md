@@ -33,6 +33,8 @@ A Player has a Hand.
 A PlayerHand contains PlayerCards. 
 - PlayerCards = knownCard or ProbableCards + drawTurn + drawId
 
+### 
+
 ### drawnId
 - Identify uniquely a card in a player hand. 
 
@@ -53,3 +55,4 @@ Actions are
 - ClueAction
 - PlayAction
 - DiscardAction 
+

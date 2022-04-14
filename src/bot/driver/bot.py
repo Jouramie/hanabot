@@ -2,7 +2,7 @@ import logging
 from threading import Thread
 from time import sleep
 
-from domain.game import GameStateReader
+from bot.domain.game import GameStateReader
 
 logger = logging.getLogger(__name__)
 
@@ -21,8 +21,8 @@ class Bot:
 
     def _bot_main_loop(self):
         """
-        algo:
         read game state
+        reconsiliate player hand with history
         if current turn is bot
             bot.playturn
 
@@ -38,6 +38,6 @@ class Bot:
                 logger.info(current_state)
 
             except Exception as e:
-                logger.error(repr(e))
+                logger.exception(e)
             finally:
                 sleep(0.1)
