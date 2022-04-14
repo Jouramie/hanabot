@@ -1,8 +1,24 @@
-from domain.game import GameState
+import cv2
+
+from domain.game import GameStateReader, GameState
 
 
-class GameStateReader:
-    def __init__(self):
+class Screenshotter:
+    def screenshot(self):
+        raise NotImplementedError
+
+
+class FromFileScreenshotter(Screenshotter):
+    def __init__(self, path):
+        self.path = path
+
+    def screenshot(self):
+        return cv2.imread(self.path)
+
+
+class Cv2GameStateReader(GameStateReader):
+    def __init__(self, screenshotter: Screenshotter):
+        self.screenshotter = screenshotter
         self.first_turn = True
 
     def see_current_state(self) -> GameState | None:
@@ -26,4 +42,4 @@ class GameStateReader:
 
         return previous state
         """
-        pass
+        raise NotImplementedError
