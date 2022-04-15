@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.domain.game.player import Player
+from simulator.game.player import Player
 
 
 @dataclass(frozen=True)

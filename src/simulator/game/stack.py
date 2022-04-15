@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-from src.domain.card import Rank
-from src.domain.game.card import Suit, Card
+from simulator.game.card import Suit, Card
 
 
 @dataclass(frozen=True)

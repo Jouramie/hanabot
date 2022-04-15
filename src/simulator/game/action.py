@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from src.domain.game.card import Card
-from src.domain.game.clue import Clue
-from src.domain.game.player import Player
+from simulator.game.card import Card
+from simulator.game.clue import Clue
+from simulator.game.player import Player
 
 
 @dataclass(frozen=True)
