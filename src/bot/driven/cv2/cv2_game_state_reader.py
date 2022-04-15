@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from typing import List, Set, FrozenSet, Tuple
@@ -14,26 +16,28 @@ logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class _ColorBoundary:
-    suit: Suit
     lower_bound: np.array
     upper_bound: np.array
+    suit: Suit | None = None
 
 
 _card_detection_color_boundaries = [
-    _ColorBoundary(Suit.RED, np.array([0, 20, 100]), np.array([20, 255, 255])),
-    _ColorBoundary(Suit.BLUE, np.array([105, 20, 100]), np.array([110, 255, 255])),
-    _ColorBoundary(Suit.PURPLE, np.array([120, 40, 100]), np.array([140, 255, 255])),
-    _ColorBoundary(Suit.YELLOW, np.array([30, 120, 100]), np.array([50, 200, 200])),
-    _ColorBoundary(Suit.GREEN, np.array([50, 0, 0]), np.array([60, 255, 220])),
+    _ColorBoundary(np.array([0, 20, 100]), np.array([20, 255, 255]), Suit.RED),
+    _ColorBoundary(np.array([105, 20, 100]), np.array([110, 255, 255]), Suit.BLUE),
+    _ColorBoundary(np.array([120, 40, 100]), np.array([140, 255, 255]), Suit.PURPLE),
+    _ColorBoundary(np.array([30, 120, 100]), np.array([50, 200, 200]), Suit.YELLOW),
+    _ColorBoundary(np.array([50, 0, 0]), np.array([60, 255, 220]), Suit.GREEN),
 ]
 
 _card_ranking_color_boundaries = [
-    _ColorBoundary(Suit.RED, np.array([0, 200, 100]), np.array([20, 255, 255])),
-    _ColorBoundary(Suit.BLUE, np.array([20, 200, 0]), np.array([200, 255, 255])),
-    _ColorBoundary(Suit.PURPLE, np.array([120, 200, 100]), np.array([140, 255, 255])),
-    _ColorBoundary(Suit.YELLOW, np.array([0, 0, 0]), np.array([255, 150, 255])),
-    _ColorBoundary(Suit.GREEN, np.array([50, 200, 0]), np.array([60, 255, 220])),
+    _ColorBoundary(np.array([0, 200, 100]), np.array([20, 255, 255]), Suit.RED),
+    _ColorBoundary(np.array([20, 200, 0]), np.array([200, 255, 255]), Suit.BLUE),
+    _ColorBoundary(np.array([120, 200, 100]), np.array([140, 255, 255]), Suit.PURPLE),
+    _ColorBoundary(np.array([0, 0, 0]), np.array([255, 150, 255]), Suit.YELLOW),
+    _ColorBoundary(np.array([50, 200, 0]), np.array([60, 255, 220]), Suit.GREEN),
 ]
+
+_play_mat_color_boundaries = _ColorBoundary(np.array([65, 100, 0]), np.array([70, 160, 255]))
 
 
 @dataclass(frozen=True)
@@ -44,18 +48,15 @@ class DetectedCard:
 
 class LazyImage:
     def __init__(self, screenshot: np.ndarray):
-        self._screenshot = screenshot
+        self.original = screenshot
         self._hsv = None
         self._hsv_filtered = None
-
-    def original(self) -> np.ndarray:
-        return self._screenshot
 
     def hsv(self) -> np.ndarray:
         if self._hsv is not None:
             return self._hsv
 
-        self._hsv = cv2.cvtColor(self._screenshot, cv2.COLOR_BGR2HSV)
+        self._hsv = cv2.cvtColor(self.original, cv2.COLOR_BGR2HSV)
         return self._hsv
 
     def hsv_filtered(self) -> np.ndarray:
@@ -65,14 +66,23 @@ class LazyImage:
         self._hsv_filtered = cv2.fastNlMeansDenoising(self.hsv(), h=10, templateWindowSize=7, searchWindowSize=21)
         return self._hsv_filtered
 
+    def crop_with_4ratio(self, up_ratio: float = 0, down_ratio: float = 0, left_ratio: float = 0, right_ratio: float = 0) -> LazyImage:
+        height = self.original.shape[0]
+        width = self.original.shape[1]
+        return LazyImage(self.original[int(height * up_ratio) : height - int(height * down_ratio), int(width * left_ratio) : width - int(width * right_ratio)])
+
+    def crop_with_2ratio(self, height_ratio: float = 0, width_ratio: float = 0) -> LazyImage:
+        return self.crop_with_4ratio(height_ratio, height_ratio, width_ratio, width_ratio)
+
+    def crop_rect(self, rect: Tuple[int, int, int, int]) -> LazyImage:
+        x, y, w, h = rect
+        return LazyImage(self.original[y : y + h, x : x + w])
+
+    def test_write(self, filename: str = "test.png"):
+        return cv2.imwrite(f"../target/{filename}", self.original)
+
     def __getitem__(self, item) -> np.ndarray:
-        return self._screenshot[item]
-
-
-def __test_write(image: np.ndarray | LazyImage):
-    if type(image) == LazyImage:
-        image = image.original()
-    return cv2.imwrite("../target/test.png", image)
+        return self.original[item]
 
 
 class Screenshotter:
@@ -115,7 +125,11 @@ class Cv2GameStateReader(GameStateReader):
         return previous state
         """
 
+        # FIXME gamestate interpretion should be uncoupled from game item detection, ie do not add player hand
+
         screenshot = self.screenshotter.screenshot()
+
+        play_mat = _crop_play_mat(screenshot)
 
         players = _read_player_hands(screenshot)
 
@@ -129,14 +143,7 @@ height_card_crop_ratio = 1 / 6
 def _read_card_rank(card: LazyImage, suit: Suit) -> Rank:
     boundary = next(boundary for boundary in _card_ranking_color_boundaries if boundary.suit == suit)
 
-    height = len(card.original())
-    width = len(card.original()[0])
-    card = LazyImage(
-        card.original()[
-            int(height_card_crop_ratio * height) : -int(height_card_crop_ratio * height),
-            int(width_card_crop_ratio * width) : -int(width_card_crop_ratio * width),
-        ]
-    )
+    card = card.crop_with_2ratio(height_card_crop_ratio, width_card_crop_ratio)
     mask = cv2.inRange(card.hsv_filtered(), boundary.lower_bound, boundary.upper_bound)
     inv = cv2.bitwise_not(mask)
 
@@ -166,9 +173,7 @@ def _read_all_cards_for_suit(screenshot: LazyImage, suit: Suit) -> Set[DetectedC
     for contour in contours:
         if cv2.contourArea(contour) > min_area:
             rect = cv2.boundingRect(contour)
-            x, y, w, h = rect
-            card_image = LazyImage(screenshot[y : y + h, x : x + w])
-            __test_write(card_image.original())
+            card_image = screenshot.crop_rect(rect)
             card = DetectedCard(Card(suit, _read_card_rank(card_image, suit)), rect)
             logger.debug(f"Found {suit} {card.card.rank} card in {rect}.")
             cards.add(card)
@@ -187,3 +192,17 @@ def _read_player_hands(screenshot: LazyImage) -> List[Player]:
     cards = _read_all_cards(screenshot)
 
     return players
+
+
+def _crop_play_mat(screenshot: LazyImage) -> LazyImage:
+    mask = cv2.inRange(screenshot.hsv(), _play_mat_color_boundaries.lower_bound, _play_mat_color_boundaries.upper_bound)
+    inv = cv2.bitwise_not(mask)
+    contours = cv2.findContours(inv, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+    contours = contours[0] if len(contours) == 2 else contours[1]
+    contour = sorted([contour for contour in contours if cv2.contourArea(contour) > 100000], key=lambda x: cv2.contourArea(x), reverse=True)[1]
+    x, y, w, h = cv2.boundingRect(contour)
+    return LazyImage(screenshot.original[y : y + h, x : x + w])
+
+
+def _crop_hands_area(play_mat: LazyImage) -> LazyImage:
+    return play_mat.crop_with_4ratio(left_ratio=0.42, right_ratio=0.2)
