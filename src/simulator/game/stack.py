@@ -9,4 +9,4 @@ class Stack:
     lastPlayed: Card
 
     def can_play(self, card):
-        return card.canPlayOn(self.lastPlayed)
+        return card.can_play_on(self.lastPlayed)

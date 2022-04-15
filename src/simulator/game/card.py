@@ -19,12 +19,16 @@ class Rank(Enum):
     FIVE = auto()
 
 
-@dataclass(frozen=True)
+@dataclass
 class Card:
     suit: Suit
     rank: Rank
 
-    def canPlayOn(self, other_card):
+    def __init__(self, suit: Suit, rank: Rank):
+        self.suit = suit
+        self.rank = rank
+
+    def can_play_on(self, other_card):
         if self.suit != other_card.suit:
             return False
         if self.rank == Rank.ONE:
