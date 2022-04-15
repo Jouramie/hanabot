@@ -37,7 +37,7 @@ def test_smollur_play_mat_detection():
     assert (450, 850, 3) < play_mat.original.shape < (500, 900, 3)
 
 
-def test_read_all_cards_in_first_turn_my_turn():
+def test_read_all_blue_cards_in_first_turn_my_turn():
     screenshot = _load_lazy_image("resources/screenshots/first-turn-my-turn.png")
     screenshot = reader._crop_play_mat(screenshot)
     screenshot = reader._crop_hands_area(screenshot)
@@ -48,6 +48,33 @@ def test_read_all_cards_in_first_turn_my_turn():
 
     assert Card(Suit.BLUE, Rank.ONE) in cards
     assert Card(Suit.BLUE, Rank.FOUR) in cards
+
+
+def test_read_all_cards_in_game_ended_3_players():
+    screenshot = _load_lazy_image("resources/screenshots/game-ended-3-players.png")
+    screenshot = reader._crop_play_mat(screenshot)
+    screenshot = reader._crop_hands_area(screenshot)
+    screenshot.test_write()
+
+    cards = reader._read_all_cards(screenshot)
+    cards = [card.card for card in cards]
+
+    assert len(cards) == 15
+    assert Card(Suit.BLUE, Rank.TWO) in cards
+    assert Card(Suit.GREEN, Rank.FOUR) in cards
+    assert Card(Suit.BLUE, Rank.THREE) in cards
+    assert Card(Suit.YELLOW, Rank.FIVE) in cards
+    assert Card(Suit.GREEN, Rank.TWO) in cards
+    assert Card(Suit.BLUE, Rank.FIVE) in cards
+    assert Card(Suit.YELLOW, Rank.TWO) in cards
+    assert Card(Suit.BLUE, Rank.ONE) in cards
+    assert Card(Suit.RED, Rank.THREE) in cards
+    assert Card(Suit.RED, Rank.TWO) in cards
+    assert Card(Suit.GREEN, Rank.THREE) in cards
+    assert Card(Suit.BLUE, Rank.FOUR) in cards
+    assert Card(Suit.RED, Rank.FOUR) in cards
+    assert Card(Suit.PURPLE, Rank.TWO) in cards
+    assert Card(Suit.GREEN, Rank.ONE) in cards
 
 
 def test_crop_hands_area():

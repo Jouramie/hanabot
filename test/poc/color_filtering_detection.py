@@ -14,7 +14,7 @@ for filename in os.listdir("../../target"):
 
 
 # Load image, grayscale, median blur, sharpen image
-image = cv2.imread("../../test/resources/first-turn-3-players.png")
+image = cv2.imread("../../test/resources/game-ended-3-players.png")
 
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 filtered = cv2.fastNlMeansDenoising(hsv, h=10, templateWindowSize=7, searchWindowSize=21)
