@@ -1,6 +1,7 @@
 from typing import List
 
 from simulator.game.gamestate import GameState
+from simulator.game.player import Player
 from test.simulator.game_setup import get_suits, get_player_names
 
 
@@ -34,6 +35,11 @@ def test_new_gamestate_should_have_empty_discard_pile():
     assert len(gamestate.discardPile) == 0
 
 
+def test_new_gamestate_should_be_first_players_turn():
+    gamestate = GameState(get_player_names(5), get_suits(5))
+    assert gamestate.playerTurn == 0
+
+
 def test_new_gamestate_should_create_2_players():
     player_names = get_player_names(2)
     gamestate = GameState(player_names, get_suits(5))
@@ -62,6 +68,13 @@ def test_new_gamestate_should_create_6_players():
     player_names = get_player_names(6)
     gamestate = GameState(player_names, get_suits(5))
     assert len(gamestate.players) == len(player_names)
+
+
+def test_new_gamestate_should_shuffle_6_players():
+    player_names = get_player_names(6)
+    gamestate1 = GameState(player_names, get_suits(5))
+    gamestate2 = GameState(player_names, get_suits(5))
+    players_are_different(gamestate1.players, gamestate2.players)
 
 
 def test_new_gamestate_should_give_cards_to_2_players():
@@ -134,3 +147,12 @@ def test_new_gamestate_should_have_6_empty_stacks():
     assert len(gamestate.stacks) == len(suits)
     for stackSuit, stack in gamestate.stacks.items():
         assert stack.lastPlayed is None
+
+
+def players_are_different(players1: List[Player], players2: List[Player]):
+    assert len(players1) == len(players2)
+    for i in range(0, len(players1)):
+        if players1[i].name != players2[i].name:
+            return
+
+    assert 0 == 1

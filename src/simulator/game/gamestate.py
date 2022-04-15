@@ -1,3 +1,5 @@
+import random
+
 from dataclasses import dataclass
 from typing import List, Dict
 
@@ -13,6 +15,7 @@ from simulator.game.player import Player
 class GameState:
     players: List[Player]
     actionHistory: List[Action]
+    playerTurn: int
     currentTurn: int
     currentClues: int
     currentStrikes: int
@@ -22,6 +25,7 @@ class GameState:
     isOver: bool
 
     def __init__(self, players: List[str], suits: List[Suit]):
+        self.playerTurn = 0
         self.currentTurn = 0
         self.currentClues = 8
         self.currentStrikes = 0
@@ -38,6 +42,7 @@ class GameState:
         self.players = []
         for playerName in players:
             self.players.append(Player(playerName))
+        random.shuffle(self.players)
 
         number_of_players = len(self.players)
         for i in range(0, get_hand_size(number_of_players) * number_of_players):
@@ -51,3 +56,7 @@ class GameState:
     def can_play(self, card):
         stack = self.stacks[card.Suit]
         return stack.can_play(card)
+
+    def next_turn(self):
+        self.playerTurn = (self.playerTurn + 1) % len(self.players)
+        self.currentTurn = self.currentTurn + 1

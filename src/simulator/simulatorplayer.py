@@ -4,5 +4,8 @@ from simulator.game.action import Action
 
 class SimulatorPlayer:
 
-    def PlayTurn(self, gamestate) -> Action:
+    def play_turn(self, gamestate) -> Action:
+        pass
+
+    def get_name(self) -> str:
         pass

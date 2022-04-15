@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from enum import auto, Enum
 
-
 class Suit(Enum):
     BLUE = auto()
     GREEN = auto()
@@ -18,7 +17,6 @@ class Rank(Enum):
     FOUR = auto()
     FIVE = auto()
 
-
 @dataclass
 class Card:
     suit: Suit
@@ -28,9 +26,15 @@ class Card:
         self.suit = suit
         self.rank = rank
 
-    def can_play_on(self, other_card):
-        if self.suit != other_card.suit:
-            return False
+    @property
+    def number_value(self) -> int:
         if self.rank == Rank.ONE:
-            return other_card is None
-        return self.rank == other_card.rank + 1
+            return 1
+        if self.rank == Rank.TWO:
+            return 2
+        if self.rank == Rank.THREE:
+            return 3
+        if self.rank == Rank.FOUR:
+            return 4
+        if self.rank == Rank.FIVE:
+            return 5
