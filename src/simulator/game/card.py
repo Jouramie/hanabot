@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import auto, Enum
 
+
 class Suit(Enum):
     BLUE = auto()
     GREEN = auto()
@@ -17,7 +18,7 @@ class Rank(Enum):
     FOUR = auto()
     FIVE = auto()
 
-@dataclass
+
 class Card:
     suit: Suit
     rank: Rank

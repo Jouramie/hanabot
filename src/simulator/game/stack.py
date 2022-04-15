@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from simulator.game.card import Suit, Card, Rank
 
 
-@dataclass
 class Stack:
     suit: Suit
     lastPlayed: Card | None

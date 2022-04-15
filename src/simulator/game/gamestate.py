@@ -11,7 +11,6 @@ from simulator.game.card import Card, Suit
 from simulator.game.player import Player
 
 
-@dataclass
 class GameState:
     players: List[Player]
     actionHistory: List[Action]
