@@ -69,9 +69,10 @@ class LazyImage:
         return self._screenshot[item]
 
 
-def __test_write(image: np.ndarray):
-    # TODO this should work in unit tests
-    cv2.imwrite("../target/test.png", image)
+def __test_write(image: np.ndarray | LazyImage):
+    if type(image) == LazyImage:
+        image = image.original()
+    return cv2.imwrite("../target/test.png", image)
 
 
 class Screenshotter:
@@ -121,14 +122,21 @@ class Cv2GameStateReader(GameStateReader):
         return None
 
 
-left_right_card_crop = 4
-top_bottom_card_crop = 28
+width_card_crop_ratio = 1 / 13
+height_card_crop_ratio = 1 / 6
 
 
 def _read_card_rank(card: LazyImage, suit: Suit) -> Rank:
     boundary = next(boundary for boundary in _card_ranking_color_boundaries if boundary.suit == suit)
 
-    card = LazyImage(card.original()[top_bottom_card_crop:-top_bottom_card_crop, left_right_card_crop:-left_right_card_crop])
+    height = len(card.original())
+    width = len(card.original()[0])
+    card = LazyImage(
+        card.original()[
+            int(height_card_crop_ratio * height) : -int(height_card_crop_ratio * height),
+            int(width_card_crop_ratio * width) : -int(width_card_crop_ratio * width),
+        ]
+    )
     mask = cv2.inRange(card.hsv_filtered(), boundary.lower_bound, boundary.upper_bound)
     inv = cv2.bitwise_not(mask)
 
