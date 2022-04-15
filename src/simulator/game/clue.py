@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from simulator.game.card import Suit, Rank
 from simulator.game.player import Player
 
 

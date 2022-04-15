@@ -2,6 +2,7 @@ from typing import List
 
 from simulator.game.card import Suit, Rank, Card
 from simulator.game.deckgenerator import DeckGenerator
+from test.simulator.game_setup import get_suits
 
 
 def test_3suits_should_contain_correct_number_of_cards():
@@ -39,17 +40,6 @@ def test_6suits_should_shuffle_differently_each_time():
     decks_are_different(deck3, deck4)
     decks_are_different(deck3, deck5)
     decks_are_different(deck4, deck5)
-
-
-def get_suits(num: int) -> List[Suit]:
-    if num == 3:
-        return [Suit.BLUE, Suit.GREEN, Suit.RED]
-    if num == 4:
-        return [Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW]
-    if num == 5:
-        return [Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE]
-    if num == 6:
-        return [Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE, Suit.TEAL]
 
 
 def generate_deck_and_assert_number_of_cards_per_suit(suits: List[Suit]):
