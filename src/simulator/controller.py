@@ -1,10 +1,9 @@
-from dataclasses import dataclass
 from typing import List, Dict
 
 from simulator.game.card import Suit
 from simulator.game.gameresult import GameResult
 from simulator.game.gamestate import GameState
-from simulator.simulatorplayer import SimulatorPlayer
+from simulator.players.simulatorplayer import SimulatorPlayer
 
 
 class Controller:
@@ -12,7 +11,7 @@ class Controller:
     current_players: Dict[str, SimulatorPlayer]
 
     def new_game(self, players: List[SimulatorPlayer], suits: List[Suit]) -> GameState:
-        current_game = GameState([player.get_name() for player in players], suits)
+        self.current_game = GameState([player.get_name() for player in players], suits)
         self.current_players = {}
         for player in players:
             self.current_players[player.get_name()] = player
@@ -33,4 +32,4 @@ class Controller:
         return self.current_game.isOver
 
     def get_game_result(self) -> GameResult:
-        pass
+        return GameResult(self.current_game)

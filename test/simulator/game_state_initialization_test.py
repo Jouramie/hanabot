@@ -122,7 +122,7 @@ def test_new_gamestate_should_have_3_empty_stacks():
     gamestate = GameState(get_player_names(5), suits)
     assert len(gamestate.stacks) == len(suits)
     for stackSuit, stack in gamestate.stacks.items():
-        assert stack.lastPlayed is None
+        assert stack.last_played is None
 
 
 def test_new_gamestate_should_have_4_empty_stacks():
@@ -130,7 +130,7 @@ def test_new_gamestate_should_have_4_empty_stacks():
     gamestate = GameState(get_player_names(5), suits)
     assert len(gamestate.stacks) == len(suits)
     for stackSuit, stack in gamestate.stacks.items():
-        assert stack.lastPlayed is None
+        assert stack.last_played is None
 
 
 def test_new_gamestate_should_have_5_empty_stacks():
@@ -138,7 +138,7 @@ def test_new_gamestate_should_have_5_empty_stacks():
     gamestate = GameState(get_player_names(5), suits)
     assert len(gamestate.stacks) == len(suits)
     for stackSuit, stack in gamestate.stacks.items():
-        assert stack.lastPlayed is None
+        assert stack.last_played is None
 
 
 def test_new_gamestate_should_have_6_empty_stacks():
@@ -146,7 +146,7 @@ def test_new_gamestate_should_have_6_empty_stacks():
     gamestate = GameState(get_player_names(5), suits)
     assert len(gamestate.stacks) == len(suits)
     for stackSuit, stack in gamestate.stacks.items():
-        assert stack.lastPlayed is None
+        assert stack.last_played is None
 
 
 def players_are_different(players1: List[Player], players2: List[Player]):

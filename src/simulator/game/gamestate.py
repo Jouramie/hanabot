@@ -59,3 +59,8 @@ class GameState:
     def next_turn(self):
         self.playerTurn = (self.playerTurn + 1) % len(self.players)
         self.currentTurn = self.currentTurn + 1
+
+    def add_strike(self):
+        self.currentStrikes = self.currentStrikes + 1
+        if self.currentStrikes >= 3:
+            self.isOver = True

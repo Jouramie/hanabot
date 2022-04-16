@@ -3,7 +3,7 @@ import random
 from simulator.game.action import Action, PlayAction, ClueAction, DiscardAction
 from simulator.game.clue import RankClue
 from simulator.game.gamestate import GameState
-from simulator.simulatorplayer import SimulatorPlayer
+from simulator.players.simulatorplayer import SimulatorPlayer
 
 
 class CheatingPlayer(SimulatorPlayer):
