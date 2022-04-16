@@ -15,6 +15,7 @@ class Controller:
         self.current_players = {}
         for player in players:
             self.current_players[player.get_name()] = player
+        return self.current_game
 
     def play_turn(self) -> GameState:
         player_to_play_name = self.current_game.players[self.current_game.playerTurn].name
@@ -33,3 +34,7 @@ class Controller:
 
     def get_game_result(self) -> GameResult:
         return GameResult(self.current_game)
+
+    def draw_game(self):
+
+        pass
