@@ -23,7 +23,7 @@ def generate_unknown_hand() -> Hand:
 
 @dataclass(frozen=True)
 class Player:
-    playerId: int
+    name: str
     hand: Hand
 
 
