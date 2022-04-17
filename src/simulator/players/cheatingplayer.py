@@ -11,10 +11,8 @@ logger = logging.getLogger(__name__)
 
 class CheatingPlayer(SimulatorPlayer):
     name: str
-    log_level: int
 
-    def __init__(self, log_level: int):
-        self.log_level = log_level
+    def __init__(self):
         self.name = "Cheater #" + str(random.randint(0, 1000))
 
     def play_turn(self, game: GameState) -> Action:

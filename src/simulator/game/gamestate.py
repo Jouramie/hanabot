@@ -57,10 +57,12 @@ class GameState:
         return self.current_turn % len(self.players)
 
     def player_draw_card(self, player: Player):
+        if len(self.deck) == 0:
+            return
         card = self.deck.pop()
         player.hand.insert(0, card)
         if len(self.deck) == 0:
-            self.turns_remaining = len(self.players)
+            self.turns_remaining = len(self.players) + 1
 
     def can_play(self, card):
         stack = self.stacks[card.Suit]
