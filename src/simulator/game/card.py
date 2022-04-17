@@ -1,22 +1,6 @@
-from dataclasses import dataclass
-from enum import auto, Enum
-
-
-class Suit(Enum):
-    BLUE = auto()
-    GREEN = auto()
-    YELLOW = auto()
-    RED = auto()
-    PURPLE = auto()
-    TEAL = auto()
-
-
-class Rank(Enum):
-    ONE = auto()
-    TWO = auto()
-    THREE = auto()
-    FOUR = auto()
-    FIVE = auto()
+from simulator.game.gamerules import get_suit_short_name
+from simulator.game.rank import Rank
+from simulator.game.suit import Suit
 
 
 class Card:
@@ -26,6 +10,9 @@ class Card:
     def __init__(self, suit: Suit, rank: Rank):
         self.suit = suit
         self.rank = rank
+
+    def __str__(self):
+        return get_suit_short_name(self.suit) + str(self.number_value)
 
     @property
     def number_value(self) -> int:

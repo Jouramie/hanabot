@@ -7,8 +7,9 @@ from simulator.game.deckgenerator import DeckGenerator
 from simulator.game.gamerules import get_hand_size, get_max_turns
 from simulator.game.stack import Stack
 from simulator.game.action import Action, PlayAction, ClueAction, DiscardAction
-from simulator.game.card import Card, Suit
+from simulator.game.card import Card
 from simulator.game.player import Player
+from simulator.game.suit import Suit
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class GameState:
 
     def player_draw_card(self, player: Player):
         card = self.deck.pop()
-        player.hand.append(card)
+        player.hand.insert(0, card)
         if len(self.deck) == 0:
             self.turns_remaining = len(self.players)
 
@@ -74,19 +75,12 @@ class GameState:
             self.is_over = True
 
     def play_turn(self, action: Action):
-        self.next_turn()
         action.actor = self.get_current_player()
-        action.turn = self.current_turn
 
-        logger.debug("gamestate.play_turn")
-        logger.debug("action: " + str(action))
-        logger.debug("action is PlayAction: " + str(action is PlayAction))
-        if action is PlayAction:
-            self.play_turn_play(action)
-        if action is ClueAction:
-            self.play_turn_clue(action)
-        if action is DiscardAction:
-            self.play_turn_discard(action)
+        action.act_on_state(self)
+
+        self.next_turn()
+        action.turn = self.current_turn
 
         self.action_history.append(action)
         self.turns_remaining = self.turns_remaining - 1
@@ -111,6 +105,7 @@ class GameState:
         clue = action.clue
         clue.turn = self.current_turn
         clue.giver = player
+        self.current_clues = self.current_clues - 1
         # TODO: Actually handle the clue or something
 
     def play_turn_discard(self, action: DiscardAction):

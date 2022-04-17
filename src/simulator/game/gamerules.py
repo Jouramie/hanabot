@@ -1,4 +1,4 @@
-from simulator.game.card import Suit
+from simulator.game.suit import Suit
 
 hand_size_rules = {
     2: 5,

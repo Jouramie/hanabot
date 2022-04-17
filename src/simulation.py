@@ -2,7 +2,7 @@ import os
 import logging
 
 from simulator.controller import Controller
-from simulator.game.card import Suit
+from simulator.game.suit import Suit
 from simulator.players.cheatingplayer import CheatingPlayer
 
 

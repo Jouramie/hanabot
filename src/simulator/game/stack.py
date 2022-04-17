@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 
-from simulator.game.card import Suit, Card, Rank
+from simulator.game.card import Card
+from simulator.game.gamerules import get_suit_short_name
+from simulator.game.rank import Rank
+from simulator.game.suit import Suit
 
 
 class Stack:
@@ -10,6 +13,12 @@ class Stack:
     def __init__(self, suit: Suit):
         self.suit = suit
         self.last_played = None
+
+    def __str__(self):
+        stack_number = 0
+        if self.last_played is not None:
+            stack_number = self.last_played.number_value
+        return get_suit_short_name(self.suit) + str(stack_number)
 
     def stack_score(self) -> int:
         if self.last_played is None:

@@ -1,6 +1,8 @@
 from typing import List
 import random
-from simulator.game.card import Suit, Card, Rank
+from simulator.game.card import Card
+from simulator.game.rank import Rank
+from simulator.game.suit import Suit
 
 
 class DeckGenerator:
