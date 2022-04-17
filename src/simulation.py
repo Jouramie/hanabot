@@ -55,7 +55,7 @@ logging.basicConfig(level=logging.INFO)
 
 clear = lambda: os.system('cls')
 controller = Controller()
-players = [CheatingPlayer(), CheatingPlayer()]
+players = [CheatingPlayer(), CheatingPlayer(), CheatingPlayer(), CheatingPlayer()]
 suits = [Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE]
 
 print("Input 'Slow' to play one game slowly")

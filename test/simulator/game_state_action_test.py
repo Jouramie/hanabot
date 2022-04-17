@@ -175,3 +175,21 @@ def test_finish_deck_play_should_set_remaining_turns():
     gamestate.play_turn(action)
 
     assert gamestate.turns_remaining == len(gamestate.players)
+
+
+def test_deck_discard_should_not_add_card_to_discard_pile():
+    gamestate = GameState(get_player_names(5), get_suits(5))
+    player = gamestate.players[gamestate.player_turn]
+    gamestate.current_clues = 4
+
+    slot1_before = player.hand[1]
+    slot2_before = player.hand[2]
+
+    assert gamestate.discard_pile.count(slot1_before) == 0
+    assert gamestate.discard_pile.count(slot2_before) == 0
+
+    action = DiscardAction(2)
+    gamestate.play_turn(action)
+
+    assert gamestate.discard_pile.count(slot1_before) == 0
+    assert gamestate.discard_pile.count(slot2_before) == 1
