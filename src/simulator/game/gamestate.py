@@ -1,39 +1,40 @@
 import random
+import logging
 
-from dataclasses import dataclass
 from typing import List, Dict
 
 from simulator.game.deckgenerator import DeckGenerator
-from simulator.game.gamerules import get_hand_size
+from simulator.game.gamerules import get_hand_size, get_max_turns
 from simulator.game.stack import Stack
 from simulator.game.action import Action, PlayAction, ClueAction, DiscardAction
 from simulator.game.card import Card, Suit
 from simulator.game.player import Player
 
+logger = logging.getLogger(__name__)
+
 
 class GameState:
     players: List[Player]
-    actionHistory: List[Action]
-    playerTurn: int
-    currentTurn: int
-    currentClues: int
-    currentStrikes: int
+    action_history: List[Action]
+    current_turn: int
+    current_clues: int
+    current_strikes: int
     deck: List[Card]
-    discardPile: List[Card]
+    discard_pile: List[Card]
     stacks: Dict[Suit, Stack]
-    isOver: bool
+    is_over: bool
+    turns_remaining: int
 
     def __init__(self, players: List[str], suits: List[Suit]):
-        self.playerTurn = 0
-        self.currentTurn = 0
-        self.currentClues = 8
-        self.currentStrikes = 0
-        self.actionHistory = []
-        self.isOver = False
+        self.current_turn = 0
+        self.current_clues = 8
+        self.current_strikes = 0
+        self.action_history = []
+        self.is_over = False
 
         generator = DeckGenerator()
         self.deck = generator.GenerateDeck(suits)
-        self.discardPile = []
+        self.discard_pile = []
         self.stacks = {}
         for suit in suits:
             self.stacks[suit] = Stack(suit)
@@ -48,28 +49,38 @@ class GameState:
             player_index = i % number_of_players
             self.player_draw_card(self.players[player_index])
 
+        self.turns_remaining = get_max_turns(number_of_players, len(suits))
+
+    @property
+    def player_turn(self) -> int:
+        return self.current_turn % len(self.players)
+
     def player_draw_card(self, player: Player):
         card = self.deck.pop()
         player.hand.append(card)
+        if len(self.deck) == 0:
+            self.turns_remaining = len(self.players)
 
     def can_play(self, card):
         stack = self.stacks[card.Suit]
         return stack.can_play(card)
 
     def next_turn(self):
-        self.playerTurn = (self.playerTurn + 1) % len(self.players)
-        self.currentTurn = self.currentTurn + 1
+        self.current_turn = self.current_turn + 1
 
     def add_strike(self):
-        self.currentStrikes = self.currentStrikes + 1
-        if self.currentStrikes >= 3:
-            self.isOver = True
+        self.current_strikes = self.current_strikes + 1
+        if self.current_strikes >= 3:
+            self.is_over = True
 
     def play_turn(self, action: Action):
         self.next_turn()
         action.actor = self.get_current_player()
-        action.turn = self.currentTurn
+        action.turn = self.current_turn
 
+        logger.debug("gamestate.play_turn")
+        logger.debug("action: " + str(action))
+        logger.debug("action is PlayAction: " + str(action is PlayAction))
         if action is PlayAction:
             self.play_turn_play(action)
         if action is ClueAction:
@@ -77,7 +88,10 @@ class GameState:
         if action is DiscardAction:
             self.play_turn_discard(action)
 
-        self.actionHistory.append(action)
+        self.action_history.append(action)
+        self.turns_remaining = self.turns_remaining - 1
+        if self.turns_remaining == 0:
+            self.is_over = True
 
     def play_turn_play(self, action: PlayAction):
         player = self.get_current_player()
@@ -87,7 +101,7 @@ class GameState:
             stack_to_play_on.play(card_to_play)
             action.success = True
         else:
-            self.currentStrikes = self.currentStrikes + 1
+            self.current_strikes = self.current_strikes + 1
             action.success = False
         self.player_draw_card(player)
         action.playedCard = card_to_play
@@ -95,22 +109,20 @@ class GameState:
     def play_turn_clue(self, action: ClueAction):
         player = self.get_current_player()
         clue = action.clue
-        clue.turn = self.currentTurn
+        clue.turn = self.current_turn
         clue.giver = player
         # TODO: Actually handle the clue or something
 
-
-
     def play_turn_discard(self, action: DiscardAction):
         player = self.get_current_player()
-        if self.currentClues >= 8 or action.cardSlot < 0 or action.cardSlot >= len(player.hand):
+        if self.current_clues >= 8 or action.cardSlot < 0 or action.cardSlot >= len(player.hand):
             raise ValueError('Can\'t perform discard action')
 
         card_to_discard = player.hand.pop(action.cardSlot)
-        self.discardPile.append(card_to_discard)
-        self.currentClues = self.currentClues + 1
+        self.discard_pile.append(card_to_discard)
+        self.current_clues = self.current_clues + 1
         self.player_draw_card(player)
         action.discardedCard = card_to_discard
 
     def get_current_player(self):
-        return self.players[self.playerTurn]
+        return self.players[self.player_turn]

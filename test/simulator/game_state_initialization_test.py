@@ -1,5 +1,6 @@
 from typing import List
 
+from simulator.game.gamerules import get_hand_size
 from simulator.game.gamestate import GameState
 from simulator.game.player import Player
 from test.simulator.game_setup import get_suits, get_player_names
@@ -7,37 +8,82 @@ from test.simulator.game_setup import get_suits, get_player_names
 
 def test_new_gamestate_should_have_8_clues():
     gamestate = GameState(get_player_names(5), get_suits(5))
-    assert gamestate.currentClues == 8
+    assert gamestate.current_clues == 8
 
 
 def test_new_gamestate_should_be_on_turn_zero():
     gamestate = GameState(get_player_names(5), get_suits(5))
-    assert gamestate.currentTurn == 0
+    assert gamestate.current_turn == 0
 
 
 def test_new_gamestate_should_have_zero_strikes():
     gamestate = GameState(get_player_names(5), get_suits(5))
-    assert gamestate.currentStrikes == 0
+    assert gamestate.current_strikes == 0
 
 
 def test_new_gamestate_should_not_be_over():
     gamestate = GameState(get_player_names(5), get_suits(5))
-    assert not gamestate.isOver
+    assert not gamestate.is_over
 
 
 def test_new_gamestate_should_have_empty_history():
     gamestate = GameState(get_player_names(5), get_suits(5))
-    assert len(gamestate.actionHistory) == 0
+    assert len(gamestate.action_history) == 0
 
 
 def test_new_gamestate_should_have_empty_discard_pile():
     gamestate = GameState(get_player_names(5), get_suits(5))
-    assert len(gamestate.discardPile) == 0
+    assert len(gamestate.discard_pile) == 0
 
 
 def test_new_gamestate_should_be_first_players_turn():
     gamestate = GameState(get_player_names(5), get_suits(5))
-    assert gamestate.playerTurn == 0
+    assert gamestate.player_turn == 0
+
+
+def test_new_gamestate_2p_should_have_many_turns_remaining():
+    number_players = 2
+    number_suits = 5
+    player_names = get_player_names(number_players)
+    suits = get_suits(number_suits)
+    gamestate = GameState(player_names, suits)
+    assert gamestate.turns_remaining == get_max_turns(number_players, number_suits)
+
+
+def test_new_gamestate_3p_should_have_many_turns_remaining():
+    number_players = 3
+    number_suits = 5
+    player_names = get_player_names(number_players)
+    suits = get_suits(number_suits)
+    gamestate = GameState(player_names, suits)
+    assert gamestate.turns_remaining == get_max_turns(number_players, number_suits)
+
+
+def test_new_gamestate_4p_should_have_many_turns_remaining():
+    number_players = 4
+    number_suits = 5
+    player_names = get_player_names(number_players)
+    suits = get_suits(number_suits)
+    gamestate = GameState(player_names, suits)
+    assert gamestate.turns_remaining == get_max_turns(number_players, number_suits)
+
+
+def test_new_gamestate_5p_should_have_many_turns_remaining():
+    number_players = 5
+    number_suits = 5
+    player_names = get_player_names(number_players)
+    suits = get_suits(number_suits)
+    gamestate = GameState(player_names, suits)
+    assert gamestate.turns_remaining == get_max_turns(number_players, number_suits)
+
+
+def test_new_gamestate_6p_should_have_many_turns_remaining():
+    number_players = 6
+    number_suits = 5
+    player_names = get_player_names(number_players)
+    suits = get_suits(number_suits)
+    gamestate = GameState(player_names, suits)
+    assert gamestate.turns_remaining == get_max_turns(number_players, number_suits)
 
 
 def test_new_gamestate_should_create_2_players():
@@ -156,3 +202,16 @@ def players_are_different(players1: List[Player], players2: List[Player]):
             return
 
     assert 0 == 1
+
+
+def get_max_turns(number_players: int, number_suits: int) -> int:
+    starting_clues = 8
+    clues_per_discard = 1
+    max_turns_per_deck_card = 1 + clues_per_discard
+    total_cards = number_suits * 10
+    hand_size = get_hand_size(number_players)
+    cards_in_hands = hand_size * number_players
+    deck_size = total_cards - cards_in_hands
+    max_turns_from_emptying_deck = deck_size * max_turns_per_deck_card
+    max_turns = max_turns_from_emptying_deck + number_players + starting_clues
+    return max_turns

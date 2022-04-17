@@ -33,7 +33,7 @@ def test_gamestate_with_one_strike_should_be_result_with_score():
     gamestate.stacks[Suit.GREEN].last_played = Card(Suit.GREEN, Rank.FIVE)
     gamestate.stacks[Suit.PURPLE].last_played = Card(Suit.PURPLE, Rank.FIVE)
     gamestate.add_strike()
-    gamestate.isOver = True
+    gamestate.is_over = True
     game_result = GameResult(gamestate)
     assert game_result.is_survival
     assert not game_result.is_victory
@@ -49,7 +49,7 @@ def test_gamestate_with_one_strike_should_be_victory_result_with_max_score():
     gamestate.stacks[Suit.GREEN].last_played = Card(Suit.GREEN, Rank.FIVE)
     gamestate.stacks[Suit.PURPLE].last_played = Card(Suit.PURPLE, Rank.FIVE)
     gamestate.add_strike()
-    gamestate.isOver = True
+    gamestate.is_over = True
     game_result = GameResult(gamestate)
     assert game_result.is_survival
     assert game_result.is_victory
