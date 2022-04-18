@@ -5,18 +5,15 @@ from frozendict import frozendict
 
 from core import Suit, Rank, Card
 
-
-def get_player_names(num: int) -> list[str]:
-    if num == 2:
-        return ["Alice", "Bob"]
-    if num == 3:
-        return ["Alice", "Bob", "Cathy"]
-    if num == 4:
-        return ["Alice", "Bob", "Cathy", "Donald"]
-    if num == 5:
-        return ["Alice", "Bob", "Cathy", "Donald", "Emily"]
-    if num == 6:
-        return ["Alice", "Bob", "Cathy", "Donald", "Emily", "Frank"]
+player_names_per_player_number: dict[int, tuple[str, ...]] = frozendict(
+    {
+        2: ("Alice", "Bob"),
+        3: ("Alice", "Bob", "Cathy"),
+        4: ("Alice", "Bob", "Cathy", "Donald"),
+        5: ("Alice", "Bob", "Cathy", "Donald", "Emily"),
+        6: ("Alice", "Bob", "Cathy", "Donald", "Emily", "Frank"),
+    }
+)
 
 
 class Variant(Enum):
@@ -26,7 +23,7 @@ class Variant(Enum):
     THREE_SUITS = auto()
 
 
-suits_per_variant = frozendict(
+suits_per_variant: dict[Variant : tuple[Suit, ...]] = frozendict(
     {
         Variant.NO_VARIANT: (Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE),
         Variant.SIX_SUITS: (Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE, Suit.TEAL),
@@ -47,10 +44,10 @@ def get_suits(num: int) -> tuple[Suit, ...]:
         return suits_per_variant[Variant.SIX_SUITS]
 
 
-def all_cards(
+def all_possible_cards(
     suits: Iterable[Suit] = suits_per_variant[Variant.NO_VARIANT],
     ranks: Iterable[Rank] = (Rank.ONE, Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE),
-) -> list[Card]:
+) -> Iterable[Card]:
     for suit in Suit:
         for rank in Rank:
             yield Card(suit, rank)

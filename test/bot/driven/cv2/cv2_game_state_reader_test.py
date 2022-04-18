@@ -4,7 +4,7 @@ import cv2
 import pytest
 
 import bot.driven.cv2.cv2_game_state_reader as reader
-from bot.domain.model.card import Suit, Rank, Card
+from core import Suit, Rank, Card
 
 
 def _load_lazy_image(path):
@@ -14,11 +14,11 @@ def _load_lazy_image(path):
 @pytest.mark.parametrize("card", [card for card in os.listdir("resources/cards") if card[1] is not "0"])
 def test_all_card_rank(card):
     card_image = _load_lazy_image("resources/cards/" + card)
-    suit = Suit.from_char(card[0])
+    suit = Suit.value_of(card[0])
 
     rank = reader._read_card_rank(card_image, suit)
 
-    assert rank == Rank.from_char(card[1])
+    assert rank == Rank.value_of(card[1])
 
 
 def test_full_screen_play_mat_detection():

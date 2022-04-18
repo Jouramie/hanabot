@@ -1,5 +1,9 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum, auto
+
+from frozendict import frozendict
 
 
 class Suit(Enum):
@@ -11,21 +15,31 @@ class Suit(Enum):
     TEAL = auto()
 
     @staticmethod
-    def from_char(char):
-        if char == "b":
-            return Suit.BLUE
-        elif char == "g":
-            return Suit.GREEN
-        elif char == "y":
-            return Suit.YELLOW
-        elif char == "r":
-            return Suit.RED
-        elif char == "p":
-            return Suit.PURPLE
-        elif char == "t":
-            return Suit.TEAL
-        else:
-            raise ValueError(f"Invalid suit: {char}")
+    def value_of(s: str) -> Suit:
+        suit = suit_abbreviation_mapping.get(s.lower())
+
+        if suit is None:
+            raise ValueError(f"Invalid suit: {s}")
+
+        return suit
+
+
+suit_abbreviation_mapping = frozendict(
+    {
+        "b": Suit.BLUE,
+        "bl": Suit.BLUE,
+        "g": Suit.GREEN,
+        "gr": Suit.GREEN,
+        "y": Suit.YELLOW,
+        "ye": Suit.YELLOW,
+        "r": Suit.RED,
+        "re": Suit.RED,
+        "p": Suit.PURPLE,
+        "pu": Suit.PURPLE,
+        "t": Suit.TEAL,
+        "te": Suit.TEAL,
+    }
+)
 
 
 class Rank(Enum):
@@ -36,7 +50,7 @@ class Rank(Enum):
     FIVE = auto()
 
     @staticmethod
-    def from_char(value: int | str):
+    def value_of(value: int | str):
         if str(value) == "1":
             return Rank.ONE
         elif str(value) == "2":

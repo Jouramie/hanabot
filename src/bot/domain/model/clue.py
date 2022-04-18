@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Set
 
-from bot.domain.model.card import Rank, Suit
+from core import Suit, Rank
 
 
 @dataclass(frozen=True)

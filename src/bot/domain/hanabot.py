@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import Set
 
 from bot.domain.convention import Convention
-from bot.domain.model.card import Rank, Suit
-from bot.domain.model.turn import Turn, GameHistory
+from bot.domain.model.turn import Turn, GameHistory, ClueAction, DiscardAction, PlayAction
+from core import Suit, Rank
 
 
 @dataclass(frozen=True)

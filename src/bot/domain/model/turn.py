@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import List, Set
 
-from bot.domain.model.card import Card
 from bot.domain.model.clue import SuitClue, RankClue
 from bot.domain.model.player import PlayerHand
 from bot.domain.model.stack import Stacks
+from core import Card
 
 
 @dataclass(frozen=True)

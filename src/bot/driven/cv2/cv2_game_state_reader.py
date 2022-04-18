@@ -6,10 +6,11 @@ from typing import List, Set, FrozenSet, Tuple
 
 import cv2
 import numpy as np
+from frozendict import frozendict
 
-from bot.domain.model.card import Card, Suit, Rank
 from bot.domain.model.player import generate_unknown_hand, PlayerHand
 from bot.domain.model.turn import GameStateReader, Turn
+from core import Suit, Rank, Card
 
 logger = logging.getLogger(__name__)
 
@@ -18,24 +19,29 @@ logger = logging.getLogger(__name__)
 class _ColorBoundary:
     lower_bound: np.array
     upper_bound: np.array
-    suit: Suit | None = None
 
 
-_card_detection_color_boundaries = [
-    _ColorBoundary(np.array([0, 20, 100]), np.array([20, 255, 255]), Suit.RED),
-    _ColorBoundary(np.array([105, 20, 100]), np.array([110, 255, 255]), Suit.BLUE),
-    _ColorBoundary(np.array([120, 40, 100]), np.array([140, 255, 255]), Suit.PURPLE),
-    _ColorBoundary(np.array([30, 120, 100]), np.array([50, 200, 200]), Suit.YELLOW),
-    _ColorBoundary(np.array([50, 0, 0]), np.array([60, 255, 220]), Suit.GREEN),
-]
+_card_detection_boundaries_by_suit = frozendict(
+    {
+        Suit.RED: _ColorBoundary(np.array([0, 20, 100]), np.array([20, 255, 255])),
+        Suit.BLUE: _ColorBoundary(np.array([105, 20, 100]), np.array([110, 255, 255])),
+        Suit.GREEN: _ColorBoundary(np.array([50, 0, 0]), np.array([60, 255, 220])),
+        Suit.YELLOW: _ColorBoundary(np.array([30, 120, 100]), np.array([50, 200, 200])),
+        Suit.PURPLE: _ColorBoundary(np.array([120, 40, 100]), np.array([140, 255, 255])),
+    }
+)
 
-_card_ranking_color_boundaries = [
-    _ColorBoundary(np.array([0, 200, 100]), np.array([20, 255, 255]), Suit.RED),
-    _ColorBoundary(np.array([20, 200, 0]), np.array([200, 255, 255]), Suit.BLUE),
-    _ColorBoundary(np.array([120, 200, 100]), np.array([140, 255, 255]), Suit.PURPLE),
-    _ColorBoundary(np.array([0, 0, 0]), np.array([255, 150, 255]), Suit.YELLOW),
-    _ColorBoundary(np.array([50, 200, 0]), np.array([60, 255, 220]), Suit.GREEN),
-]
+
+_card_ranking_boundaries_by_suit = frozendict(
+    {
+        Suit.RED: _ColorBoundary(np.array([0, 200, 100]), np.array([20, 255, 255])),
+        Suit.BLUE: _ColorBoundary(np.array([20, 200, 0]), np.array([200, 255, 255])),
+        Suit.GREEN: _ColorBoundary(np.array([50, 200, 0]), np.array([60, 255, 220])),
+        Suit.YELLOW: _ColorBoundary(np.array([0, 0, 0]), np.array([255, 150, 255])),
+        Suit.PURPLE: _ColorBoundary(np.array([120, 200, 100]), np.array([140, 255, 255])),
+    }
+)
+
 
 _play_mat_color_boundaries = _ColorBoundary(np.array([65, 100, 0]), np.array([70, 160, 255]))
 
@@ -141,7 +147,7 @@ height_card_crop_ratio = 1 / 6
 
 
 def _read_card_rank(card: LazyImage, suit: Suit) -> Rank:
-    boundary = next(boundary for boundary in _card_ranking_color_boundaries if boundary.suit == suit)
+    boundary = _card_ranking_boundaries_by_suit[suit]
 
     card = card.crop_with_2ratio(height_card_crop_ratio, width_card_crop_ratio)
     mask = cv2.inRange(card.hsv_filtered(), boundary.lower_bound, boundary.upper_bound)
@@ -154,13 +160,15 @@ def _read_card_rank(card: LazyImage, suit: Suit) -> Rank:
     max_area = 1000
 
     rank = len([contour for contour in contours if min_area < cv2.contourArea(contour) < max_area])
-    return Rank.from_char(rank)
+    return Rank.value_of(rank)
 
 
 def _read_all_cards_for_suit(screenshot: LazyImage, suit: Suit) -> Set[DetectedCard]:
     logger.debug(f"Finding card of the {suit} suit.")
 
-    color_boundary = next(boundary for boundary in _card_detection_color_boundaries if boundary.suit == suit)
+    color_boundary = _card_detection_boundaries_by_suit.get(suit)
+    if color_boundary is None:
+        return set()
 
     mask = cv2.inRange(screenshot.hsv_filtered(), color_boundary.lower_bound, color_boundary.upper_bound)
 
