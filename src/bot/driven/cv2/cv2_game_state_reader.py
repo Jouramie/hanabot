@@ -7,9 +7,9 @@ from typing import List, Set, FrozenSet, Tuple
 import cv2
 import numpy as np
 
-from bot.domain.card import Card, Suit, Rank
-from bot.domain.game import GameStateReader, GameState
-from bot.domain.player import Player, generate_unknown_hand
+from bot.domain.model.card import Card, Suit, Rank
+from bot.domain.model.player import generate_unknown_hand, PlayerHand
+from bot.domain.model.turn import GameStateReader, Turn
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +103,7 @@ class Cv2GameStateReader(GameStateReader):
         self.screenshotter = screenshotter
         self.first_turn = True
 
-    def see_current_state(self) -> GameState | None:
+    def see_current_state(self) -> Turn | None:
         """
         algo:
 
@@ -186,8 +186,8 @@ def _read_all_cards(screenshot: LazyImage) -> FrozenSet[DetectedCard]:
     return frozenset(card for suit in Suit for card in _read_all_cards_for_suit(screenshot, suit))
 
 
-def _read_player_hands(screenshot: LazyImage) -> List[Player]:
-    players = [Player(0, generate_unknown_hand())]
+def _read_player_hands(screenshot: LazyImage) -> List[PlayerHand]:
+    players = [PlayerHand("0", generate_unknown_hand())]
 
     cards = _read_all_cards(screenshot)
 

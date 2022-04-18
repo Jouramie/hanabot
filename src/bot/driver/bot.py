@@ -2,14 +2,15 @@ import logging
 from threading import Thread
 from time import sleep
 
-from bot.domain.game import GameStateReader
+from bot.domain.model.turn import GameStateReader
 
 logger = logging.getLogger(__name__)
 
 
 class Bot:
-    def __init__(self, game_state_reader: GameStateReader):
+    def __init__(self, game_state_reader: GameStateReader, player_name: str):
         self.game_state_reader = game_state_reader
+        self.player_name = player_name
         self.stop_flag = False
         self.thread = Thread(target=self._bot_main_loop)
 

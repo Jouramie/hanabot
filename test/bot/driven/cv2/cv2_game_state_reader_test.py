@@ -4,7 +4,7 @@ import cv2
 import pytest
 
 import bot.driven.cv2.cv2_game_state_reader as reader
-from bot.domain.card import Suit, Rank, Card
+from bot.domain.model.card import Suit, Rank, Card
 
 
 def _load_lazy_image(path):
@@ -82,4 +82,4 @@ def test_crop_hands_area():
 
     card_area = reader._crop_hands_area(screenshot)
 
-    assert (300, 485, 3) < card_area.original.shape < (350, 485, 3)
+    assert (483, 300, 3) < card_area.original.shape < (485, 350, 3)
