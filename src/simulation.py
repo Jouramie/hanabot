@@ -1,9 +1,9 @@
 import os
 import logging
 
+from core import Suit
 from simulator.controller import Controller
 from simulator.game.gameresult import GameResult
-from simulator.game.suit import Suit
 from simulator.players.cheatingplayer import CheatingPlayer
 
 
@@ -53,7 +53,7 @@ def play_games_fast(number_games: int):
 
 logging.basicConfig(level=logging.INFO)
 
-clear = lambda: os.system('cls')
+clear = lambda: os.system("cls")
 controller = Controller()
 players = [CheatingPlayer(), CheatingPlayer(), CheatingPlayer(), CheatingPlayer()]
 suits = [Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE]

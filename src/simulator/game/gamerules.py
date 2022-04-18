@@ -1,12 +1,6 @@
-from simulator.game.suit import Suit
+from core import Suit
 
-hand_size_rules = {
-    2: 5,
-    3: 5,
-    4: 4,
-    5: 4,
-    6: 3
-}
+hand_size_rules = {2: 5, 3: 5, 4: 4, 5: 4, 6: 3}
 
 suit_abbreviations = {
     Suit.RED: "Re",

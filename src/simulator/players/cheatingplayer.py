@@ -1,14 +1,12 @@
-import random
 import logging
+import random
 from typing import List, Dict
 
+from core import Suit, Rank, Card
 from simulator.game.action import Action, PlayAction, ClueAction, DiscardAction
-from simulator.game.card import Card
 from simulator.game.clue import RankClue
 from simulator.game.gamestate import GameState
-from simulator.game.rank import Rank
 from simulator.game.stack import Stack
-from simulator.game.suit import Suit
 from simulator.players.simulatorplayer import SimulatorPlayer
 
 logger = logging.getLogger(__name__)
@@ -18,7 +16,7 @@ def card_is_trash(card: Card, stacks: Dict[Suit, Stack]):
     stack = stacks[card.suit]
     if stack.last_played is None:
         return False
-    return stack.last_played.number_value >= card.number_value
+    return stack.last_played.number_value >= card.rank.number_value
 
 
 def card_is_discarded(card: Card, discardPile: List[Card]):

@@ -23,6 +23,12 @@ class Suit(Enum):
 
         return suit
 
+    def __repr__(self) -> str:
+        return self.short_name()
+
+    def short_name(self) -> str:
+        return self.name[0:1].lower()
+
 
 suit_abbreviation_mapping = frozendict(
     {
@@ -64,8 +70,40 @@ class Rank(Enum):
         else:
             raise ValueError(f"Invalid rank: {value}")
 
+    @property
+    def short_name(self) -> str:
+        if self is Rank.ONE:
+            return "1"
+        elif self is Rank.TWO:
+            return "2"
+        elif self is Rank.THREE:
+            return "3"
+        elif self is Rank.FOUR:
+            return "4"
+        elif self is Rank.FIVE:
+            return "5"
+
+    @property
+    def number_value(self) -> int:
+        if self is Rank.ONE:
+            return 1
+        if self is Rank.TWO:
+            return 2
+        if self is Rank.THREE:
+            return 3
+        if self is Rank.FOUR:
+            return 4
+        if self is Rank.FIVE:
+            return 5
+
+    def __repr__(self) -> str:
+        return self.short_name
+
 
 @dataclass(frozen=True)
 class Card:
     suit: Suit
     rank: Rank
+
+    def __repr__(self) -> str:
+        return f"{self.suit.short_name()}{self.rank.name}"

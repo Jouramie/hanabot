@@ -1,18 +1,13 @@
 from dataclasses import dataclass
 
-from simulator.game.card import Card
+from core import Suit, Rank, Card
 from simulator.game.gamerules import get_suit_short_name
-from simulator.game.rank import Rank
-from simulator.game.suit import Suit
 
 
+@dataclass
 class Stack:
     suit: Suit
-    last_played: Card | None
-
-    def __init__(self, suit: Suit):
-        self.suit = suit
-        self.last_played = None
+    last_played: Rank | None = None
 
     def __str__(self):
         stack_number = 0
@@ -25,15 +20,15 @@ class Stack:
             return 0
         return self.last_played.number_value
 
-    def can_play(self, card) -> bool:
+    def can_play(self, card: Card) -> bool:
         if card.suit != self.suit:
             return False
         if self.last_played is None:
             return card.rank == Rank.ONE
-        return self.last_played.number_value == card.number_value - 1
+        return self.last_played.number_value == card.rank.number_value - 1
 
-    def play(self, card) -> bool:
+    def play(self, card: Card) -> bool:
         if self.can_play(card):
-            self.last_played = card
+            self.last_played = card.rank
             return True
         return False

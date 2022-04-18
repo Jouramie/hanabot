@@ -1,6 +1,5 @@
+from core import Suit, Rank
 from simulator.game.gamerules import get_suit_short_name
-from simulator.game.rank import Rank
-from simulator.game.suit import Suit
 
 
 class Card:

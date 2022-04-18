@@ -1,9 +1,9 @@
 from typing import List, Dict
 
+from core import Suit
 from simulator.game.gameresult import GameResult
 from simulator.game.gamestate import GameState
 from simulator.game.player import Player
-from simulator.game.suit import Suit
 from simulator.players.simulatorplayer import SimulatorPlayer
 
 

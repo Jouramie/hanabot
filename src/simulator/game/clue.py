@@ -1,8 +1,5 @@
-from dataclasses import dataclass
-
+from core import Suit, Rank
 from simulator.game.player import Player
-from simulator.game.rank import Rank
-from simulator.game.suit import Suit
 
 
 class Clue:

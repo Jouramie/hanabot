@@ -1,29 +1,9 @@
 from typing import List
-import random
-from simulator.game.card import Card
-from simulator.game.rank import Rank
-from simulator.game.suit import Suit
+
+from core import Suit, Card
+from core.deck import generate
 
 
 class DeckGenerator:
-
     def GenerateDeck(self, suits: List[Suit]) -> List[Card]:
-        deck = []
-        for suit in suits:
-            deck.append(Card(suit, Rank.ONE))
-            deck.append(Card(suit, Rank.ONE))
-            deck.append(Card(suit, Rank.ONE))
-
-            deck.append(Card(suit, Rank.TWO))
-            deck.append(Card(suit, Rank.TWO))
-
-            deck.append(Card(suit, Rank.THREE))
-            deck.append(Card(suit, Rank.THREE))
-
-            deck.append(Card(suit, Rank.FOUR))
-            deck.append(Card(suit, Rank.FOUR))
-
-            deck.append(Card(suit, Rank.FIVE))
-
-        random.shuffle(deck)
-        return deck
+        return generate(suits)

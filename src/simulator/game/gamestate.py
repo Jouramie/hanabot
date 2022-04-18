@@ -1,15 +1,13 @@
-import random
 import logging
-
+import random
 from typing import List, Dict
 
+from core import Suit, Card
+from simulator.game.action import Action, PlayAction, ClueAction, DiscardAction
 from simulator.game.deckgenerator import DeckGenerator
 from simulator.game.gamerules import get_hand_size, get_max_turns
-from simulator.game.stack import Stack
-from simulator.game.action import Action, PlayAction, ClueAction, DiscardAction
-from simulator.game.card import Card
 from simulator.game.player import Player
-from simulator.game.suit import Suit
+from simulator.game.stack import Stack
 
 logger = logging.getLogger(__name__)
 
@@ -64,10 +62,6 @@ class GameState:
         if len(self.deck) == 0:
             self.turns_remaining = len(self.players) + 1
 
-    def can_play(self, card):
-        stack = self.stacks[card.Suit]
-        return stack.can_play(card)
-
     def next_turn(self):
         self.current_turn = self.current_turn + 1
 
@@ -113,7 +107,7 @@ class GameState:
     def play_turn_discard(self, action: DiscardAction):
         player = self.get_current_player()
         if self.current_clues >= 8 or action.cardSlot < 0 or action.cardSlot >= len(player.hand):
-            raise ValueError('Can\'t perform discard action')
+            raise ValueError("Can't perform discard action")
 
         card_to_discard = player.hand.pop(action.cardSlot)
         self.discard_pile.append(card_to_discard)

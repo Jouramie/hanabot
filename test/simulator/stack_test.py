@@ -1,4 +1,4 @@
-from simulator.game.card import Card, Suit, Rank
+from core import Suit, Card, Rank
 from simulator.game.stack import Stack
 
 
