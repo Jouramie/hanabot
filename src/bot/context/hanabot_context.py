@@ -1,5 +1,5 @@
-from bot.driven.cv2.cv2_game_state_reader import Cv2GameStateReader, FromFileScreenshotter
-from bot.driver.bot import Bot
+from bot.infra.cv2.cv2_game_state_reader import Cv2GameStateReader, FromFileScreenshotter
+from bot.ui.bot import Bot
 
 
 class HanabotContext:

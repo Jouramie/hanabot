@@ -64,9 +64,8 @@
 
 
 # Feature creep
-- Play on the website
-- Read my cards from screenshot and compare with internal resolution
 - Multiple bots play against each other
+- Play on the website
 - Replay game seed with bot
 - Start bot on started game
 - Bot piloted review

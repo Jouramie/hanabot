@@ -1,6 +1,6 @@
 from typing import List
 
-from simulator.game.card import Suit
+from core import Suit
 
 
 def get_player_names(num: int) -> List[str]:
