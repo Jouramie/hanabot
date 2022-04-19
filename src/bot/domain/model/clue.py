@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Set
 
-from core import Suit, Rank
+from core.card import Rank, Suit
 
 
 @dataclass(frozen=True)

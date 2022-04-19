@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Iterable
 
-from core import Card
+from core.card import Card
 from core.game_setup import all_possible_cards
 
 

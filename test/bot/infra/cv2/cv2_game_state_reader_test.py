@@ -4,7 +4,7 @@ import cv2
 import pytest
 
 import bot.infra.cv2.cv2_game_state_reader as reader
-from core import Suit, Rank, Card
+from core.card import Card, Rank, Suit
 
 
 def _load_lazy_image(path):

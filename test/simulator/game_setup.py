@@ -1,6 +1,6 @@
 from typing import List
 
-from core import Suit
+from core.card import Suit
 
 
 def get_player_names(num: int) -> List[str]:

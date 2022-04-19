@@ -1,4 +1,4 @@
-from core import Suit
+from core.card import Suit
 
 hand_size_rules = {2: 5, 3: 5, 4: 4, 5: 4, 6: 3}
 

@@ -1,6 +1,6 @@
 from typing import List
 
-from core import Suit, Card
+from core.card import Card, Suit
 from core.deck import generate
 
 

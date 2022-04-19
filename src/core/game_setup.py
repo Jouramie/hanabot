@@ -3,7 +3,7 @@ from typing import Iterable
 
 from frozendict import frozendict
 
-from core import Suit, Rank, Card
+from core.card import Card, Rank, Suit
 
 player_names_per_player_number: dict[int, tuple[str, ...]] = frozendict(
     {

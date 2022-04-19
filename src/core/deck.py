@@ -1,7 +1,7 @@
 from random import shuffle
 from typing import Iterable, List
 
-from core import Suit, Card, Rank
+from core.card import Card, Rank, Suit
 
 
 def generate(suits: Iterable[Suit]) -> List[Card]:

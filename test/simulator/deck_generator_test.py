@@ -1,6 +1,6 @@
 from typing import List
 
-from core import Suit, Rank, Card
+from core.card import Card, Rank, Suit
 from simulator.game.deckgenerator import DeckGenerator
 from test.simulator.game_setup import get_suits
 

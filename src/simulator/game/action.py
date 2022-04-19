@@ -1,4 +1,4 @@
-from core import Card
+from core.card import Card
 from simulator.game.clue import Clue
 from simulator.game.player import Player
 

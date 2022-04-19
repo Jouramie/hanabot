@@ -1,6 +1,6 @@
 import pytest
 
-from core import Suit, Rank
+from core.card import Rank, Suit
 from simulator.game.gameresult import GameResult
 from simulator.game.gamestate import GameState
 from test.simulator.game_setup import get_player_names, get_suits

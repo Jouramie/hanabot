@@ -2,7 +2,7 @@ import logging
 import random
 from typing import List, Dict
 
-from core import Suit, Card
+from core.card import Card, Suit
 from simulator.game.action import Action, PlayAction, ClueAction, DiscardAction
 from simulator.game.deckgenerator import DeckGenerator
 from simulator.game.gamerules import get_hand_size, get_max_turns

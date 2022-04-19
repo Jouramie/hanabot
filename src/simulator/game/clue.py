@@ -1,4 +1,4 @@
-from core import Suit, Rank
+from core.card import Rank, Suit
 from simulator.game.player import Player
 
 

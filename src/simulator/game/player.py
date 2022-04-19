@@ -1,6 +1,6 @@
 from typing import List
 
-from core import Card
+from core.card import Card
 
 
 class Player:
