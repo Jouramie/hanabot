@@ -48,6 +48,6 @@ def all_possible_cards(
     suits: Iterable[Suit] = suits_per_variant[Variant.NO_VARIANT],
     ranks: Iterable[Rank] = (Rank.ONE, Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE),
 ) -> Iterable[Card]:
-    for suit in Suit:
-        for rank in Rank:
+    for suit in suits:
+        for rank in ranks:
             yield Card(suit, rank)
