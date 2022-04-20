@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum, auto
+
 from frozendict import frozendict
 
 
@@ -44,6 +46,7 @@ suit_abbreviation_mapping = frozendict(
         "te": Suit.TEAL,
     }
 )
+
 
 class Rank(Enum):
     ONE = auto()

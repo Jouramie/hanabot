@@ -10,7 +10,7 @@ from frozendict import frozendict
 
 from bot.domain.model.player import generate_unknown_hand, PlayerHand
 from bot.domain.model.turn import GameStateReader, Turn
-from core.card import Card, Rank, Suit
+from core import Card, Rank, Suit
 
 logger = logging.getLogger(__name__)
 

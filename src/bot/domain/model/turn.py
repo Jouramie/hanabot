@@ -5,7 +5,7 @@ from typing import List, Set
 from bot.domain.model.clue import SuitClue, RankClue
 from bot.domain.model.player import PlayerHand
 from bot.domain.model.stack import Stacks
-from core.card import Card
+from core import Card
 
 
 @dataclass(frozen=True)
