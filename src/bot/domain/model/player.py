@@ -8,16 +8,23 @@ from core.game_setup import all_possible_cards
 @dataclass(frozen=True)
 class PlayerCard:
     # Without interpretation, only basic clue information
-    probableCards: Iterable[Card]
-    handSlot: int
-    drawnTurn: int
+    probable_cards: Iterable[Card]
+    is_clued: bool
+    slot: int
+    drawn_turn: int
 
 
 @dataclass(frozen=True)
 class PlayerHand:
-    playerName: str
+    player_name: str
     cards: List[PlayerCard]
+
+    def __iter__(self):
+        return iter(self.cards)
+
+    def __getitem__(self, item):
+        return self.cards[item]
 
 
 def generate_unknown_hand() -> List[PlayerCard]:
-    return [PlayerCard(all_possible_cards(), i, 0) for i in range(5)]
+    return [PlayerCard(all_possible_cards(), False, i, 0) for i in range(5)]

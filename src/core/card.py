@@ -96,6 +96,24 @@ class Rank(Enum):
         if self is Rank.FIVE:
             return 5
 
+    def is_playable_over(self, already_played_rank: Rank | None) -> bool:
+        if self is Rank.ONE:
+            return already_played_rank is None
+        elif self is Rank.TWO:
+            return already_played_rank is Rank.ONE
+        elif self is Rank.THREE:
+            return already_played_rank is Rank.TWO
+        elif self is Rank.FOUR:
+            return already_played_rank is Rank.THREE
+        elif self is Rank.FIVE:
+            return already_played_rank is Rank.FOUR
+
+    def __gt__(self, other):
+        return self.number_value > other.number_value
+
+    def __lt__(self, other):
+        return self.number_value < other.number_value
+
     def __repr__(self) -> str:
         return self.short_name
 
