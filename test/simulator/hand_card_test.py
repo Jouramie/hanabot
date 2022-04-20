@@ -148,47 +148,6 @@ def test_hand_card_negative_color_clued_should_possibly_be_all_ranks(card: Card)
         assert possible_ranks.index(rank) > -1
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
 def test_hand_card_rank_clued_should_possibly_be_all_cards_of_own_rank(card: Card):
     suits = get_suits(5)
