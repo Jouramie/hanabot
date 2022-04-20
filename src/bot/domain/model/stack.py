@@ -12,12 +12,10 @@ class Stack:
     rank: Rank | None = None
 
     def is_playable(self, rank: Rank) -> bool:
-        # return rank.is_playable_over(self.rank)
-        pass
+        return rank.is_playable_over(self.rank)
 
     def is_already_played(self, rank: Rank) -> bool:
-        pass
-        # return self.rank is not None and self.rank >= rank
+        return self.rank is not None and self.rank >= rank
 
 
 # FIXME this should be frozen
@@ -26,17 +24,22 @@ class Stacks:
     stack_by_suit: Dict[Suit, Stack]
 
     @staticmethod
-    def empty_stacks(suits: Set[Suit]) -> Stacks:
+    def create_empty_stacks(suits: Set[Suit]) -> Stacks:
         return Stacks({suit: Stack(suit) for suit in suits})
 
     def are_all_playable_or_already_played(self, probable_cards: Iterable[Card]) -> bool:
-        # return all(self.is_playable(card) or self.is_already_played(card) for card in probable_cards)
-        pass
+        return all(self.is_playable(card) or self.is_already_played(card) for card in probable_cards)
 
     def is_playable(self, card: Card) -> bool:
-        # return self.stack_by_suit[card.suit].is_playable(card.rank)
-        pass
+        stack = self.stack_by_suit.get(card.suit)
+        if stack is None:
+            raise ValueError(f"No stack for suit {card.suit}")
+
+        return stack.is_playable(card.rank)
 
     def is_already_played(self, card: Card) -> bool:
-        # return self.stack_by_suit[card.suit].is_already_played(card.rank)
-        pass
+        stack = self.stack_by_suit.get(card.suit)
+        if stack is None:
+            raise ValueError(f"No stack for suit {card.suit}")
+
+        return stack.is_already_played(card.rank)

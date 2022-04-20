@@ -42,7 +42,7 @@ class Hanabot:
         """
         my_hand = next(hand for hand in current_game_state.hands if hand.player_name == self.player_name)
 
-        # if possible card if playable or already played, play it
+        # if possible card if playable or already played, play it (good touch principle)
         for card in my_hand:
             if current_game_state.stacks.are_all_playable_or_already_played(card.probable_cards):
                 return PlayAction(card.slot)

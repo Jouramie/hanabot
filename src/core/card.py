@@ -114,6 +114,12 @@ class Rank(Enum):
     def __lt__(self, other):
         return self.number_value < other.number_value
 
+    def __ge__(self, other):
+        return self.number_value >= other.number_value
+
+    def __le__(self, other):
+        return self.number_value <= other.number_value
+
     def __repr__(self) -> str:
         return self.short_name
 
