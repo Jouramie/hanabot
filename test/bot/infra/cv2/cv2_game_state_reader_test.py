@@ -4,7 +4,7 @@ import cv2
 import pytest
 
 import bot.infra.cv2.cv2_game_state_reader as reader
-from core.card import Card, Rank, Suit
+from core import Card, Rank, Suit
 
 
 def _load_lazy_image(path):
@@ -37,6 +37,7 @@ def test_smollur_play_mat_detection():
     assert (450, 850, 3) < play_mat.original.shape < (500, 900, 3)
 
 
+@pytest.mark.skip
 def test_read_all_blue_cards_in_first_turn_my_turn():
     screenshot = _load_lazy_image("resources/screenshots/first-turn-my-turn.png")
     screenshot = reader._crop_play_mat(screenshot)
@@ -50,6 +51,7 @@ def test_read_all_blue_cards_in_first_turn_my_turn():
     assert Card(Suit.BLUE, Rank.FOUR) in cards
 
 
+@pytest.mark.skip
 def test_read_all_cards_in_game_ended_3_players():
     screenshot = _load_lazy_image("resources/screenshots/game-ended-3-players.png")
     screenshot = reader._crop_play_mat(screenshot)
