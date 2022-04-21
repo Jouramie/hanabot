@@ -236,5 +236,80 @@ def test_hand_card_negative_rank_clued_should_possibly_be_all_suits(card: Card):
         assert possible_suits.index(suit) > -1
 
 
+@pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
+def test_hand_card_clued_should_remember_clue(card: Card):
+    suits = get_suits(5)
+    hand_card = HandCard(card, suits)
+    clue = ColorClue(card.suit, Player("player1"))
+    hand_card.receive_clue(clue)
+    received_clues = hand_card.received_clues
+    assert len(received_clues) == 1
+    assert received_clues[0] == clue
+
+
+@pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
+def test_hand_card_clued_twice_should_remember_both_clue(card: Card):
+    suits = get_suits(5)
+    hand_card = HandCard(card, suits)
+    clue1 = ColorClue(card.suit, Player("player1"))
+    clue2 = RankClue(card.rank, Player("player1"))
+    hand_card.receive_clue(clue1)
+    hand_card.receive_clue(clue2)
+    received_clues = hand_card.received_clues
+    assert len(received_clues) == 2
+    assert received_clues[0] == clue1
+    assert received_clues[1] == clue2
+
+
+@pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
+def test_hand_card_clued_should_be_clued(card: Card):
+    suits = get_suits(5)
+    hand_card = HandCard(card, suits)
+    clue = ColorClue(card.suit, Player("player1"))
+    hand_card.receive_clue(clue)
+    assert hand_card.is_clued() == True
+
+
+@pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
+def test_hand_card_clued_twice_should_be_clued(card: Card):
+    suits = get_suits(5)
+    hand_card = HandCard(card, suits)
+    clue1 = ColorClue(card.suit, Player("player1"))
+    clue2 = RankClue(card.rank, Player("player1"))
+    hand_card.receive_clue(clue1)
+    hand_card.receive_clue(clue2)
+    assert hand_card.is_clued() == True
+
+
+@pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
+def test_hand_card_negative_clued_should_not_be_clued(card: Card):
+    suits = get_suits(5)
+    clue_suit = suits[0]
+    if clue_suit == card.suit:
+        clue_suit = suits[1]
+    hand_card = HandCard(card, suits)
+    clue = ColorClue(clue_suit, Player("player1"))
+    hand_card.receive_clue(clue)
+    assert hand_card.is_clued() == False
+
+
+@pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
+def test_hand_card_negative_clued_twice_should_not_be_clued(card: Card):
+    suits = get_suits(5)
+    clue_suit = suits[0]
+    if clue_suit == card.suit:
+        clue_suit = suits[1]
+
+    ranks = get_ranks()
+    clue_rank = ranks[0]
+    if clue_rank == card.rank:
+        clue_rank = ranks[1]
+
+    hand_card = HandCard(card, suits)
+    clue1 = ColorClue(clue_suit, Player("player1"))
+    clue2 = RankClue(clue_rank, Player("player1"))
+    hand_card.receive_clue(clue1)
+    hand_card.receive_clue(clue2)
+    assert hand_card.is_clued() == False
 
 

@@ -2,7 +2,7 @@ from typing import List
 
 from core.card import Card, Suit, Rank
 from core.game_setup import all_possible_cards
-from simulator.game.clue import Clue, ColorClue, RankClue
+from simulator.game.clue import Clue
 
 
 class HandCard:
@@ -20,6 +20,7 @@ class HandCard:
     def receive_clue(self, clue: Clue):
         self.possible_cards = \
             [card for card in self.possible_cards if clue.touches_card(card) == clue.touches_card(self.real_card)]
+        self.received_clues.append(clue)
 
     def get_all_possible_cards(self) -> List[Card]:
         return self.possible_cards
@@ -29,3 +30,9 @@ class HandCard:
 
     def get_all_possible_ranks(self) -> List[Rank]:
         return list(set([card.rank for card in self.possible_cards]))
+
+    def is_clued(self) -> bool:
+        for clue in self.received_clues:
+            if clue.touches_card(self.real_card):
+                return True
+        return False
