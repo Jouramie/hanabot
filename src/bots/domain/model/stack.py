@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Set, Iterable
+from typing import Iterable
+
+from frozendict import frozendict
 
 from core import Rank, Suit, Card
 
@@ -18,13 +20,12 @@ class Stack:
         return self.rank is not None and self.rank >= rank
 
 
-# FIXME this should be frozen
-@dataclass
+@dataclass(frozen=True)
 class Stacks:
-    stack_by_suit: Dict[Suit, Stack]
+    stack_by_suit: frozendict[Suit, Stack]
 
     @staticmethod
-    def create_empty_stacks(suits: Set[Suit]) -> Stacks:
+    def create_empty_stacks(suits: frozenset[Suit]) -> Stacks:
         return Stacks({suit: Stack(suit) for suit in suits})
 
     def are_all_playable_or_already_played(self, probable_cards: Iterable[Card]) -> bool:

@@ -1,34 +1,35 @@
 from abc import ABC
 from dataclasses import dataclass
 
-from bots.domain.model.gamestate import GameState, GameHistory
+from bots.domain.model.game_state import RelativeGameState, GameHistory
 from core import Suit, Rank
 
 
 @dataclass(frozen=True)
-class DecisionPlayAction:
+class PlayDecision:
     slot: int
 
 
 @dataclass(frozen=True)
-class DecisionDiscardAction:
+class DiscardDecision:
     slot: int
 
 
 @dataclass(frozen=True)
-class DecisionSuitClueAction:
+class SuitClueDecision:
     suit: Suit
     player_name: str
 
 
 @dataclass(frozen=True)
-class DecisionRankClueAction:
+class RankClueDecision:
     rank: Rank
     player_name: str
 
 
+Decision = PlayDecision | DiscardDecision | SuitClueDecision | RankClueDecision
+
+
 class DecisionMaking(ABC):
-    def play_turn(
-        self, current_game_state: GameState, history: GameHistory
-    ) -> DecisionPlayAction | DecisionDiscardAction | DecisionSuitClueAction | DecisionRankClueAction:
+    def play_turn(self, current_game_state: RelativeGameState, history: GameHistory) -> Decision:
         pass

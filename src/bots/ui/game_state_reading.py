@@ -4,14 +4,14 @@ from threading import Thread
 from time import sleep
 
 from bots.domain.decision import DecisionMaking
-from bots.domain.model.gamestate import GameState
+from bots.domain.model.game_state import RelativeGameState
 
 logger = logging.getLogger(__name__)
 
 
 class GameStateReader(ABC):
     @abstractmethod
-    def see_current_state(self) -> GameState | None:
+    def see_current_state(self) -> RelativeGameState | None:
         pass
 
 
