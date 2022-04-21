@@ -1,5 +1,5 @@
-from bot.infra.cv2.cv2_game_state_reader import Cv2GameStateReader, FromFileScreenshotter
-from bot.ui.bot import Bot
+from bots.infra.cv2.cv2_game_state_reader import Cv2GameStateReader, FromFileScreenshotter
+from bots.ui.game_state_reading import GameStateReadingBot
 
 
 class HanabotContext:
@@ -9,7 +9,7 @@ class HanabotContext:
 
     def _initialize_context(self):
         self.game_state_reader = Cv2GameStateReader(FromFileScreenshotter("../test/resources/screenshots/first-turn-my-turn.png"))
-        self.bot = Bot(self.game_state_reader)
+        self.bot = GameStateReadingBot(self.game_state_reader)
 
     def _actually_start(self):
         self.bot.start()

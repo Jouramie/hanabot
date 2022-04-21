@@ -1,39 +1,18 @@
-from dataclasses import dataclass
 from typing import Set
 
-from bot.domain.convention import Convention
-from bot.domain.model.turn import Turn, GameHistory, ClueAction, DiscardAction, PlayAction
-from core import Suit, Rank
+from bots.domain.decision import DecisionMaking, DecisionPlayAction, DecisionDiscardAction, DecisionSuitClueAction, DecisionRankClueAction
+from bots.domain.model.gamestate import GameState, GameHistory
+from bots.hanabot.convention import Convention
 
 
-@dataclass(frozen=True)
-class PlayerPlayAction:
-    slot: int
-
-
-@dataclass(frozen=True)
-class PlayerDiscardAction:
-    slot: int
-
-
-@dataclass(frozen=True)
-class PlayerSuitClueAction:
-    suit: Suit
-    player_name: str
-
-
-@dataclass(frozen=True)
-class PlayerRankClueAction:
-    rank: Rank
-    player_name: str
-
-
-class Hanabot:
+class Hanabot(DecisionMaking):
     def __init__(self, player_name: str, conventions: Set[Convention]):
         self.player_name = player_name
         self.conventions = conventions
 
-    def play_turn(self, current_game_state: Turn, history: GameHistory) -> ClueAction | DiscardAction | PlayAction:
+    def play_turn(
+        self, current_game_state: GameState, history: GameHistory
+    ) -> DecisionPlayAction | DecisionDiscardAction | DecisionSuitClueAction | DecisionRankClueAction:
         """
         choose action (all hands + interpreted hands + stacks
 
@@ -51,6 +30,6 @@ class Hanabot:
         # if possible card if playable or already played, play it (good touch principle)
         for card in my_hand:
             if current_game_state.stacks.are_all_playable_or_already_played(card.probable_cards):
-                return PlayAction(card.slot)
+                return DecisionPlayAction(card.slot)
 
-        return DiscardAction(my_hand[-1].slot)
+        return DecisionDiscardAction(my_hand.get_card_on_chop().slot)

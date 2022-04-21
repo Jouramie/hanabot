@@ -1,6 +1,6 @@
 import pytest
 
-from bot.domain.model.stack import Stack, Stacks
+from bots.domain.model.stack import Stack, Stacks
 from core import Suit, Rank, Card
 
 A_SUIT = Suit.BLUE

@@ -3,7 +3,7 @@ import signal
 import sys
 from time import sleep
 
-from bot.context.hanabot_context import HanabotContext
+from context import HanabotContext
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)

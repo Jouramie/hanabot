@@ -3,7 +3,7 @@ import os
 import cv2
 import pytest
 
-import bot.infra.cv2.cv2_game_state_reader as reader
+import bots.infra.cv2.cv2_game_state_reader as reader
 from core import Card, Rank, Suit
 
 

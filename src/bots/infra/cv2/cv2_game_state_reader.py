@@ -8,8 +8,8 @@ import cv2
 import numpy as np
 from frozendict import frozendict
 
-from bot.domain.model.player import generate_unknown_hand, PlayerHand
-from bot.domain.model.turn import GameStateReader, Turn
+from bots.domain.model.gamestate import GameStateReader, GameState
+from bots.domain.model.player import generate_unknown_hand, PlayerHand
 from core import Card, Rank, Suit
 
 logger = logging.getLogger(__name__)
@@ -109,7 +109,7 @@ class Cv2GameStateReader(GameStateReader):
         self.screenshotter = screenshotter
         self.first_turn = True
 
-    def see_current_state(self) -> Turn | None:
+    def see_current_state(self) -> GameState | None:
         """
         algo:
 
