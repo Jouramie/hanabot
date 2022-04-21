@@ -40,11 +40,17 @@ class Hanabot:
         perform action
 
         """
-        my_hand = next(hand for hand in current_game_state.hands if hand.player_name == self.player_name)
+        my_hand = current_game_state.get_player_hand(self.player_name)
+
+        next_player_hand = current_game_state.get_next_player_hand(self.player_name)
+
+        next_player_chop = next_player_hand.get_card_on_chop()
+
+        # if current_game_state.is_critical(next_player_chop):
 
         # if possible card if playable or already played, play it (good touch principle)
         for card in my_hand:
             if current_game_state.stacks.are_all_playable_or_already_played(card.probable_cards):
                 return PlayAction(card.slot)
 
-        return my_hand[-1]
+        return DiscardAction(my_hand[-1].slot)

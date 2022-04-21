@@ -34,6 +34,12 @@ class Turn:
     clueCount: int
     bombCount: int
 
+    def get_player_hand(self, player_name: str) -> PlayerHand:
+        return next(hand for hand in self.hands if hand.player_name == player_name)
+
+    def get_next_player_hand(self, player_name: str) -> PlayerHand:
+        return self.hands[(self.hands.index(self.get_player_hand(player_name)) + 1) % len(self.hands)]
+
 
 class GameStateReader(ABC):
     @abstractmethod

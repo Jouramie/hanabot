@@ -25,6 +25,9 @@ class PlayerHand:
     def __getitem__(self, item):
         return self.cards[item]
 
+    def get_card_on_chop(self):
+        return self.cards[-1]
+
 
 def generate_unknown_hand() -> List[PlayerCard]:
     return [PlayerCard(all_possible_cards(), False, i, 0) for i in range(5)]
