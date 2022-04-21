@@ -267,7 +267,7 @@ def test_hand_card_clued_should_be_clued(card: Card):
     hand_card = HandCard(card, suits)
     clue = ColorClue(card.suit, Player("player1"))
     hand_card.receive_clue(clue)
-    assert hand_card.is_clued() == True
+    assert hand_card.is_clued()
 
 
 @pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
@@ -278,7 +278,7 @@ def test_hand_card_clued_twice_should_be_clued(card: Card):
     clue2 = RankClue(card.rank, Player("player1"))
     hand_card.receive_clue(clue1)
     hand_card.receive_clue(clue2)
-    assert hand_card.is_clued() == True
+    assert hand_card.is_clued()
 
 
 @pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
@@ -290,7 +290,7 @@ def test_hand_card_negative_clued_should_not_be_clued(card: Card):
     hand_card = HandCard(card, suits)
     clue = ColorClue(clue_suit, Player("player1"))
     hand_card.receive_clue(clue)
-    assert hand_card.is_clued() == False
+    assert not hand_card.is_clued()
 
 
 @pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
@@ -310,6 +310,6 @@ def test_hand_card_negative_clued_twice_should_not_be_clued(card: Card):
     clue2 = RankClue(clue_rank, Player("player1"))
     hand_card.receive_clue(clue1)
     hand_card.receive_clue(clue2)
-    assert hand_card.is_clued() == False
+    assert not hand_card.is_clued()
 
 
