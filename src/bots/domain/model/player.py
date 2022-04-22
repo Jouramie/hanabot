@@ -32,5 +32,5 @@ class PlayerHand:
         return self.cards[item]
 
 
-def generate_unknown_hand() -> tuple[PlayerCard]:
-    return tuple(PlayerCard(all_possible_cards(), False, i, 0) for i in range(5))
+def generate_unknown_hand(size: int = 5) -> tuple[PlayerCard]:
+    return tuple(PlayerCard(all_possible_cards(), False, i, 0) for i in range(size))
