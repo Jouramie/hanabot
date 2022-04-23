@@ -4,7 +4,7 @@ from typing import List, Dict
 
 from core.card import Card, Suit
 from simulator.game.action import Action, PlayAction, ColorClueAction, RankClueAction, DiscardAction
-from simulator.game.clue import ColorClue, RankClue
+from simulator.game.clue import ColorClue, RankClue, Clue
 from simulator.game.deckgenerator import DeckGenerator
 from simulator.game.gamerules import get_hand_size, get_max_turns
 from simulator.game.hand_card import HandCard
@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 class GameState:
     players: List[Player]
     action_history: List[Action]
+    clue_history: List[Clue]
     current_turn: int
     current_clues: int
     current_strikes: int
@@ -32,6 +33,7 @@ class GameState:
         self.current_clues = 8
         self.current_strikes = 0
         self.action_history = []
+        self.clue_history = []
         self.is_over = False
         self.suits = suits
 
@@ -105,16 +107,18 @@ class GameState:
         action.playedCard = card_to_play
 
     def play_turn_color_clue(self, action: ColorClueAction):
-        player = self.current_player
-        clue = ColorClue(action.color, action.target_player.name, player.name, self.current_turn)
-        self.current_clues = self.current_clues - 1
-        # TODO: Actually handle the clue or something
+        clue = ColorClue(action.color, action.target_player.name, self.current_player.name, self.current_turn + 1)
+        self.play_turn_clue(clue, action.target_player)
 
     def play_turn_rank_clue(self, action: RankClueAction):
-        player = self.current_player
-        clue = RankClue(action.rank, action.target_player.name, player.name, self.current_turn)
+        clue = RankClue(action.rank, action.target_player.name, self.current_player.name, self.current_turn + 1)
+        self.play_turn_clue(clue, action.target_player)
+
+    def play_turn_clue(self, clue: Clue, target_player: Player):
         self.current_clues = self.current_clues - 1
-        # TODO: Actually handle the clue or something
+        for hand_card in target_player.hand:
+            hand_card.receive_clue(clue)
+        self.clue_history.append(clue)
 
     def play_turn_discard(self, action: DiscardAction):
         player = self.current_player
@@ -130,3 +134,8 @@ class GameState:
     @property
     def current_player(self):
         return self.players[self.player_turn]
+
+    def get_player_by_name(self, name: str):
+        for player in self.players:
+            if player.name == name:
+                return player

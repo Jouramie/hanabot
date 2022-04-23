@@ -2,6 +2,7 @@ import logging
 import os
 from typing import List
 
+import time
 from core.card import Variant, suits_per_variant
 from simulator.controller import Controller
 from simulator.game.gameresult import GameResult
@@ -37,6 +38,7 @@ def play_games_fast(players: List[SimulatorPlayer], variant: Variant, number_gam
     total_survivals = 0
     total_victories = 0
     games_remaining = number_games
+    time_before = time.time()
     while games_remaining > 0:
         game = controller.new_game(players, suits_per_variant[variant])
         controller.play_until_game_is_over()
@@ -50,6 +52,13 @@ def play_games_fast(players: List[SimulatorPlayer], variant: Variant, number_gam
             total_victories = total_victories + 1
         games_remaining = games_remaining - 1
 
+    time_after = time.time()
+    elapsed_seconds = time_after - time_before
+    elapsed_seconds_rounded = round(elapsed_seconds, 3)
+    elapsed_milliseconds = elapsed_seconds * 1000
+    average_time_milliseconds_rounded = round(elapsed_milliseconds / number_games, 1)
+
+    print("Finished simulating " + str(number_games) + " games in " + str(elapsed_seconds_rounded) + " seconds (Average:" + str(average_time_milliseconds_rounded) + "ms per game)")
     print("Survival Rate: " + str(total_survivals / number_games * 100) + "%")
     print("Victory Rate: " + str(total_victories / number_games * 100) + "%")
     print("Average Score: " + str(total_score / number_games))
