@@ -1,9 +1,8 @@
 import pytest
 
-from core.card import Card, Rank, Suit
+from core.card import Card
 from simulator.game.clue import ColorClue, RankClue
 from simulator.game.hand_card import HandCard
-from simulator.game.player import Player
 from test.simulator.game_setup import get_suits, get_possible_cards, get_ranks
 
 
@@ -66,7 +65,8 @@ def test_hand_card_color_clued_should_possibly_be_all_cards_of_own_suit(card: Ca
     all_cards_of_own_suit = get_possible_cards([card.suit])
     suits = get_suits(5)
     hand_card = HandCard(card, suits)
-    hand_card.receive_clue(ColorClue(card.suit, Player("player1")))
+    clue = ColorClue(card.suit, "player1", "player0", 1)
+    hand_card.receive_clue(clue)
     possible_cards = hand_card.get_all_possible_cards()
     assert len(possible_cards) == len(all_cards_of_own_suit)
     for card in all_cards_of_own_suit:
@@ -77,7 +77,8 @@ def test_hand_card_color_clued_should_possibly_be_all_cards_of_own_suit(card: Ca
 def test_hand_card_color_clued_should_possibly_be_only_own_suit(card: Card):
     suits = get_suits(5)
     hand_card = HandCard(card, suits)
-    hand_card.receive_clue(ColorClue(card.suit, Player("player1")))
+    clue = ColorClue(card.suit, "player1", "player0", 1)
+    hand_card.receive_clue(clue)
     possible_suits = hand_card.get_all_possible_suits()
     assert len(possible_suits) == 1
     assert possible_suits[0] == card.suit
@@ -88,7 +89,8 @@ def test_hand_card_color_clued_should_possibly_be_all_ranks(card: Card):
     suits = get_suits(5)
     ranks = get_ranks()
     hand_card = HandCard(card, suits)
-    hand_card.receive_clue(ColorClue(card.suit, Player("player1")))
+    clue = ColorClue(card.suit, "player1", "player0", 1)
+    hand_card.receive_clue(clue)
     possible_ranks = hand_card.get_all_possible_ranks()
     assert len(possible_ranks) == len(ranks)
     for rank in ranks:
@@ -107,7 +109,8 @@ def test_hand_card_negative_color_clued_should_possibly_be_all_cards_except_clue
 
     all_cards_of_other_suits = get_possible_cards(suits_other_than_clue_suit)
     hand_card = HandCard(card, suits)
-    hand_card.receive_clue(ColorClue(clue_suit, Player("player1")))
+    clue = ColorClue(clue_suit, "player1", "player0", 1)
+    hand_card.receive_clue(clue)
     possible_cards = hand_card.get_all_possible_cards()
     assert len(possible_cards) == len(all_cards_of_other_suits)
     for card in all_cards_of_other_suits:
@@ -125,7 +128,8 @@ def test_hand_card_negative_color_clued_should_possibly_be_not_own_suit(card: Ca
     suits_other_than_clue_suit.remove(clue_suit)
 
     hand_card = HandCard(card, suits)
-    hand_card.receive_clue(ColorClue(clue_suit, Player("player1")))
+    clue = ColorClue(clue_suit, "player1", "player0", 1)
+    hand_card.receive_clue(clue)
     possible_suits = hand_card.get_all_possible_suits()
     assert len(possible_suits) == len(suits_other_than_clue_suit)
     for suit in suits_other_than_clue_suit:
@@ -141,7 +145,8 @@ def test_hand_card_negative_color_clued_should_possibly_be_all_ranks(card: Card)
 
     ranks = get_ranks()
     hand_card = HandCard(card, suits)
-    hand_card.receive_clue(ColorClue(clue_suit, Player("player1")))
+    clue = ColorClue(clue_suit, "player1", "player0", 1)
+    hand_card.receive_clue(clue)
     possible_ranks = hand_card.get_all_possible_ranks()
     assert len(possible_ranks) == len(ranks)
     for rank in ranks:
@@ -153,7 +158,8 @@ def test_hand_card_rank_clued_should_possibly_be_all_cards_of_own_rank(card: Car
     suits = get_suits(5)
     all_cards_of_own_rank = [pcard for pcard in get_possible_cards(suits) if pcard.rank == card.rank]
     hand_card = HandCard(card, suits)
-    hand_card.receive_clue(RankClue(card.rank, Player("player1")))
+    clue = RankClue(card.rank, "player1", "player0", 1)
+    hand_card.receive_clue(clue)
     possible_cards = hand_card.get_all_possible_cards()
     assert len(possible_cards) == len(all_cards_of_own_rank)
     for card in all_cards_of_own_rank:
@@ -164,7 +170,8 @@ def test_hand_card_rank_clued_should_possibly_be_all_cards_of_own_rank(card: Car
 def test_hand_card_rank_clued_should_possibly_be_only_own_rank(card: Card):
     suits = get_suits(5)
     hand_card = HandCard(card, suits)
-    hand_card.receive_clue(RankClue(card.rank, Player("player1")))
+    clue = RankClue(card.rank, "player1", "player0", 1)
+    hand_card.receive_clue(clue)
     possible_ranks = hand_card.get_all_possible_ranks()
     assert len(possible_ranks) == 1
     assert possible_ranks[0] == card.rank
@@ -174,7 +181,8 @@ def test_hand_card_rank_clued_should_possibly_be_only_own_rank(card: Card):
 def test_hand_card_rank_clued_should_possibly_be_all_suits(card: Card):
     suits = get_suits(5)
     hand_card = HandCard(card, suits)
-    hand_card.receive_clue(RankClue(card.rank, Player("player1")))
+    clue = RankClue(card.rank, "player1", "player0", 1)
+    hand_card.receive_clue(clue)
     possible_suits = hand_card.get_all_possible_suits()
     assert len(possible_suits) == len(suits)
     for suit in suits:
@@ -194,7 +202,8 @@ def test_hand_card_negative_rank_clued_should_possibly_be_all_cards_except_clue_
 
     all_cards_of_other_ranks = [pcard for pcard in get_possible_cards(suits) if pcard.rank != clue_rank]
     hand_card = HandCard(card, suits)
-    hand_card.receive_clue(RankClue(clue_rank, Player("player1")))
+    clue = RankClue(clue_rank, "player1", "player0", 1)
+    hand_card.receive_clue(clue)
     possible_cards = hand_card.get_all_possible_cards()
     assert len(possible_cards) == len(all_cards_of_other_ranks)
     for card in all_cards_of_other_ranks:
@@ -213,7 +222,8 @@ def test_hand_card_negative_rank_clued_should_possibly_be_not_own_rank(card: Car
     ranks_other_than_clue_rank.remove(clue_rank)
 
     hand_card = HandCard(card, suits)
-    hand_card.receive_clue(RankClue(clue_rank, Player("player1")))
+    clue = RankClue(clue_rank, "player1", "player0", 1)
+    hand_card.receive_clue(clue)
     possible_ranks = hand_card.get_all_possible_ranks()
     assert len(possible_ranks) == len(ranks_other_than_clue_rank)
     for suit in ranks_other_than_clue_rank:
@@ -229,7 +239,8 @@ def test_hand_card_negative_rank_clued_should_possibly_be_all_suits(card: Card):
         clue_rank = ranks[1]
 
     hand_card = HandCard(card, suits)
-    hand_card.receive_clue(RankClue(clue_rank, Player("player1")))
+    clue = RankClue(clue_rank, "player1", "player0", 1)
+    hand_card.receive_clue(clue)
     possible_suits = hand_card.get_all_possible_suits()
     assert len(possible_suits) == len(suits)
     for suit in suits:
@@ -240,7 +251,7 @@ def test_hand_card_negative_rank_clued_should_possibly_be_all_suits(card: Card):
 def test_hand_card_clued_should_remember_clue(card: Card):
     suits = get_suits(5)
     hand_card = HandCard(card, suits)
-    clue = ColorClue(card.suit, Player("player1"))
+    clue = ColorClue(card.suit, "player1", "player0", 1)
     hand_card.receive_clue(clue)
     received_clues = hand_card.received_clues
     assert len(received_clues) == 1
@@ -251,8 +262,8 @@ def test_hand_card_clued_should_remember_clue(card: Card):
 def test_hand_card_clued_twice_should_remember_both_clue(card: Card):
     suits = get_suits(5)
     hand_card = HandCard(card, suits)
-    clue1 = ColorClue(card.suit, Player("player1"))
-    clue2 = RankClue(card.rank, Player("player1"))
+    clue1 = ColorClue(card.suit, "player1", "player0", 1)
+    clue2 = RankClue(card.rank, "player1", "player0", 1)
     hand_card.receive_clue(clue1)
     hand_card.receive_clue(clue2)
     received_clues = hand_card.received_clues
@@ -265,7 +276,7 @@ def test_hand_card_clued_twice_should_remember_both_clue(card: Card):
 def test_hand_card_clued_should_be_clued(card: Card):
     suits = get_suits(5)
     hand_card = HandCard(card, suits)
-    clue = ColorClue(card.suit, Player("player1"))
+    clue = ColorClue(card.suit, "player1", "player0", 1)
     hand_card.receive_clue(clue)
     assert hand_card.is_clued()
 
@@ -274,8 +285,8 @@ def test_hand_card_clued_should_be_clued(card: Card):
 def test_hand_card_clued_twice_should_be_clued(card: Card):
     suits = get_suits(5)
     hand_card = HandCard(card, suits)
-    clue1 = ColorClue(card.suit, Player("player1"))
-    clue2 = RankClue(card.rank, Player("player1"))
+    clue1 = ColorClue(card.suit, "player1", "player0", 1)
+    clue2 = RankClue(card.rank, "player1", "player0", 1)
     hand_card.receive_clue(clue1)
     hand_card.receive_clue(clue2)
     assert hand_card.is_clued()
@@ -288,7 +299,7 @@ def test_hand_card_negative_clued_should_not_be_clued(card: Card):
     if clue_suit == card.suit:
         clue_suit = suits[1]
     hand_card = HandCard(card, suits)
-    clue = ColorClue(clue_suit, Player("player1"))
+    clue = ColorClue(clue_suit, "player1", "player0", 1)
     hand_card.receive_clue(clue)
     assert not hand_card.is_clued()
 
@@ -306,10 +317,8 @@ def test_hand_card_negative_clued_twice_should_not_be_clued(card: Card):
         clue_rank = ranks[1]
 
     hand_card = HandCard(card, suits)
-    clue1 = ColorClue(clue_suit, Player("player1"))
-    clue2 = RankClue(clue_rank, Player("player1"))
+    clue1 = ColorClue(clue_suit, "player1", "player0", 1)
+    clue2 = RankClue(clue_rank, "player1", "player0", 1)
     hand_card.receive_clue(clue1)
     hand_card.receive_clue(clue2)
     assert not hand_card.is_clued()
-
-

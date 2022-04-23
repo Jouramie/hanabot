@@ -3,9 +3,11 @@ import random
 from typing import List, Dict
 
 from core.card import Card, Suit
-from simulator.game.action import Action, PlayAction, ClueAction, DiscardAction
+from simulator.game.action import Action, PlayAction, ColorClueAction, RankClueAction, DiscardAction
+from simulator.game.clue import ColorClue, RankClue
 from simulator.game.deckgenerator import DeckGenerator
 from simulator.game.gamerules import get_hand_size, get_max_turns
+from simulator.game.hand_card import HandCard
 from simulator.game.player import Player
 from simulator.game.stack import Stack
 
@@ -23,6 +25,7 @@ class GameState:
     stacks: Dict[Suit, Stack]
     is_over: bool
     turns_remaining: int
+    suits: List[Suit]
 
     def __init__(self, players: List[str], suits: List[Suit]):
         self.current_turn = 0
@@ -30,12 +33,13 @@ class GameState:
         self.current_strikes = 0
         self.action_history = []
         self.is_over = False
+        self.suits = suits
 
         generator = DeckGenerator()
-        self.deck = generator.GenerateDeck(suits)
+        self.deck = generator.GenerateDeck(self.suits)
         self.discard_pile = []
         self.stacks = {}
-        for suit in suits:
+        for suit in self.suits:
             self.stacks[suit] = Stack(suit)
 
         self.players = []
@@ -48,7 +52,7 @@ class GameState:
             player_index = i % number_of_players
             self.player_draw_card(self.players[player_index])
 
-        self.turns_remaining = get_max_turns(number_of_players, len(suits))
+        self.turns_remaining = get_max_turns(number_of_players, len(self.suits))
 
     @property
     def player_turn(self) -> int:
@@ -58,7 +62,8 @@ class GameState:
         if len(self.deck) == 0:
             return
         card = self.deck.pop()
-        player.hand.insert(0, card)
+        hand_card = HandCard(card, self.suits)
+        player.hand.insert(0, hand_card)
         if len(self.deck) == 0:
             self.turns_remaining = len(self.players) + 1
 
@@ -86,9 +91,9 @@ class GameState:
     def play_turn_play(self, action: PlayAction):
         player = self.get_current_player()
         card_to_play = player.hand.pop(action.cardSlot)
-        stack_to_play_on = self.stacks[card_to_play.suit]
-        if stack_to_play_on.can_play(card_to_play):
-            stack_to_play_on.play(card_to_play)
+        stack_to_play_on = self.stacks[card_to_play.real_card.suit]
+        if stack_to_play_on.can_play(card_to_play.real_card):
+            stack_to_play_on.play(card_to_play.real_card)
             action.success = True
         else:
             self.current_strikes = self.current_strikes + 1
@@ -96,11 +101,15 @@ class GameState:
         self.player_draw_card(player)
         action.playedCard = card_to_play
 
-    def play_turn_clue(self, action: ClueAction):
+    def play_turn_color_clue(self, action: ColorClueAction):
         player = self.get_current_player()
-        clue = action.clue
-        clue.turn = self.current_turn
-        clue.giver = player
+        clue = ColorClue(action.color, action.target_player.name, player.name, self.current_turn)
+        self.current_clues = self.current_clues - 1
+        # TODO: Actually handle the clue or something
+
+    def play_turn_rank_clue(self, action: RankClueAction):
+        player = self.get_current_player()
+        clue = RankClue(action.rank, action.target_player.name, player.name, self.current_turn)
         self.current_clues = self.current_clues - 1
         # TODO: Actually handle the clue or something
 
@@ -110,10 +119,10 @@ class GameState:
             raise ValueError("Can't perform discard action")
 
         card_to_discard = player.hand.pop(action.cardSlot)
-        self.discard_pile.append(card_to_discard)
+        self.discard_pile.append(card_to_discard.real_card)
         self.current_clues = self.current_clues + 1
         self.player_draw_card(player)
-        action.discardedCard = card_to_discard
+        action.discardedCard = card_to_discard.real_card
 
     def get_current_player(self):
         return self.players[self.player_turn]

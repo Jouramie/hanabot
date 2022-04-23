@@ -1,5 +1,7 @@
 from typing import List
 
+import pytest
+
 from simulator.game.gamerules import get_hand_size
 from simulator.game.gamestate import GameState
 from simulator.game.player import Player
@@ -41,8 +43,8 @@ def test_new_gamestate_should_be_first_players_turn():
     assert gamestate.player_turn == 0
 
 
-def test_new_gamestate_2p_should_have_many_turns_remaining():
-    number_players = 2
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 6)])
+def test_new_gamestate_should_have_many_turns_remaining(number_players):
     number_suits = 5
     player_names = get_player_names(number_players)
     suits = get_suits(number_suits)
@@ -50,68 +52,9 @@ def test_new_gamestate_2p_should_have_many_turns_remaining():
     assert gamestate.turns_remaining == get_max_turns(number_players, number_suits)
 
 
-def test_new_gamestate_3p_should_have_many_turns_remaining():
-    number_players = 3
-    number_suits = 5
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 6)])
+def test_new_gamestate_should_create_players(number_players):
     player_names = get_player_names(number_players)
-    suits = get_suits(number_suits)
-    gamestate = GameState(player_names, suits)
-    assert gamestate.turns_remaining == get_max_turns(number_players, number_suits)
-
-
-def test_new_gamestate_4p_should_have_many_turns_remaining():
-    number_players = 4
-    number_suits = 5
-    player_names = get_player_names(number_players)
-    suits = get_suits(number_suits)
-    gamestate = GameState(player_names, suits)
-    assert gamestate.turns_remaining == get_max_turns(number_players, number_suits)
-
-
-def test_new_gamestate_5p_should_have_many_turns_remaining():
-    number_players = 5
-    number_suits = 5
-    player_names = get_player_names(number_players)
-    suits = get_suits(number_suits)
-    gamestate = GameState(player_names, suits)
-    assert gamestate.turns_remaining == get_max_turns(number_players, number_suits)
-
-
-def test_new_gamestate_6p_should_have_many_turns_remaining():
-    number_players = 6
-    number_suits = 5
-    player_names = get_player_names(number_players)
-    suits = get_suits(number_suits)
-    gamestate = GameState(player_names, suits)
-    assert gamestate.turns_remaining == get_max_turns(number_players, number_suits)
-
-
-def test_new_gamestate_should_create_2_players():
-    player_names = get_player_names(2)
-    gamestate = GameState(player_names, get_suits(5))
-    assert len(gamestate.players) == len(player_names)
-
-
-def test_new_gamestate_should_create_3_players():
-    player_names = get_player_names(3)
-    gamestate = GameState(player_names, get_suits(5))
-    assert len(gamestate.players) == len(player_names)
-
-
-def test_new_gamestate_should_create_4_players():
-    player_names = get_player_names(4)
-    gamestate = GameState(player_names, get_suits(5))
-    assert len(gamestate.players) == len(player_names)
-
-
-def test_new_gamestate_should_create_5_players():
-    player_names = get_player_names(5)
-    gamestate = GameState(player_names, get_suits(5))
-    assert len(gamestate.players) == len(player_names)
-
-
-def test_new_gamestate_should_create_6_players():
-    player_names = get_player_names(6)
     gamestate = GameState(player_names, get_suits(5))
     assert len(gamestate.players) == len(player_names)
 
@@ -123,72 +66,19 @@ def test_new_gamestate_should_shuffle_6_players():
     players_are_different(gamestate1.players, gamestate2.players)
 
 
-def test_new_gamestate_should_give_cards_to_2_players():
-    player_names = get_player_names(2)
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 6)])
+def test_new_gamestate_should_give_cards_to_all_players(number_players):
+    player_names = get_player_names(number_players)
     gamestate = GameState(player_names, get_suits(5))
+    expected_hand_size = get_hand_size(number_players)
     for player in gamestate.players:
-        assert len(player.hand) == 5
-    assert len(gamestate.deck) == 40
+        assert len(player.hand) == expected_hand_size
+    assert len(gamestate.deck) == 50 - (expected_hand_size * number_players)
 
 
-def test_new_gamestate_should_give_cards_to_3_players():
-    player_names = get_player_names(3)
-    gamestate = GameState(player_names, get_suits(5))
-    for player in gamestate.players:
-        assert len(player.hand) == 5
-    assert len(gamestate.deck) == 35
-
-
-def test_new_gamestate_should_give_cards_to_4_players():
-    player_names = get_player_names(4)
-    gamestate = GameState(player_names, get_suits(5))
-    for player in gamestate.players:
-        assert len(player.hand) == 4
-    assert len(gamestate.deck) == 34
-
-
-def test_new_gamestate_should_give_cards_to_5_players():
-    player_names = get_player_names(5)
-    gamestate = GameState(player_names, get_suits(5))
-    for player in gamestate.players:
-        assert len(player.hand) == 4
-    assert len(gamestate.deck) == 30
-
-
-def test_new_gamestate_should_give_cards_to_6_players():
-    player_names = get_player_names(6)
-    gamestate = GameState(player_names, get_suits(5))
-    for player in gamestate.players:
-        assert len(player.hand) == 3
-    assert len(gamestate.deck) == 32
-
-
-def test_new_gamestate_should_have_3_empty_stacks():
-    suits = get_suits(3)
-    gamestate = GameState(get_player_names(5), suits)
-    assert len(gamestate.stacks) == len(suits)
-    for stackSuit, stack in gamestate.stacks.items():
-        assert stack.last_played is None
-
-
-def test_new_gamestate_should_have_4_empty_stacks():
-    suits = get_suits(4)
-    gamestate = GameState(get_player_names(5), suits)
-    assert len(gamestate.stacks) == len(suits)
-    for stackSuit, stack in gamestate.stacks.items():
-        assert stack.last_played is None
-
-
-def test_new_gamestate_should_have_5_empty_stacks():
-    suits = get_suits(5)
-    gamestate = GameState(get_player_names(5), suits)
-    assert len(gamestate.stacks) == len(suits)
-    for stackSuit, stack in gamestate.stacks.items():
-        assert stack.last_played is None
-
-
-def test_new_gamestate_should_have_6_empty_stacks():
-    suits = get_suits(6)
+@pytest.mark.parametrize("number_suits", [number_suits for number_suits in range(3, 6)])
+def test_new_gamestate_should_have_empty_stacks(number_suits):
+    suits = get_suits(number_suits)
     gamestate = GameState(get_player_names(5), suits)
     assert len(gamestate.stacks) == len(suits)
     for stackSuit, stack in gamestate.stacks.items():

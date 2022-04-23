@@ -1,11 +1,11 @@
 from typing import List
 
-from core.card import Card
+from simulator.game.hand_card import HandCard
 
 
 class Player:
     name: str
-    hand: List[Card]
+    hand: List[HandCard]
 
     def __init__(self, name: str):
         self.name = name
