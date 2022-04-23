@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from random import shuffle
-from typing import Iterable, Iterator, Sized, Union
+from typing import Iterable, Iterator, Sized, Union, Container
 
 from core.card import Card, Rank, Variant, Suit
 
@@ -10,7 +10,7 @@ from core.card import Card, Rank, Variant, Suit
 @dataclass(frozen=True)
 class Deck:
     _cards: list[Card]
-    suits: Union[Iterable[Suit], Sized] = Variant.NO_VARIANT
+    suits: Union[Iterable[Suit], Container[Suit], Sized] = Variant.NO_VARIANT
 
     def __post_init__(self):
         self._cards.reverse()
@@ -46,13 +46,15 @@ class Deck:
     def starting_with(cards: Iterable[Card] | Card, suits: Iterable[Suit] = Variant.NO_VARIANT) -> Deck:
         if isinstance(cards, Card):
             cards = [cards]
+        else:
+            cards = list(cards)
 
         other_cards = Deck.generate(suits)._cards
         for card in cards:
             other_cards.remove(card)
 
         shuffle(other_cards)
-        return Deck(list(cards) + other_cards, suits)
+        return Deck(cards + other_cards, suits)
 
     def draw(self) -> Card:
         return self._cards.pop()

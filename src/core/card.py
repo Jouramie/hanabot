@@ -171,6 +171,9 @@ class Variant(Enum):
     def __len__(self) -> int:
         return len(self.suits)
 
+    def __contains__(self, item):
+        return item in self.suits
+
 
 def all_possible_cards(
     suits: Iterable[Suit] = Variant.NO_VARIANT,

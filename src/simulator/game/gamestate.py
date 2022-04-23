@@ -48,7 +48,7 @@ class GameState:
         return self.status.turn % len(self.players)
 
     def get_relative_player(self, relative_player_id: int) -> Player:
-        return self.players[(self.player_turn + relative_player_id + 1) % len(self.players)]
+        return self.players[(self.player_turn + relative_player_id) % len(self.players)]
 
     def player_draw_card(self, player: Player):
         if len(self.deck) == 0:
