@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from core.card import Card, Rank, Suit
-from simulator.game.gamerules import get_suit_short_name
+from core.gamerules import get_suit_short_name
 
 
 @dataclass

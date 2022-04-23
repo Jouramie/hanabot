@@ -13,7 +13,7 @@ from simulator.game.action import (
     RankClueAction as SimulatorRankClueAction,
 )
 from simulator.game.gamestate import GameState as GlobalGameState
-from simulator.game.stack import Stack as SimulatorStack
+from core.state.stack import Stack as SimulatorStack
 from simulator.players.simulatorplayer import SimulatorPlayer
 
 
