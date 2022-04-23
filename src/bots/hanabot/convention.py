@@ -8,12 +8,12 @@ from bots.domain.model.player import PlayerHand, PlayerCard, RelativePlayerId
 from core import Rank
 
 
+@dataclass(frozen=True)
 class Convention(ABC):
-    def __init__(self, name):
-        self.name = name
+    name: str
 
     @abstractmethod
-    def find_play_clue(self, owner_slot_cards: tuple[int, int, PlayerCard], current_game_state: RelativeGameState) -> Decision | None:
+    def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerId, int, PlayerCard], current_game_state: RelativeGameState) -> Decision | None:
         pass
 
 

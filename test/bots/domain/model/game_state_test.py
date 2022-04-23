@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Iterable
+
 from bots.domain.model.action import Action
 from bots.domain.model.game_state import RelativeGameState
 from bots.domain.model.player import PlayerHand, create_unknown_hand, create_unknown_real_card
@@ -100,7 +102,7 @@ def test_given_stacks_at_one_when_find_playable_cards_then_only_ones_are_not_pla
 
 
 class RelativeGameStateBuilder:
-    def __init__(self, suits: frozenset[Suit]):
+    def __init__(self, suits: Iterable[Suit]):
         self.stacks = Stacks.create_empty_stacks(suits)
         self.discard = tuple()
         self.my_hand = create_unknown_hand(ALICE, 5)

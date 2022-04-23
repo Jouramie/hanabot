@@ -1,7 +1,7 @@
 from bots.domain.decision import DecisionMaking, Decision, PlayDecision, DiscardDecision, SuitClueDecision, RankClueDecision
 from bots.domain.model.action import Action, PlayAction, DiscardAction, ClueAction
 from bots.domain.model.clue import SuitClue, RankClue
-from bots.domain.model.game_state import RelativeGameState
+from bots.domain.model.game_state import RelativeGameState, GameHistory
 from bots.domain.model.stack import Stacks, Stack
 from core import Suit
 from simulator.game.action import (
@@ -71,6 +71,6 @@ class SimulatorBot(SimulatorPlayer):
             global_game_state.current_strikes,
         )
 
-        decision = self.decision_making.play_turn(relative_game_state, None)
+        decision = self.decision_making.play_turn(relative_game_state, GameHistory())
 
         return assemble_simulator_decision(decision, global_game_state)

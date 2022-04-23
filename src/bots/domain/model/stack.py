@@ -26,7 +26,7 @@ class Stacks:
     stack_by_suit: frozendict[Suit, Stack]
 
     @staticmethod
-    def create_empty_stacks(suits: frozenset[Suit]) -> Stacks:
+    def create_empty_stacks(suits: Iterable[Suit]) -> Stacks:
         return Stacks({suit: Stack(suit) for suit in suits})
 
     def are_all_playable_or_already_played(self, probable_cards: Iterable[Card]) -> bool:
