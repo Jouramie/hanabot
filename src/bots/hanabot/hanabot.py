@@ -7,8 +7,7 @@ SAVE_CLUE_ENABLED = False
 
 
 class Hanabot(DecisionMaking):
-    def __init__(self, player_name: str, conventions: Conventions):
-        self.player_name = player_name
+    def __init__(self, conventions: Conventions):
         self.conventions = conventions
 
     def play_turn(self, current_game_state: RelativeGameState, history: GameHistory) -> Decision:

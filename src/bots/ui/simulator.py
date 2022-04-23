@@ -29,8 +29,10 @@ def assemble_my_hand(global_game_state: GlobalGameState) -> PlayerHand:
 
 def assemble_other_player_hands(global_game_state: GlobalGameState) -> tuple[PlayerHand, ...]:
     return tuple(
-        PlayerHand(player.name, tuple(PlayerCard(hand_card.possible_cards, len(hand_card.received_clues) > 0, None) for hand_card in player.hand))
-        for player in global_game_state.players[global_game_state.current_player + 1 : len(global_game_state.current_player) + global_game_state.current_player]
+        PlayerHand(
+            player.name, tuple(PlayerCard(hand_card.possible_cards, len(hand_card.received_clues) > 0, None, hand_card.real_card) for hand_card in player.hand)
+        )
+        for player in global_game_state.players[global_game_state.player_turn + 1 : len(global_game_state.players) + global_game_state.player_turn]
     )
 
 

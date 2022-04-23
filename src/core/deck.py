@@ -41,13 +41,15 @@ class Deck:
     def starting_with(cards: Iterable[Card] | Card, suits: Iterable[Suit] = Variant.NO_VARIANT) -> Deck:
         if isinstance(cards, Card):
             cards = [cards]
+        else:
+            cards = list(cards)
 
         other_cards = Deck.generate(suits)._cards
         for card in cards:
             other_cards.remove(card)
 
         shuffle(other_cards)
-        return Deck(list(cards) + other_cards, suits)
+        return Deck(cards + other_cards, suits)
 
     def draw(self) -> Card:
         return self._cards.pop()

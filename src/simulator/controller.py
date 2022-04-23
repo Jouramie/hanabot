@@ -13,10 +13,18 @@ class Controller:
 
     def new_game(self, players: List[SimulatorPlayer], suits: Iterable[Suit]) -> GameState:
         self.current_game = GameState([player.name for player in players], Deck.generate(suits))
+        self._initialize_players(players)
+        return self.current_game
+
+    def resume_game(self, players: List[SimulatorPlayer], game_state: GameState) -> GameState:
+        self.current_game = game_state
+        self._initialize_players(players)
+        return self.current_game
+
+    def _initialize_players(self, players: List[SimulatorPlayer]):
         self.current_players = {}
         for player in players:
             self.current_players[player.name] = player
-        return self.current_game
 
     def play_turn(self) -> GameState:
         player_to_play_name = self.current_game.players[self.current_game.player_turn].name
