@@ -58,6 +58,9 @@ class GameState:
     def player_turn(self) -> int:
         return self.current_turn % len(self.players)
 
+    def get_relative_player(self, relative_player_id: int) -> Player:
+        return self.players[(self.player_turn + relative_player_id + 1) % len(self.players)]
+
     def player_draw_card(self, player: Player):
         if len(self.deck) == 0:
             return
@@ -76,7 +79,7 @@ class GameState:
             self.is_over = True
 
     def play_turn(self, action: Action):
-        action.actor = self.get_current_player()
+        action.actor = self.current_player
 
         action.act_on_state(self)
 
@@ -89,7 +92,7 @@ class GameState:
             self.is_over = True
 
     def play_turn_play(self, action: PlayAction):
-        player = self.get_current_player()
+        player = self.current_player
         card_to_play = player.hand.pop(action.cardSlot)
         stack_to_play_on = self.stacks[card_to_play.real_card.suit]
         if stack_to_play_on.can_play(card_to_play.real_card):
@@ -102,19 +105,19 @@ class GameState:
         action.playedCard = card_to_play
 
     def play_turn_color_clue(self, action: ColorClueAction):
-        player = self.get_current_player()
+        player = self.current_player
         clue = ColorClue(action.color, action.target_player.name, player.name, self.current_turn)
         self.current_clues = self.current_clues - 1
         # TODO: Actually handle the clue or something
 
     def play_turn_rank_clue(self, action: RankClueAction):
-        player = self.get_current_player()
+        player = self.current_player
         clue = RankClue(action.rank, action.target_player.name, player.name, self.current_turn)
         self.current_clues = self.current_clues - 1
         # TODO: Actually handle the clue or something
 
     def play_turn_discard(self, action: DiscardAction):
-        player = self.get_current_player()
+        player = self.current_player
         if self.current_clues >= 8 or action.cardSlot < 0 or action.cardSlot >= len(player.hand):
             raise ValueError("Can't perform discard action")
 
@@ -124,5 +127,6 @@ class GameState:
         self.player_draw_card(player)
         action.discardedCard = card_to_discard.real_card
 
-    def get_current_player(self):
+    @property
+    def current_player(self):
         return self.players[self.player_turn]

@@ -20,6 +20,3 @@ class SingleCardPlayClueConvention(Convention):
 
         # TODO suit clues
         return None
-
-
-basic_conventions = {SingleCardPlayClueConvention()}

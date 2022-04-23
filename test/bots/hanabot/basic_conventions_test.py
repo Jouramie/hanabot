@@ -2,7 +2,7 @@ from bots.domain.decision import RankClueDecision, PlayDecision
 from bots.domain.model.game_state import GameHistory
 from bots.domain.model.player import create_unknown_hand, create_unknown_real_hand, PlayerHand, PlayerCard, create_unknown_card
 from bots.hanabot.convention import Conventions
-from bots.hanabot.conventions.basic.single_card_play_clue import basic_conventions
+from bots.hanabot.conventions import basic
 from bots.hanabot.hanabot import Hanabot
 from core.card import Card, Suit, Rank, all_possible_cards
 from test.bots.domain.model.game_state_test import RelativeGameStateBuilder
@@ -12,7 +12,7 @@ suits = (Suit.BLUE, Suit.GREEN, Suit.YELLOW, Suit.RED, Suit.PURPLE)
 
 
 def test_given_first_turn_when_play_turn_then_clue_one():
-    hanabot = Hanabot("Alice", Conventions(basic_conventions))
+    hanabot = Hanabot("Alice", Conventions(basic))
     game_state = (
         RelativeGameStateBuilder(suits)
         .set_my_hand(create_unknown_hand("Alice"))
@@ -49,7 +49,7 @@ def test_given_first_turn_when_play_turn_then_clue_one():
 
 
 def test_given_second_turn_when_play_turn_then_clue_one():
-    hanabot = Hanabot("Bob", Conventions(basic_conventions))
+    hanabot = Hanabot("Bob", Conventions(basic))
     game_state = (
         RelativeGameStateBuilder(suits)
         .set_my_hand(

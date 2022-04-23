@@ -80,7 +80,7 @@ def test_given_empty_stacks_when_find_playable_cards_then_only_ones_are_playable
 
     playable_cards = list(game_state.find_playable_cards())
 
-    assert playable_cards == [(BOB, 0, expected_one_in_bob_hand), (DONALD, 0, expected_one_in_donald_hand)]
+    assert playable_cards == [(0, 0, expected_one_in_bob_hand), (2, 0, expected_one_in_donald_hand)]
 
 
 def test_given_stacks_at_one_when_find_playable_cards_then_only_ones_are_not_playable():

@@ -27,7 +27,7 @@ class RelativeGameState:
             return True
 
         if card.rank is Rank.ONE:
-            return self.discard.count(card) is 2
+            return self.discard.count(card) == 2
 
         return card in self.discard
 

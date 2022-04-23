@@ -13,12 +13,14 @@ class HandCard:
     def __init__(self, card: Card, suits_in_game: List[Suit]):
         self.real_card = card
         self.suits_in_game = suits_in_game
+        self.is_clued = False
         self.received_clues = []
         self.possible_cards = list(all_possible_cards(suits_in_game))
 
     def receive_clue(self, clue: Clue):
         self.possible_cards = [card for card in self.possible_cards if clue.touches_card(card) == clue.touches_card(self.real_card)]
         self.received_clues.append(clue)
+        self.is_clued |= clue.touches_card(self.real_card)
 
     def get_all_possible_cards(self) -> List[Card]:
         return self.possible_cards
@@ -28,12 +30,6 @@ class HandCard:
 
     def get_all_possible_ranks(self) -> List[Rank]:
         return list(set([card.rank for card in self.possible_cards]))
-
-    def is_clued(self) -> bool:
-        for clue in self.received_clues:
-            if clue.touches_card(self.real_card):
-                return True
-        return False
 
     def __repr__(self):
         return self.real_card.short_name
