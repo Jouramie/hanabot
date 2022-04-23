@@ -72,16 +72,16 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     clear = lambda: os.system("cls")
-    players = [CheatingPlayer(), CheatingPlayer(), CheatingPlayer(), CheatingPlayer()]
-    suits = Variant.NO_VARIANT
+    simulation_players = [CheatingPlayer(), CheatingPlayer(), CheatingPlayer(), CheatingPlayer()]
+    simulation_suits = Variant.NO_VARIANT
 
     print("Input 'Slow' to play one game slowly")
     print("Input 'Fast X' to play X games quickly")
     response = input().lower()
     words = response.split(" ")
     if response == "slow":
-        play_game_slow(players, suits)
+        play_game_slow(simulation_players, simulation_suits)
     elif words[0] == "fast" and len(words) == 2:
-        play_games_fast(players, suits, int(words[1]))
+        play_games_fast(simulation_players, simulation_suits, int(words[1]))
     else:
         print("you suck at typing")

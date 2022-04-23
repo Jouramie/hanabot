@@ -31,7 +31,7 @@ class Controller:
         return self.get_game_result()
 
     def is_game_over(self) -> bool:
-        return self.current_game.is_over
+        return self.current_game.status.is_over
 
     def get_game_result(self) -> GameResult:
         return GameResult(self.current_game)
@@ -44,14 +44,14 @@ class Controller:
         print("-------------------------------")
 
     def draw_last_action(self):
-        if self.current_game.action_history:
-            print(str(self.current_game.action_history[-1]))
+        if self.current_game.history.actions:
+            print(str(self.current_game.history.actions[-1]))
 
     def draw_game_numbers(self):
-        clues = str(self.current_game.current_clues)
-        strikes = str(self.current_game.current_strikes)
+        clues = str(self.current_game.status.clues)
+        strikes = str(self.current_game.status.strikes)
         score = 0
-        for stack in self.current_game.stacks.values():
+        for stack in self.current_game.play_area.stacks.values():
             score = score + stack.stack_score()
         score = str(score)
         turns = str(self.current_game.turns_remaining)
@@ -59,7 +59,7 @@ class Controller:
 
     def draw_stacks(self):
         stack_string = "Stacks: | "
-        for suit, stack in self.current_game.stacks.items():
+        for suit, stack in self.current_game.play_area.stacks.items():
             stack_string += str(stack) + " | "
         print(stack_string)
 
