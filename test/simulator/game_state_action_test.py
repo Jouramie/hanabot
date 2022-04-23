@@ -1,5 +1,5 @@
 from simulator.game.action import ColorClueAction, RankClueAction, PlayAction, DiscardAction
-from simulator.game.clue import ColorClue
+from simulator.game.clue import ColorClue, RankClue
 from test.simulator.game_setup import get_player_names, get_suits
 
 from simulator.game.gamestate import GameState
@@ -27,6 +27,83 @@ def test_give_rank_clue_should_use_clue():
     gamestate.play_turn(action)
     clues_after_action = gamestate.current_clues
     assert clues_before_action == clues_after_action + 1
+
+
+def test_give_color_clue_should_add_clue_on_all_hand_cards():
+    gamestate = GameState(get_player_names(5), get_suits(5))
+    first_player = gamestate.players[0]
+    second_player = gamestate.players[1]
+    second_card = second_player.hand[1].real_card
+
+    for hand_card in second_player.hand:
+        assert len(hand_card.received_clues) == 0
+
+    action = ColorClueAction(second_card.suit, second_player)
+    gamestate.play_turn(action)
+
+    for hand_card in second_player.hand:
+        assert len(hand_card.received_clues) == 1
+        received_clue = hand_card.received_clues[0]
+        assert received_clue.turn == 1
+        assert received_clue.giver_name == first_player.name
+        assert received_clue.receiver_name == second_player.name
+        assert isinstance(received_clue, ColorClue)
+        assert received_clue.suit == second_card.suit
+
+
+def test_give_rank_clue_should_add_clue_on_all_hand_cards():
+    gamestate = GameState(get_player_names(5), get_suits(5))
+    first_player = gamestate.players[0]
+    second_player = gamestate.players[1]
+    second_card = second_player.hand[1].real_card
+
+    for hand_card in second_player.hand:
+        assert len(hand_card.received_clues) == 0
+
+    action = RankClueAction(second_card.rank, second_player)
+    gamestate.play_turn(action)
+
+    for hand_card in second_player.hand:
+        assert len(hand_card.received_clues) == 1
+        received_clue = hand_card.received_clues[0]
+        assert received_clue.turn == 1
+        assert received_clue.giver_name == first_player.name
+        assert received_clue.receiver_name == second_player.name
+        assert isinstance(received_clue, RankClue)
+        assert received_clue.rank == second_card.rank
+
+
+def test_give_two_clues_should_add_clues_on_all_hand_cards():
+    gamestate = GameState(get_player_names(5), get_suits(5))
+    first_player = gamestate.players[0]
+    second_player = gamestate.players[1]
+    third_player = gamestate.players[2]
+    second_card = third_player.hand[1].real_card
+
+    for hand_card in third_player.hand:
+        assert len(hand_card.received_clues) == 0
+
+    action1 = ColorClueAction(second_card.suit, third_player)
+    action2 = RankClueAction(second_card.rank, third_player)
+    gamestate.play_turn(action1)
+    gamestate.play_turn(action2)
+
+    for hand_card in third_player.hand:
+        assert len(hand_card.received_clues) == 2
+        first_received_clue = hand_card.received_clues[0]
+        second_received_clue = hand_card.received_clues[1]
+
+        assert first_received_clue.turn == 1
+        assert first_received_clue.giver_name == first_player.name
+        assert first_received_clue.receiver_name == third_player.name
+        assert isinstance(first_received_clue, ColorClue)
+        assert first_received_clue.suit == second_card.suit
+
+        assert second_received_clue.turn == 2
+        assert second_received_clue.giver_name == second_player.name
+        assert second_received_clue.receiver_name == third_player.name
+        assert isinstance(second_received_clue, RankClue)
+        assert second_received_clue.rank == second_card.rank
 
 
 def test_play_should_draw_card():

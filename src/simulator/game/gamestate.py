@@ -103,15 +103,17 @@ class GameState:
 
     def play_turn_color_clue(self, action: ColorClueAction):
         player = self.get_current_player()
-        clue = ColorClue(action.color, action.target_player.name, player.name, self.current_turn)
+        clue = ColorClue(action.color, action.target_player.name, player.name, self.current_turn + 1)
         self.current_clues = self.current_clues - 1
-        # TODO: Actually handle the clue or something
+        for hand_card in action.target_player.hand:
+            hand_card.receive_clue(clue)
 
     def play_turn_rank_clue(self, action: RankClueAction):
         player = self.get_current_player()
-        clue = RankClue(action.rank, action.target_player.name, player.name, self.current_turn)
+        clue = RankClue(action.rank, action.target_player.name, player.name, self.current_turn + 1)
         self.current_clues = self.current_clues - 1
-        # TODO: Actually handle the clue or something
+        for hand_card in action.target_player.hand:
+            hand_card.receive_clue(clue)
 
     def play_turn_discard(self, action: DiscardAction):
         player = self.get_current_player()
@@ -126,3 +128,8 @@ class GameState:
 
     def get_current_player(self):
         return self.players[self.player_turn]
+
+    def get_player_by_name(self, name: str):
+        for player in self.players:
+            if player.name == name:
+                return player
