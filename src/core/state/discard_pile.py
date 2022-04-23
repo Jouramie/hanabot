@@ -8,3 +8,6 @@ class DiscardPile:
 
     def __init__(self):
         self.cards = []
+
+    def discard(self, card: Card):
+        self.cards.append(card)

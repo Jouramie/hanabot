@@ -11,3 +11,9 @@ class History:
     def __init__(self):
         self.actions = []
         self.clues = []
+
+    def add_clue(self, clue: Clue):
+        self.clues.append(clue)
+
+    def add_action(self, action: Action):
+        self.actions.append(action)

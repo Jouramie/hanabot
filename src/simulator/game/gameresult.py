@@ -7,13 +7,13 @@ class GameResult:
     final_state: GameState
 
     def __init__(self, final_state: GameState):
-        if not final_state.is_over:
+        if not final_state.status.is_over:
             raise ValueError('Cannot generate result for an unfinished game')
         self.final_state = final_state
 
     @property
     def is_survival(self) -> bool:
-        return self.final_state.current_strikes < 3
+        return self.final_state.status.strikes < 3
 
     @property
     def is_victory(self) -> bool:
@@ -27,12 +27,12 @@ class GameResult:
 
     @property
     def max_score(self) -> int:
-        return len(self.final_state.stacks) * 5
+        return len(self.final_state.play_area.stacks) * 5
 
     @property
     def played_cards(self) -> int:
         score = 0
-        for stack in self.final_state.stacks.values():
+        for stack in self.final_state.play_area.stacks.values():
             score = score + stack.stack_score()
 
         return score

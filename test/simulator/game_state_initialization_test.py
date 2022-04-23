@@ -11,17 +11,17 @@ from test.simulator.game_setup import get_player_names
 
 def test_new_gamestate_should_have_8_clues():
     gamestate = GameState(get_player_names(5), Deck.generate())
-    assert gamestate.status.current_clues == 8
+    assert gamestate.status.clues == 8
 
 
 def test_new_gamestate_should_be_on_turn_zero():
     gamestate = GameState(get_player_names(5), Deck.generate())
-    assert gamestate.status.current_turn == 0
+    assert gamestate.status.turn == 0
 
 
 def test_new_gamestate_should_have_zero_strikes():
     gamestate = GameState(get_player_names(5), Deck.generate())
-    assert gamestate.status.current_strikes == 0
+    assert gamestate.status.strikes == 0
 
 
 def test_new_gamestate_should_not_be_over():
@@ -87,7 +87,7 @@ def test_new_gamestate_should_have_empty_play_area(number_suits):
     suits = Variant.get_suits(number_suits)
     deck = Deck.generate(suits)
     gamestate = GameState(get_player_names(5), deck)
-    assert len(gamestate.play_area.stacks) == len(deck.variant)
+    assert len(gamestate.play_area.stacks) == len(deck.suits)
     for suit in suits:
         assert gamestate.play_area.stacks[suit].last_played is None
 

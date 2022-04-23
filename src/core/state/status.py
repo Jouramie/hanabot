@@ -1,12 +1,26 @@
 class Status:
-    current_turn: int
-    current_clues: int
-    current_strikes: int
+    turn: int
+    clues: int
+    strikes: int
     is_over: bool
     turns_remaining: int
 
     def __init__(self):
-        self.current_turn = 0
-        self.current_clues = 8
-        self.current_strikes = 0
+        self.turn = 0
+        self.clues = 8
+        self.strikes = 0
         self.is_over = False
+
+    def generate_clue(self):
+        self.clues = self.clues + 1
+
+    def consume_clue(self):
+        self.clues = self.clues - 1
+
+    def add_strike(self):
+        self.strikes = self.strikes + 1
+        if self.strikes >= 3:
+            self.is_over = True
+
+    def next_turn(self):
+        self.turn = self.turn + 1
