@@ -2,23 +2,23 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from random import shuffle
-from typing import Iterable, Iterator
+from typing import Iterable, Iterator, Sized, Union
 
-from core.card import Card, Rank, Variant
+from core.card import Card, Rank, Variant, Suit
 
 
 @dataclass(frozen=True)
 class Deck:
     _cards: list[Card]
-    variant: Variant = Variant.NO_VARIANT
+    suits: Union[Iterable[Suit], Sized] = Variant.NO_VARIANT
 
     def __post_init__(self):
         self._cards.reverse()
 
     @staticmethod
-    def generate(variant: Variant = Variant.NO_VARIANT) -> Deck:
+    def generate(suits: Iterable[Suit] = Variant.NO_VARIANT) -> Deck:
         cards = []
-        for suit in variant:
+        for suit in suits:
             cards.append(Card(suit, Rank.ONE))
             cards.append(Card(suit, Rank.ONE))
             cards.append(Card(suit, Rank.ONE))
@@ -35,19 +35,19 @@ class Deck:
             cards.append(Card(suit, Rank.FIVE))
 
         shuffle(cards)
-        return Deck(cards, variant)
+        return Deck(cards, suits)
 
     @staticmethod
-    def starting_with(cards: Iterable[Card] | Card, variant: Variant = Variant.NO_VARIANT) -> Deck:
+    def starting_with(cards: Iterable[Card] | Card, suits: Iterable[Suit] = Variant.NO_VARIANT) -> Deck:
         if isinstance(cards, Card):
             cards = [cards]
 
-        other_cards = Deck.generate(variant)._cards
+        other_cards = Deck.generate(suits)._cards
         for card in cards:
             other_cards.remove(card)
 
         shuffle(other_cards)
-        return Deck(list(cards) + other_cards, variant)
+        return Deck(list(cards) + other_cards, suits)
 
     def draw(self) -> Card:
         return self._cards.pop()
@@ -69,7 +69,3 @@ class Deck:
 
     def __ne__(self, other):
         return not self == other
-
-
-def generate(variant: Variant) -> Deck:
-    return Deck.generate(variant)

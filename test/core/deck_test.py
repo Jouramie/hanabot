@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from core import Card, Rank, Suit, Variant
 from core.deck import Deck
 
@@ -100,9 +102,9 @@ def test_6suits_should_shuffle_differently_each_time():
     decks_are_different(deck4, deck5)
 
 
-def generate_deck_and_assert_number_of_cards_per_suit(variant: Variant):
-    deck = Deck.generate(variant)
-    for suit in variant:
+def generate_deck_and_assert_number_of_cards_per_suit(suits: Iterable[Suit]):
+    deck = Deck.generate(suits)
+    for suit in suits:
         assert sum(1 for card in deck if card.suit == suit and card.rank == Rank.ONE) == 3
         assert sum(1 for card in deck if card.suit == suit and card.rank == Rank.TWO) == 2
         assert sum(1 for card in deck if card.suit == suit and card.rank == Rank.THREE) == 2

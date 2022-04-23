@@ -1,9 +1,9 @@
 import logging
 import os
 import time
-from typing import List
+from typing import List, Iterable
 
-from core import Variant
+from core import Variant, Suit
 from simulator.controller import Controller
 from simulator.game.gameresult import GameResult
 from simulator.players.cheatingplayer import CheatingPlayer
@@ -19,9 +19,9 @@ def print_game_result(result: GameResult):
         print("The team has struck out after playing " + str(result.played_cards))
 
 
-def play_game_slow(players: List[SimulatorPlayer], variant: Variant):
+def play_game_slow(players: List[SimulatorPlayer], suits: Iterable[Suit]):
     controller = Controller()
-    game = controller.new_game(players, variant)
+    game = controller.new_game(players, suits)
     while not controller.is_game_over():
         controller.draw_game()
         input("")
@@ -32,7 +32,7 @@ def play_game_slow(players: List[SimulatorPlayer], variant: Variant):
     print_game_result(result)
 
 
-def play_games_fast(players: List[SimulatorPlayer], variant: Variant, number_games: int):
+def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], number_games: int):
     controller = Controller()
     total_score = 0
     total_survivals = 0
@@ -40,7 +40,7 @@ def play_games_fast(players: List[SimulatorPlayer], variant: Variant, number_gam
     games_remaining = number_games
     time_before = time.time()
     while games_remaining > 0:
-        game = controller.new_game(players, variant)
+        game = controller.new_game(players, suits)
         controller.play_until_game_is_over()
         result = controller.get_game_result()
         print_game_result(result)

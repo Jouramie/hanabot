@@ -37,7 +37,7 @@ class GameState:
         self.deck = deck
         self.discard_pile = []
         self.stacks = {}
-        for suit in deck.variant:
+        for suit in deck.suits:
             self.stacks[suit] = Stack(suit)
 
         self.players = []
@@ -50,7 +50,7 @@ class GameState:
             player_index = i % number_of_players
             self.player_draw_card(self.players[player_index])
 
-        self.turns_remaining = get_max_turns(number_of_players, len(self.deck.variant))
+        self.turns_remaining = get_max_turns(number_of_players, len(self.deck.suits))
 
     @property
     def player_turn(self) -> int:
@@ -63,7 +63,7 @@ class GameState:
         if len(self.deck) == 0:
             return
         card = self.deck.draw()
-        hand_card = HandCard(card, list(self.deck.variant.suits))
+        hand_card = HandCard(card, list(self.deck.suits))
         player.hand.insert(0, hand_card)
         if len(self.deck) == 0:
             self.turns_remaining = len(self.players) + 1

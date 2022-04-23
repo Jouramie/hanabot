@@ -52,7 +52,7 @@ def test_new_gamestate_should_be_first_players_turn():
 @pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 6)])
 def test_new_gamestate_should_have_many_turns_remaining(number_players):
     deck = Deck.generate()
-    number_suits = len(deck.variant)
+    number_suits = len(deck.suits)
     player_names = get_player_names(number_players)
     gamestate = GameState(player_names, deck)
     assert gamestate.turns_remaining == get_max_turns(number_players, number_suits)
@@ -86,7 +86,7 @@ def test_new_gamestate_should_give_cards_to_all_players(number_players):
 def test_new_gamestate_should_have_empty_stacks(number_suits):
     deck = Deck.generate(Variant.get_suits(number_suits))
     gamestate = GameState(get_player_names(5), deck)
-    assert len(gamestate.stacks) == len(deck.variant)
+    assert len(gamestate.stacks) == len(deck.suits)
     for stackSuit, stack in gamestate.stacks.items():
         assert stack.last_played is None
 
