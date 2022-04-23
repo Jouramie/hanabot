@@ -4,7 +4,7 @@ from typing import Iterable
 
 from bots.domain.decision import Decision, RankClueDecision, SuitClueDecision
 from bots.domain.model.game_state import RelativeGameState
-from bots.domain.model.player import PlayerHand, PlayerCard
+from bots.domain.model.player import PlayerHand, PlayerCard, RelativePlayerId
 from core import Rank
 
 
@@ -38,7 +38,7 @@ class Conventions:
     def find_card_on_chop(self, player_hand: PlayerHand) -> PlayerCard:
         return player_hand[self.find_chop(player_hand)]
 
-    def find_play_clue(self, owner_slot_cards: Iterable[tuple[int, int, PlayerCard]], current_game_state: RelativeGameState) -> Iterable[Decision]:
+    def find_play_clue(self, owner_slot_cards: Iterable[tuple[RelativePlayerId, int, PlayerCard]], current_game_state: RelativeGameState) -> Iterable[Decision]:
         for owner_slot_card in owner_slot_cards:
             for convention in self.conventions:
                 decision = convention.find_play_clue(owner_slot_card, current_game_state)

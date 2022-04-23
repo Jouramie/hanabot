@@ -12,7 +12,7 @@ class SingleCardPlayClueConvention(Convention):
 
         rank = player_card.real_card.rank
         if len(hand.get_real(rank)) == 1:
-            return RankClueDecision(rank, hand.owner)
+            return RankClueDecision(rank, hand.owner_name)
 
         # TODO suit clues
         return None
