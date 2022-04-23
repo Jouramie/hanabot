@@ -130,4 +130,7 @@ class Card:
     rank: Rank
 
     def __repr__(self) -> str:
-        return f"{self.suit.short_name()}{self.rank.name}"
+        return f"{repr(self.suit)}{repr(self.rank)}"
+
+    def matches(self, suit_or_rank: Suit | Rank) -> bool:
+        return self.suit is suit_or_rank or self.rank is suit_or_rank

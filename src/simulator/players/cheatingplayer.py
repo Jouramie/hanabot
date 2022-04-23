@@ -64,14 +64,14 @@ class CheatingPlayer(SimulatorPlayer):
         my_hand = myself.hand
         for slot, card in enumerate(my_hand):
             if game.stacks[card.suit].can_play(card):
-                logger.debug(self._name + ": Play slot " + str(slot))
+                logger.debug(self.name + ": Play slot " + str(slot))
                 return PlayAction(slot)
 
         if game.current_clues > 0:
             next_player = game.players[(game.player_turn + 1) % len(game.players)]
             next_player_first_card = next_player.hand[0]
             next_player_first_card_number = next_player_first_card.rank
-            logger.debug(self._name + ": Clue " + str(next_player_first_card_number) + " to " + next_player.name)
+            logger.debug(self.name + ": Clue " + str(next_player_first_card_number) + " to " + next_player.name)
             return ClueAction(RankClue(next_player_first_card_number, next_player))
 
         lowest_value = 999
@@ -82,8 +82,8 @@ class CheatingPlayer(SimulatorPlayer):
                 lowest_value_slot = slot
                 lowest_value = value
 
-        logger.debug(self._name + ": Discard slot " + str(lowest_value_slot))
+        logger.debug(self.name + ": Discard slot " + str(lowest_value_slot))
         return DiscardAction(lowest_value_slot)
 
     def name(self) -> str:
-        return self._name
+        return self.name

@@ -10,6 +10,7 @@ from core import Rank, Suit, Card
 
 @dataclass(frozen=True)
 class Stack:
+    # TODO is this really needed?
     suit: Suit
     rank: Rank | None = None
 

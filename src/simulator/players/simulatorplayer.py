@@ -6,7 +6,7 @@ from simulator.game.gamestate import GameState
 
 class SimulatorPlayer(ABC):
     def __init__(self, name: str):
-        self._name = name
+        self.name = name
 
     @abstractmethod
     def play_turn(self, gamestate: GameState) -> Action:

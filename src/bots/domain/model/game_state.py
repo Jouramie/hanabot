@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Iterable
 
 from bots.domain.model.action import Action
-from bots.domain.model.player import PlayerHand
+from bots.domain.model.player import PlayerHand, PlayerCard
 from bots.domain.model.stack import Stacks
 from core import Card, Rank
 
@@ -31,8 +31,11 @@ class RelativeGameState:
 
         return card in self.discard
 
-    def find_not_clued_playable_cards(self):
-        pass
+    def find_playable_cards(self) -> Iterable[tuple[int, int, PlayerCard]]:
+        for hand in self.other_player_hands:
+            for i, card in enumerate(hand.cards):
+                if self.stacks.is_playable(card.real_card):
+                    yield hand.owner, i, card
 
 
 @dataclass(frozen=True)

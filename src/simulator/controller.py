@@ -12,10 +12,10 @@ class Controller:
     current_players: Dict[str, SimulatorPlayer]
 
     def new_game(self, players: List[SimulatorPlayer], suits: List[Suit]) -> GameState:
-        self.current_game = GameState([player._name() for player in players], suits)
+        self.current_game = GameState([player.name for player in players], suits)
         self.current_players = {}
         for player in players:
-            self.current_players[player._name()] = player
+            self.current_players[player.name] = player
         return self.current_game
 
     def play_turn(self) -> GameState:

@@ -28,6 +28,7 @@ class RankClueDecision:
 
 
 Decision = PlayDecision | DiscardDecision | SuitClueDecision | RankClueDecision
+ClueDecision = SuitClueDecision | RankClueDecision
 
 
 class DecisionMaking(ABC):

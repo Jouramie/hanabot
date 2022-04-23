@@ -2,12 +2,18 @@ from __future__ import annotations
 
 from bots.domain.model.action import Action
 from bots.domain.model.game_state import RelativeGameState
-from bots.domain.model.player import PlayerHand, generate_unknown_hand
-from bots.domain.model.stack import Stacks
+from bots.domain.model.player import PlayerHand, create_unknown_hand, create_unknown_real_card
+from bots.domain.model.stack import Stacks, Stack
 from core import Card, Suit, Rank
 
+ALICE = "Alice"
+BOB = "Bob"
+CATHY = "Cathy"
+DONALD = "Donald"
+
 A_SUIT = Suit.TEAL
-SOME_SUITS = frozenset({A_SUIT, Suit.RED, Suit.BLUE})
+ANOTHER_SUIT = Suit.BLUE
+SOME_SUITS = frozenset({A_SUIT, Suit.RED, ANOTHER_SUIT})
 EMPTY_DISCARD = tuple()
 
 
@@ -54,11 +60,50 @@ def test_given_discard_with_two_ones_when_is_the_last_one_critical_then_is_criti
     assert is_five_critical is True
 
 
+def test_given_empty_stacks_when_find_playable_cards_then_only_ones_are_playable():
+    expected_one_in_bob_hand = create_unknown_real_card(Card(A_SUIT, Rank.ONE))
+    expected_one_in_donald_hand = create_unknown_real_card(Card(ANOTHER_SUIT, Rank.ONE))
+    game_state = (
+        RelativeGameStateBuilder(SOME_SUITS)
+        .set_stacks(Stacks.create_empty_stacks(SOME_SUITS))
+        .set_other_player_hands(
+            (
+                PlayerHand(BOB, (expected_one_in_bob_hand,)),
+                PlayerHand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.TWO)),)),
+                PlayerHand(DONALD, (expected_one_in_donald_hand,)),
+            )
+        )
+        .build()
+    )
+
+    playable_cards = list(game_state.find_playable_cards())
+
+    assert playable_cards == [(BOB, 0, expected_one_in_bob_hand), (DONALD, 0, expected_one_in_donald_hand)]
+
+
+def test_given_stacks_at_one_when_find_playable_cards_then_only_ones_are_not_playable():
+    game_state = (
+        RelativeGameStateBuilder(SOME_SUITS)
+        .set_stacks(Stacks({A_SUIT: Stack(A_SUIT, Rank.ONE)}))
+        .set_other_player_hands(
+            (
+                PlayerHand(BOB, ((create_unknown_real_card(Card(A_SUIT, Rank.ONE))),)),
+                PlayerHand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.THREE)),)),
+            )
+        )
+        .build()
+    )
+
+    playable_cards = list(game_state.find_playable_cards())
+
+    assert not playable_cards
+
+
 class RelativeGameStateBuilder:
     def __init__(self, suits: frozenset[Suit]):
         self.stacks = Stacks.create_empty_stacks(suits)
         self.discard = tuple()
-        self.my_hand = PlayerHand("me", generate_unknown_hand(5))
+        self.my_hand = create_unknown_hand(ALICE, 5)
         self.other_player_hands = tuple()
         self.last_performed_action = None
         self.turn_number = 0

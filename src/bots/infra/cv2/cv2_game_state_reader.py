@@ -9,7 +9,7 @@ import numpy as np
 from frozendict import frozendict
 
 from bots.domain.model.game_state import RelativeGameState
-from bots.domain.model.player import generate_unknown_hand, PlayerHand
+from bots.domain.model.player import create_unknown_hand, PlayerHand
 from bots.ui.game_state_reading import GameStateReader
 from core import Card, Rank, Suit
 
@@ -196,7 +196,7 @@ def _read_all_cards(screenshot: LazyImage) -> FrozenSet[DetectedCard]:
 
 
 def _read_player_hands(screenshot: LazyImage) -> List[PlayerHand]:
-    players = [PlayerHand("0", generate_unknown_hand())]
+    players = [create_unknown_hand("0")]
 
     cards = _read_all_cards(screenshot)
 
