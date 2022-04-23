@@ -37,10 +37,15 @@ class Controller:
         return GameResult(self.current_game)
 
     def draw_game(self):
+        self.draw_last_action()
         self.draw_game_numbers()
         self.draw_stacks()
         self.draw_hands()
         print("-------------------------------")
+
+    def draw_last_action(self):
+        if self.current_game.action_history:
+            print(str(self.current_game.action_history[-1]))
 
     def draw_game_numbers(self):
         clues = str(self.current_game.current_clues)

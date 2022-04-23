@@ -1,5 +1,5 @@
 from core.card import Card
-from simulator.game.clue import Clue
+from simulator.game.clue import Clue, ColorClue
 from simulator.game.player import Player
 
 
@@ -20,6 +20,12 @@ class ClueAction(Action):
     def act_on_state(self, gamestate):
         gamestate.play_turn_clue(self)
 
+    def __str__(self):
+        if type(self.clue) is ColorClue:
+            return f"{self.clue.giver.name} clued {self.clue.receiver.name} {self.clue.suit.name}."
+        else:
+            return f"{self.clue.giver.name} clued {self.clue.receiver.name} {self.clue.rank.name}."
+
 
 class PlayAction(Action):
     playedCard: Card
@@ -32,6 +38,9 @@ class PlayAction(Action):
     def act_on_state(self, gamestate):
         gamestate.play_turn_play(self)
 
+    def __str__(self):
+        return f"{self.actor.name} played {repr(self.playedCard)} from slot {self.cardSlot + 1}."
+
 
 class DiscardAction(Action):
     discardedCard: Card
@@ -42,3 +51,6 @@ class DiscardAction(Action):
 
     def act_on_state(self, gamestate):
         gamestate.play_turn_discard(self)
+
+    def __str__(self):
+        return f"{self.actor.name} discarded {repr(self.discardedCard)} from slot {self.cardSlot + 1}."
