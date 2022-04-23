@@ -1,7 +1,7 @@
 from bots.domain.decision import ClueDecision, RankClueDecision
 from bots.domain.model.game_state import RelativeGameState
 from bots.domain.model.player import PlayerCard, PlayerHand, RelativePlayerId
-from bots.hanabot.convention import Convention
+from bots.hanabot.conventions.convention import Convention
 
 
 class SingleCardPlayClueConvention(Convention):

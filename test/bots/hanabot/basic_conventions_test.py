@@ -1,4 +1,3 @@
-from bots.hanabot.convention import Conventions
 from bots.hanabot.conventions import basic
 from bots.hanabot.hanabot import Hanabot
 from bots.ui.simulator import SimulatorBot
@@ -28,9 +27,9 @@ deck = Deck.starting_with(
     Variant.NO_VARIANT,
 )
 
-alice = SimulatorBot("alice", Hanabot(Conventions(basic)))
-bob = SimulatorBot("bob", Hanabot(Conventions(basic)))
-cathy = SimulatorBot("cathy", Hanabot(Conventions(basic)))
+alice = SimulatorBot("alice", Hanabot(basic))
+bob = SimulatorBot("bob", Hanabot(basic))
+cathy = SimulatorBot("cathy", Hanabot(basic))
 
 
 def test_given_first_turn_when_play_turn_then_clue_one():

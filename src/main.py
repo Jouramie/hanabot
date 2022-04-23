@@ -35,10 +35,10 @@ if __name__ == "__main__":
     clear = lambda: os.system("cls")
     controller = Controller()
     players = [
-        SimulatorBot("Alice", Hanabot("Alice", conventions.basic)),
-        SimulatorBot("Bob", Hanabot("Bob", conventions.basic)),
-        SimulatorBot("Cathy", Hanabot("Cathy", conventions.basic)),
-        SimulatorBot("Donald", Hanabot("Donald", conventions.basic)),
+        SimulatorBot("Alice", Hanabot(conventions.basic)),
+        SimulatorBot("Bob", Hanabot(conventions.basic)),
+        SimulatorBot("Cathy", Hanabot(conventions.basic)),
+        SimulatorBot("Donald", Hanabot(conventions.basic)),
     ]
     suits = Variant.NO_VARIANT
 

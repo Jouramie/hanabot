@@ -1,6 +1,6 @@
 from bots.domain.decision import DecisionMaking, PlayDecision, DiscardDecision, Decision
 from bots.domain.model.game_state import RelativeGameState, GameHistory
-from bots.hanabot.convention import Conventions
+from bots.hanabot.conventions.convention import Conventions
 
 
 SAVE_CLUE_ENABLED = False

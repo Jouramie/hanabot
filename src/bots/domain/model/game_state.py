@@ -41,7 +41,7 @@ class RelativeGameState:
         return self.player_hands[0]
 
     @property
-    def other_player_hands(self) -> Iterable[PlayerHand]:
+    def other_player_hands(self) -> tuple[PlayerHand]:
         return self.player_hands[1:]
 
 

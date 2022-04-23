@@ -80,7 +80,7 @@ def test_given_empty_stacks_when_find_playable_cards_then_only_ones_are_playable
 
     playable_cards = list(game_state.find_playable_cards())
 
-    assert playable_cards == [(0, 0, expected_one_in_bob_hand), (2, 0, expected_one_in_donald_hand)]
+    assert playable_cards == [(1, 0, expected_one_in_bob_hand), (3, 0, expected_one_in_donald_hand)]
 
 
 def test_given_stacks_at_one_when_find_playable_cards_then_only_ones_are_not_playable():
@@ -105,8 +105,7 @@ class RelativeGameStateBuilder:
     def __init__(self, suits: Iterable[Suit]):
         self.stacks = Stacks.create_empty_stacks(suits)
         self.discard = tuple()
-        self.my_hand = create_unknown_hand(ALICE, 5)
-        self.other_player_hands = tuple()
+        self.hands = [create_unknown_hand(ALICE, 5)]
         self.last_performed_action = None
         self.turn_number = 0
         self.clue_count = 8
@@ -121,11 +120,11 @@ class RelativeGameStateBuilder:
         return self
 
     def set_my_hand(self, my_hand: PlayerHand) -> RelativeGameStateBuilder:
-        self.my_hand = my_hand
+        self.hands[0] = my_hand
         return self
 
     def set_other_player_hands(self, other_player_hands: tuple[PlayerHand, ...]) -> RelativeGameStateBuilder:
-        self.other_player_hands = other_player_hands
+        self.hands = [self.hands[0]] + list(other_player_hands)
         return self
 
     def set_last_performed_action(self, last_performed_action: Action) -> RelativeGameStateBuilder:
@@ -148,8 +147,7 @@ class RelativeGameStateBuilder:
         return RelativeGameState(
             stacks=self.stacks,
             discard=self.discard,
-            my_hand=self.my_hand,
-            other_player_hands=self.other_player_hands,
+            player_hands=tuple(self.hands),
             last_performed_action=self.last_performed_action,
             turn_number=self.turn_number,
             clue_count=self.clue_count,
