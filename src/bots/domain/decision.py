@@ -2,6 +2,7 @@ from abc import ABC
 from dataclasses import dataclass
 
 from bots.domain.model.game_state import RelativeGameState, GameHistory
+from bots.domain.model.player import RelativePlayerId
 from core import Suit, Rank
 
 
@@ -18,13 +19,13 @@ class DiscardDecision:
 @dataclass(frozen=True)
 class SuitClueDecision:
     suit: Suit
-    player_name: str
+    receiver: RelativePlayerId
 
 
 @dataclass(frozen=True)
 class RankClueDecision:
     rank: Rank
-    player_name: str
+    receiver: RelativePlayerId
 
 
 Decision = PlayDecision | DiscardDecision | SuitClueDecision | RankClueDecision

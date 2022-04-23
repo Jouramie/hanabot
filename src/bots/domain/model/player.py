@@ -4,6 +4,8 @@ from typing import Iterable, Sized
 from core import Card, Rank, Suit
 from core.game_setup import all_possible_cards
 
+RelativePlayerId = int
+
 
 @dataclass(frozen=True)
 class PlayerCard:
@@ -19,7 +21,8 @@ class PlayerCard:
 
 @dataclass(frozen=True)
 class PlayerHand(Iterable[PlayerCard], Sized):
-    owner: str
+    owner: RelativePlayerId
+    owner_name: str
     cards: tuple[PlayerCard, ...]
 
     def __iter__(self):
