@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from functools import cached_property
 from typing import List, Iterable, Dict
 
 from bots.domain.model.action import Action
@@ -16,6 +17,8 @@ class RelativeGameState:
     turn_number: int
     clue_count: int
     bomb_count: int
+
+    _visible_cards = None
 
     def is_first_turn(self):
         return self.last_performed_action is None
@@ -52,26 +55,27 @@ class RelativeGameState:
 
     def is_possibly_playable(self, card: PlayerCard):
         filtered_possible_cards = set()
-        visible_cards = self.visible_cards()
+        visible_cards = self.visible_cards
         for possible_card in card.possible_cards:
             if visible_cards.get(possible_card, 0) < possible_card.number_of_copies:
                 filtered_possible_cards.add(possible_card)
 
         return self.stacks.are_all_playable_or_already_played(filtered_possible_cards)
 
+    @cached_property
     def visible_cards(self) -> Dict[Card, int]:
-        played_cards = {}
+        visible_cards = {}
         for card in self.stacks.played_cards:
-            played_cards[card] = played_cards.get(card, 0) + 1
+            visible_cards[card] = visible_cards.get(card, 0) + 1
 
         for card in self.discard:
-            played_cards[card] = played_cards.get(card, 0) + 1
+            visible_cards[card] = visible_cards.get(card, 0) + 1
 
         for hand in self.other_player_hands:
             for card in hand.cards:
-                played_cards[card.real_card] = played_cards.get(card.real_card, 0) + 1
+                visible_cards[card.real_card] = visible_cards.get(card.real_card, 0) + 1
 
-        return played_cards
+        return visible_cards
 
 
 @dataclass(frozen=True)

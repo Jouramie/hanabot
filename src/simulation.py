@@ -32,7 +32,7 @@ def play_game_slow(players: List[SimulatorPlayer], suits: Iterable[Suit]):
     print_game_result(result)
 
 
-def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], number_games: int):
+def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], number_games: int, verbose: bool = True):
     controller = Controller()
     total_score = 0
     total_survivals = 0
@@ -43,7 +43,10 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
         game = controller.new_game(players, suits)
         controller.play_until_game_is_over()
         result = controller.get_game_result()
-        print_game_result(result)
+        if verbose:
+            print_game_result(result)
+        elif games_remaining % 100 == 0:
+            print(f"({number_games-games_remaining}/{number_games})")
 
         total_score = total_score + result.played_cards
         if result.is_survival:

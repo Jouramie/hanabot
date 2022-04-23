@@ -115,7 +115,7 @@ def test_given_cards_in_hands_stacks_and_discard_when_visible_cards_then_all_vis
         .build()
     )
 
-    visible_cards = game_state.visible_cards()
+    visible_cards = game_state.visible_cards
 
     assert visible_cards == {
         Card(A_SUIT, Rank.ONE): 3,
