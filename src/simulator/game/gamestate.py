@@ -55,7 +55,7 @@ class GameState:
         if len(self.deck) == 0:
             return
         card = self.deck.draw()
-        hand_card = HandCard(card, list(self.deck.variant.suits))
+        hand_card = HandCard(card, list(self.deck.suits))
         player.hand.insert(0, hand_card)
         if len(self.deck) == 0:
             self.turns_remaining = len(self.players) + 1

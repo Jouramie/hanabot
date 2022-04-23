@@ -1,6 +1,6 @@
-from typing import List, Dict
+from typing import List, Dict, Iterable
 
-from core import Variant, Deck
+from core import Deck, Suit
 from simulator.game.gameresult import GameResult
 from simulator.game.gamestate import GameState
 from simulator.game.player import Player
@@ -11,8 +11,8 @@ class Controller:
     current_game: GameState
     current_players: Dict[str, SimulatorPlayer]
 
-    def new_game(self, players: List[SimulatorPlayer], variant: Variant) -> GameState:
-        self.current_game = GameState([player.name for player in players], Deck.generate(variant))
+    def new_game(self, players: List[SimulatorPlayer], suits: Iterable[Suit]) -> GameState:
+        self.current_game = GameState([player.name for player in players], Deck.generate(suits))
         self.current_players = {}
         for player in players:
             self.current_players[player.name] = player

@@ -1,4 +1,6 @@
-from core import Card, Rank, Suit
+from typing import Iterable
+
+from core import Card, Rank, Suit, Variant
 from core.deck import Deck
 
 
@@ -61,4 +63,55 @@ def test_given_two_random_deck_then_are_not_equal():
     deck1 = Deck.generate()
     deck2 = Deck.generate()
 
+    assert deck1 != deck2
+
+
+def test_3suits_should_contain_correct_number_of_cards():
+    generate_deck_and_assert_number_of_cards_per_suit(Variant.THREE_SUITS)
+
+
+def test_4suits_should_contain_correct_number_of_cards():
+    generate_deck_and_assert_number_of_cards_per_suit(Variant.FOUR_SUITS)
+
+
+def test_5suits_should_contain_correct_number_of_cards():
+    generate_deck_and_assert_number_of_cards_per_suit(Variant.NO_VARIANT)
+
+
+def test_6suits_should_contain_correct_number_of_cards():
+    generate_deck_and_assert_number_of_cards_per_suit(Variant.SIX_SUITS)
+
+
+def test_6suits_should_shuffle_differently_each_time():
+    variant = Variant.get_suits(6)
+    deck1 = Deck.generate(variant)
+    deck2 = Deck.generate(variant)
+    deck3 = Deck.generate(variant)
+    deck4 = Deck.generate(variant)
+    deck5 = Deck.generate(variant)
+
+    decks_are_different(deck1, deck2)
+    decks_are_different(deck1, deck3)
+    decks_are_different(deck1, deck4)
+    decks_are_different(deck1, deck5)
+    decks_are_different(deck2, deck3)
+    decks_are_different(deck2, deck4)
+    decks_are_different(deck2, deck5)
+    decks_are_different(deck3, deck4)
+    decks_are_different(deck3, deck5)
+    decks_are_different(deck4, deck5)
+
+
+def generate_deck_and_assert_number_of_cards_per_suit(suits: Iterable[Suit]):
+    deck = Deck.generate(suits)
+    for suit in suits:
+        assert sum(1 for card in deck if card.suit == suit and card.rank == Rank.ONE) == 3
+        assert sum(1 for card in deck if card.suit == suit and card.rank == Rank.TWO) == 2
+        assert sum(1 for card in deck if card.suit == suit and card.rank == Rank.THREE) == 2
+        assert sum(1 for card in deck if card.suit == suit and card.rank == Rank.FOUR) == 2
+        assert sum(1 for card in deck if card.suit == suit and card.rank == Rank.FIVE) == 1
+
+
+def decks_are_different(deck1: Deck, deck2: Deck):
+    assert len(deck1) == len(deck2)
     assert deck1 != deck2
