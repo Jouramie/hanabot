@@ -49,7 +49,7 @@ def test_new_gamestate_should_be_first_players_turn():
     assert gamestate.player_turn == 0
 
 
-@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 6)])
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
 def test_new_gamestate_should_have_many_turns_remaining(number_players):
     deck = Deck.generate()
     number_suits = len(deck.suits)
@@ -58,7 +58,7 @@ def test_new_gamestate_should_have_many_turns_remaining(number_players):
     assert gamestate.turns_remaining == number_players + gamestate.deck.number_cards()
 
 
-@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 6)])
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
 def test_new_gamestate_should_create_players(number_players):
     player_names = get_player_names(number_players)
     gamestate = GameState(player_names, Deck.generate())
@@ -72,7 +72,7 @@ def test_new_gamestate_should_shuffle_6_players():
     players_are_different(gamestate1.players, gamestate2.players)
 
 
-@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 6)])
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
 def test_new_gamestate_should_give_cards_to_all_players(number_players):
     player_names = get_player_names(number_players)
     gamestate = GameState(player_names, Deck.generate())
@@ -82,7 +82,7 @@ def test_new_gamestate_should_give_cards_to_all_players(number_players):
     assert len(gamestate.deck) == 50 - (expected_hand_size * number_players)
 
 
-@pytest.mark.parametrize("number_suits", [number_suits for number_suits in range(3, 6)])
+@pytest.mark.parametrize("number_suits", [number_suits for number_suits in range(3, 7)])
 def test_new_gamestate_should_have_empty_play_area(number_suits):
     suits = Variant.get_suits(number_suits)
     deck = Deck.generate(suits)

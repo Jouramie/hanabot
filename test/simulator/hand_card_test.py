@@ -322,3 +322,74 @@ def test_hand_card_negative_clued_twice_should_not_be_clued(card: Card):
     hand_card.receive_clue(clue1)
     hand_card.receive_clue(clue2)
     assert not hand_card.is_clued
+
+
+@pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
+def test_hand_card_clued_should_return_true(card: Card):
+    suits = get_suits(5)
+    hand_card = HandCard(card, suits)
+    clue = ColorClue(card.suit, "player1", "player0", 1)
+    assert hand_card.receive_clue(clue)
+
+
+@pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
+def test_hand_card_clued_twice_should_return_true_both_times(card: Card):
+    suits = get_suits(5)
+    hand_card = HandCard(card, suits)
+    clue1 = ColorClue(card.suit, "player1", "player0", 1)
+    clue2 = RankClue(card.rank, "player1", "player0", 1)
+    assert hand_card.receive_clue(clue1)
+    assert hand_card.receive_clue(clue2)
+
+
+@pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
+def test_hand_card_negative_clued_should_return_false(card: Card):
+    suits = get_suits(5)
+    clue_suit = suits[0]
+    if clue_suit == card.suit:
+        clue_suit = suits[1]
+    hand_card = HandCard(card, suits)
+    clue = ColorClue(clue_suit, "player1", "player0", 1)
+    assert not hand_card.receive_clue(clue)
+
+
+@pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
+def test_hand_card_negative_clued_twice_should_return_false_both_times(card: Card):
+    suits = get_suits(5)
+    clue_suit = suits[0]
+    if clue_suit == card.suit:
+        clue_suit = suits[1]
+
+    ranks = get_ranks()
+    clue_rank = ranks[0]
+    if clue_rank == card.rank:
+        clue_rank = ranks[1]
+
+    hand_card = HandCard(card, suits)
+    clue1 = ColorClue(clue_suit, "player1", "player0", 1)
+    clue2 = RankClue(clue_rank, "player1", "player0", 1)
+    assert not hand_card.receive_clue(clue1)
+    assert not hand_card.receive_clue(clue2)
+
+
+@pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))
+def test_hand_card_clued_four_times_should_return_correct_boolean_every_time(card: Card):
+    suits = get_suits(5)
+    clue_suit = suits[0]
+    if clue_suit == card.suit:
+        clue_suit = suits[1]
+
+    ranks = get_ranks()
+    clue_rank = ranks[0]
+    if clue_rank == card.rank:
+        clue_rank = ranks[1]
+
+    hand_card = HandCard(card, suits)
+    clue1 = ColorClue(clue_suit, "player1", "player0", 1)
+    clue2 = ColorClue(card.suit, "player1", "player0", 1)
+    clue3 = RankClue(card.rank, "player1", "player0", 1)
+    clue4 = RankClue(clue_rank, "player1", "player0", 1)
+    assert not hand_card.receive_clue(clue1)
+    assert hand_card.receive_clue(clue2)
+    assert hand_card.receive_clue(clue3)
+    assert not hand_card.receive_clue(clue4)

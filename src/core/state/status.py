@@ -15,6 +15,8 @@ class Status:
         self.clues = self.clues + 1
 
     def consume_clue(self):
+        if self.clues < 1:
+            raise ValueError("You cannot give a clue, the team has no clues!")
         self.clues = self.clues - 1
 
     def add_strike(self):

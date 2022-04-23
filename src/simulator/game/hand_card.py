@@ -17,10 +17,12 @@ class HandCard:
         self.received_clues = []
         self.possible_cards = list(all_possible_cards(suits_in_game))
 
-    def receive_clue(self, clue: Clue):
+    def receive_clue(self, clue: Clue) -> bool:
         self.possible_cards = [card for card in self.possible_cards if clue.touches_card(card) == clue.touches_card(self.real_card)]
         self.received_clues.append(clue)
-        self.is_clued |= clue.touches_card(self.real_card)
+        is_touched = clue.touches_card(self.real_card)
+        self.is_clued |= is_touched
+        return is_touched
 
     def get_all_possible_cards(self) -> List[Card]:
         return self.possible_cards

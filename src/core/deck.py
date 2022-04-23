@@ -38,6 +38,11 @@ class Deck:
         return Deck(cards, suits)
 
     @staticmethod
+    def empty(suits: Iterable[Suit] = Variant.NO_VARIANT) -> Deck:
+        cards = []
+        return Deck(cards, suits)
+
+    @staticmethod
     def starting_with(cards: Iterable[Card] | Card, suits: Iterable[Suit] = Variant.NO_VARIANT) -> Deck:
         if isinstance(cards, Card):
             cards = [cards]

@@ -74,6 +74,10 @@ class GameState:
 
     def play_turn_play(self, action: PlayAction):
         player = self.current_player
+
+        if action.cardSlot < 0 or action.cardSlot >= len(player.hand):
+            raise ValueError("You cannot play this slot!")
+
         card_to_play = player.hand.pop(action.cardSlot)
         stack_to_play_on = self.play_area.stacks[card_to_play.real_card.suit]
         if stack_to_play_on.can_play(card_to_play.real_card):
@@ -86,6 +90,14 @@ class GameState:
         action.playedCard = card_to_play
 
     def play_turn_color_clue(self, action: ColorClueAction):
+        suit_is_in_game = False
+        for suit in self.deck.suits:
+            if suit == action.color:
+                suit_is_in_game = True
+
+        if not suit_is_in_game:
+            raise ValueError("You cannot clue a suit that is not in the game!")
+
         clue = ColorClue(action.color, action.target_player.name, self.current_player.name, self.status.turn + 1)
         self.play_turn_clue(clue, action.target_player)
 
@@ -94,15 +106,32 @@ class GameState:
         self.play_turn_clue(clue, action.target_player)
 
     def play_turn_clue(self, clue: Clue, target_player: Player):
+
+        if target_player == self.current_player:
+            raise ValueError("You cannot clue yourself!")
+
+        if self.players.count(target_player) < 1:
+            raise ValueError("You cannot clue someone outside of the game!")
+
         self.status.consume_clue()
+
+        touches_any = False
+
         for hand_card in target_player.hand:
-            hand_card.receive_clue(clue)
+            touches_any |= hand_card.receive_clue(clue)
+
+        if not touches_any:
+            raise ValueError("Empty clues are not allowed in this game!")
+
         self.history.add_clue(clue)
 
     def play_turn_discard(self, action: DiscardAction):
         player = self.current_player
-        if self.status.clues >= 8 or action.cardSlot < 0 or action.cardSlot >= len(player.hand):
-            raise ValueError("Can't perform discard action")
+
+        if self.status.clues >= 8:
+            raise ValueError("You cannot discard at 8 clues!")
+        if action.cardSlot < 0 or action.cardSlot >= len(player.hand):
+            raise ValueError("You cannot discard this slot!")
 
         card_to_discard = player.hand.pop(action.cardSlot)
         self.discard_pile.discard(card_to_discard.real_card)

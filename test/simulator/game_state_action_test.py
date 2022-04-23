@@ -325,7 +325,7 @@ def test_empty_deck_discard_should_not_draw_card():
 def test_empty_deck_color_clue_should_not_draw_card():
     gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
-    gamestate.deck = []
+    gamestate.deck = Deck.empty()
 
     slot0_before = player.hand[0]
     slot1_before = player.hand[1]
