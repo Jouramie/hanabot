@@ -3,7 +3,7 @@ from typing import List
 import pytest
 
 from core import Deck, Variant
-from simulator.game.gamerules import get_hand_size
+from core.gamerules import get_hand_size
 from simulator.game.gamestate import GameState
 from simulator.game.player import Player
 from test.simulator.game_setup import get_player_names
@@ -11,37 +11,37 @@ from test.simulator.game_setup import get_player_names
 
 def test_new_gamestate_should_have_8_clues():
     gamestate = GameState(get_player_names(5), Deck.generate())
-    assert gamestate.current_clues == 8
+    assert gamestate.status.current_clues == 8
 
 
 def test_new_gamestate_should_be_on_turn_zero():
     gamestate = GameState(get_player_names(5), Deck.generate())
-    assert gamestate.current_turn == 0
+    assert gamestate.status.current_turn == 0
 
 
 def test_new_gamestate_should_have_zero_strikes():
     gamestate = GameState(get_player_names(5), Deck.generate())
-    assert gamestate.current_strikes == 0
+    assert gamestate.status.current_strikes == 0
 
 
 def test_new_gamestate_should_not_be_over():
     gamestate = GameState(get_player_names(5), Deck.generate())
-    assert not gamestate.is_over
+    assert not gamestate.status.is_over
 
 
 def test_new_gamestate_should_have_empty_action_history():
     gamestate = GameState(get_player_names(5), Deck.generate())
-    assert len(gamestate.action_history) == 0
+    assert len(gamestate.history.actions) == 0
 
 
 def test_new_gamestate_should_have_empty_clue_history():
     gamestate = GameState(get_player_names(5), Deck.generate())
-    assert len(gamestate.clue_history) == 0
+    assert len(gamestate.history.clues) == 0
 
 
 def test_new_gamestate_should_have_empty_discard_pile():
     gamestate = GameState(get_player_names(5), Deck.generate())
-    assert len(gamestate.discard_pile) == 0
+    assert len(gamestate.discard_pile.cards) == 0
 
 
 def test_new_gamestate_should_be_first_players_turn():
@@ -55,7 +55,7 @@ def test_new_gamestate_should_have_many_turns_remaining(number_players):
     number_suits = len(deck.variant)
     player_names = get_player_names(number_players)
     gamestate = GameState(player_names, deck)
-    assert gamestate.turns_remaining == get_max_turns(number_players, number_suits)
+    assert gamestate.turns_remaining == number_players + gamestate.deck.number_cards()
 
 
 @pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 6)])
@@ -83,12 +83,13 @@ def test_new_gamestate_should_give_cards_to_all_players(number_players):
 
 
 @pytest.mark.parametrize("number_suits", [number_suits for number_suits in range(3, 6)])
-def test_new_gamestate_should_have_empty_stacks(number_suits):
-    deck = Deck.generate(Variant.get_suits(number_suits))
+def test_new_gamestate_should_have_empty_play_area(number_suits):
+    suits = Variant.get_suits(number_suits)
+    deck = Deck.generate(suits)
     gamestate = GameState(get_player_names(5), deck)
-    assert len(gamestate.stacks) == len(deck.variant)
-    for stackSuit, stack in gamestate.stacks.items():
-        assert stack.last_played is None
+    assert len(gamestate.play_area.stacks) == len(deck.variant)
+    for suit in suits:
+        assert gamestate.play_area.stacks[suit].last_played is None
 
 
 def players_are_different(players1: List[Player], players2: List[Player]):

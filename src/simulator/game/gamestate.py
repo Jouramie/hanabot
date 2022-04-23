@@ -3,42 +3,34 @@ import random
 from typing import List, Dict
 
 from core import Deck, Card, Suit
+from core.state.discard_pile import DiscardPile
+from core.state.play_area import PlayArea
+from core.state.status import Status
+from core.gamerules import get_hand_size
 from simulator.game.action import Action, PlayAction, ColorClueAction, RankClueAction, DiscardAction
 from simulator.game.clue import ColorClue, RankClue, Clue
-from simulator.game.gamerules import get_hand_size, get_max_turns
 from simulator.game.hand_card import HandCard
+from simulator.game.history import History
 from simulator.game.player import Player
-from simulator.game.stack import Stack
+from core.state.stack import Stack
 
 logger = logging.getLogger(__name__)
 
 
 class GameState:
     players: List[Player]
-    action_history: List[Action]
-    clue_history: List[Clue]
-    current_turn: int
-    current_clues: int
-    current_strikes: int
     deck: Deck
-    discard_pile: List[Card]
-    stacks: Dict[Suit, Stack]
-    is_over: bool
-    turns_remaining: int
+    discard_pile: DiscardPile
+    play_area: PlayArea
+    history: History
+    status: Status
 
     def __init__(self, players: List[str], deck: Deck):
-        self.current_turn = 0
-        self.current_clues = 8
-        self.current_strikes = 0
-        self.action_history = []
-        self.clue_history = []
-        self.is_over = False
-
         self.deck = deck
-        self.discard_pile = []
-        self.stacks = {}
-        for suit in deck.variant:
-            self.stacks[suit] = Stack(suit)
+        self.discard_pile = DiscardPile()
+        self.status = Status()
+        self.history = History()
+        self.play_area = PlayArea(deck.suits)
 
         self.players = []
         for playerName in players:
@@ -50,7 +42,7 @@ class GameState:
             player_index = i % number_of_players
             self.player_draw_card(self.players[player_index])
 
-        self.turns_remaining = get_max_turns(number_of_players, len(self.deck.variant))
+        self.turns_remaining = number_of_players + self.deck.number_cards()
 
     @property
     def player_turn(self) -> int:
@@ -135,3 +127,15 @@ class GameState:
         for player in self.players:
             if player.name == name:
                 return player
+
+    def get_max_turns(self, number_players: int, number_suits: int) -> int:
+        starting_clues = 8
+        clues_per_discard = 1
+        max_turns_per_deck_card = 1 + clues_per_discard
+        total_cards = number_suits * 10
+        hand_size = get_hand_size(number_players)
+        cards_in_hands = hand_size * number_players
+        deck_size = total_cards - cards_in_hands
+        max_turns_from_emptying_deck = deck_size * max_turns_per_deck_card
+        max_turns = max_turns_from_emptying_deck + number_players + starting_clues
+        return max_turns

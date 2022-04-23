@@ -55,6 +55,9 @@ class Deck:
     def is_empty(self) -> bool:
         return not self._cards
 
+    def number_cards(self) -> int:
+        return len(self._cards)
+
     def __iter__(self) -> Iterator[Card]:
         return iter(self._cards[::-1])
 

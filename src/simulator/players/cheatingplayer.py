@@ -5,7 +5,7 @@ from typing import List, Dict
 from core import Suit, Rank, Card
 from simulator.game.action import Action, PlayAction, RankClueAction, DiscardAction
 from simulator.game.gamestate import GameState
-from simulator.game.stack import Stack
+from core.state.stack import Stack
 from simulator.players.simulatorplayer import SimulatorPlayer
 
 logger = logging.getLogger(__name__)

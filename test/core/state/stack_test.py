@@ -1,5 +1,5 @@
 from core.card import Card, Rank, Suit
-from simulator.game.stack import Stack
+from core.state.stack import Stack
 
 
 def test_can_play_one_on_zero():
