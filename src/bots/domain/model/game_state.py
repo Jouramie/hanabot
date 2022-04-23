@@ -44,6 +44,12 @@ class RelativeGameState:
     def other_player_hands(self) -> tuple[PlayerHand]:
         return self.player_hands[1:]
 
+    def can_give_clue(self):
+        return self.clue_count > 0
+
+    def can_discard(self):
+        return self.clue_count < 8
+
 
 @dataclass(frozen=True)
 class GameHistory:
