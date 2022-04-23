@@ -28,9 +28,14 @@ def test_new_gamestate_should_not_be_over():
     assert not gamestate.is_over
 
 
-def test_new_gamestate_should_have_empty_history():
+def test_new_gamestate_should_have_empty_action_history():
     gamestate = GameState(get_player_names(5), get_suits(5))
     assert len(gamestate.action_history) == 0
+
+
+def test_new_gamestate_should_have_empty_clue_history():
+    gamestate = GameState(get_player_names(5), get_suits(5))
+    assert len(gamestate.clue_history) == 0
 
 
 def test_new_gamestate_should_have_empty_discard_pile():

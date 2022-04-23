@@ -106,6 +106,78 @@ def test_give_two_clues_should_add_clues_on_all_hand_cards():
         assert second_received_clue.rank == second_card.rank
 
 
+def test_give_color_clue_should_add_clue_to_history():
+    gamestate = GameState(get_player_names(5), get_suits(5))
+    first_player = gamestate.players[0]
+    second_player = gamestate.players[1]
+    second_card = second_player.hand[1].real_card
+
+    assert len(gamestate.clue_history) == 0
+
+    action = ColorClueAction(second_card.suit, second_player)
+    gamestate.play_turn(action)
+
+    assert len(gamestate.clue_history) == 1
+    history_clue = gamestate.clue_history[0]
+    assert history_clue.turn == 1
+    assert history_clue.giver_name == first_player.name
+    assert history_clue.receiver_name == second_player.name
+    assert isinstance(history_clue, ColorClue)
+    assert history_clue.suit == second_card.suit
+
+
+def test_give_rank_clue_should_add_clue_to_history():
+    gamestate = GameState(get_player_names(5), get_suits(5))
+    first_player = gamestate.players[0]
+    second_player = gamestate.players[1]
+    second_card = second_player.hand[1].real_card
+
+    assert len(gamestate.clue_history) == 0
+
+    action = RankClueAction(second_card.rank, second_player)
+    gamestate.play_turn(action)
+
+    assert len(gamestate.clue_history) == 1
+    history_clue = gamestate.clue_history[0]
+    assert history_clue.turn == 1
+    assert history_clue.giver_name == first_player.name
+    assert history_clue.receiver_name == second_player.name
+    assert isinstance(history_clue, RankClue)
+    assert history_clue.rank == second_card.rank
+
+
+def test_give_two_clues_should_add_both_clues_to_history():
+    gamestate = GameState(get_player_names(5), get_suits(5))
+    first_player = gamestate.players[0]
+    second_player = gamestate.players[1]
+    third_player = gamestate.players[2]
+    second_card = third_player.hand[1].real_card
+
+    assert len(gamestate.clue_history) == 0
+
+    action1 = ColorClueAction(second_card.suit, third_player)
+    action2 = RankClueAction(second_card.rank, third_player)
+    gamestate.play_turn(action1)
+    assert len(gamestate.clue_history) == 1
+    gamestate.play_turn(action2)
+
+    assert len(gamestate.clue_history) == 2
+
+    history_clue1 = gamestate.clue_history[0]
+    assert history_clue1.turn == 1
+    assert history_clue1.giver_name == first_player.name
+    assert history_clue1.receiver_name == third_player.name
+    assert isinstance(history_clue1, ColorClue)
+    assert history_clue1.suit == second_card.suit
+
+    history_clue2 = gamestate.clue_history[1]
+    assert history_clue2.turn == 2
+    assert history_clue2.giver_name == second_player.name
+    assert history_clue2.receiver_name == third_player.name
+    assert isinstance(history_clue2, RankClue)
+    assert history_clue2.rank == second_card.rank
+
+
 def test_play_should_draw_card():
     gamestate = GameState(get_player_names(5), get_suits(5))
     player = gamestate.players[gamestate.player_turn]
