@@ -11,7 +11,7 @@ class SingleCardPlayClueConvention(Convention):
     def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerId, int, PlayerCard], current_game_state: RelativeGameState) -> ClueDecision | None:
         owner, slot, player_card = owner_slot_cards
 
-        hand: PlayerHand = current_game_state.other_player_hands[owner]
+        hand: PlayerHand = current_game_state.player_hands[owner]
 
         rank = player_card.real_card.rank
         real_cards_with_rank = list(hand.get_real(rank))

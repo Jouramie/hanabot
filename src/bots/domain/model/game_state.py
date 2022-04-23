@@ -11,8 +11,7 @@ from core import Card, Rank
 class RelativeGameState:
     stacks: Stacks
     discard: tuple[Card, ...]
-    my_hand: PlayerHand
-    other_player_hands: tuple[PlayerHand, ...]
+    player_hands: tuple[PlayerHand, ...]
     last_performed_action: Action | None
     turn_number: int
     clue_count: int
@@ -32,10 +31,18 @@ class RelativeGameState:
         return card in self.discard
 
     def find_playable_cards(self) -> Iterable[tuple[RelativePlayerId, int, PlayerCard]]:
-        for relative_player_id, hand in enumerate(self.other_player_hands):
+        for relative_player_id, hand in enumerate(self.other_player_hands, 1):
             for slot, card in enumerate(hand.cards):
                 if self.stacks.is_playable(card.real_card):
                     yield relative_player_id, slot, card
+
+    @property
+    def my_hand(self) -> PlayerHand:
+        return self.player_hands[0]
+
+    @property
+    def other_player_hands(self) -> Iterable[PlayerHand]:
+        return self.player_hands[1:]
 
 
 @dataclass(frozen=True)

@@ -42,4 +42,4 @@ def test_given_first_turn_when_play_turn_then_clue_one():
     controller.play_turn()
     controller.play_turn()
 
-    assert controller.current_game.stacks[Suit.RED].last_played == Rank.ONE
+    assert controller.current_game.play_area.stacks[Suit.RED].last_played == Rank.ONE

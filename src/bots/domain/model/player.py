@@ -18,6 +18,9 @@ class PlayerCard:
     def is_real(self, suit_or_rank: Suit | Rank) -> bool:
         return self.real_card is not None and self.real_card.matches(suit_or_rank)
 
+    def __repr__(self):
+        return f"{self.real_card if self.real_card is not None else self.probable_cards}"
+
 
 @dataclass(frozen=True)
 class PlayerHand(Iterable[PlayerCard], Sized):
@@ -37,6 +40,9 @@ class PlayerHand(Iterable[PlayerCard], Sized):
         for card in self:
             if card.is_real(suit_or_rank):
                 yield card
+
+    def __repr__(self):
+        return f"{self.owner_name} {self.cards})"
 
 
 def create_unknown_card() -> PlayerCard:
