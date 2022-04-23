@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Iterable, Sized
 
 from core import Card, Rank, Suit
-from core.game_setup import all_possible_cards
+from core.card import all_possible_cards
 
 RelativePlayerId = int
 
@@ -21,7 +21,6 @@ class PlayerCard:
 
 @dataclass(frozen=True)
 class PlayerHand(Iterable[PlayerCard], Sized):
-    owner: RelativePlayerId
     owner_name: str
     cards: tuple[PlayerCard, ...]
 
@@ -34,14 +33,10 @@ class PlayerHand(Iterable[PlayerCard], Sized):
     def __getitem__(self, item):
         return self.cards[item]
 
-    def get_real(self, suit_or_rank: Suit | Rank) -> Iterable[PlayerCard] and Sized:
+    def get_real(self, suit_or_rank: Suit | Rank) -> Iterable[PlayerCard]:
         for card in self:
             if card.is_real(suit_or_rank):
                 yield card
-
-
-def create_unknown_hand(player_name: str, size: int = 5) -> PlayerHand:
-    return PlayerHand(player_name, tuple(create_unknown_card() for i in range(size)))
 
 
 def create_unknown_card() -> PlayerCard:
@@ -50,3 +45,11 @@ def create_unknown_card() -> PlayerCard:
 
 def create_unknown_real_card(card: Card) -> PlayerCard:
     return PlayerCard(tuple(all_possible_cards()), False, 0, card)
+
+
+def create_unknown_hand(player_name: str, size: int = 5) -> PlayerHand:
+    return PlayerHand(player_name, tuple(create_unknown_card() for i in range(size)))
+
+
+def create_unknown_real_hand(player_name: str, cards: Iterable[Card]) -> PlayerHand:
+    return PlayerHand(player_name, tuple(create_unknown_real_card(card) for card in cards))

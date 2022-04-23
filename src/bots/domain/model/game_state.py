@@ -32,10 +32,10 @@ class RelativeGameState:
         return card in self.discard
 
     def find_playable_cards(self) -> Iterable[tuple[RelativePlayerId, int, PlayerCard]]:
-        for hand in self.other_player_hands:
-            for i, card in enumerate(hand.cards):
+        for relative_player_id, hand in enumerate(self.other_player_hands):
+            for slot, card in enumerate(hand.cards):
                 if self.stacks.is_playable(card.real_card):
-                    yield hand.owner_name, i, card
+                    yield relative_player_id, slot, card
 
 
 @dataclass(frozen=True)

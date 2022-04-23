@@ -1,7 +1,6 @@
 from typing import List
 
-from core.card import Card, Suit, Rank
-from core.game_setup import all_possible_cards
+from core.card import Card, Suit, Rank, all_possible_cards
 from simulator.game.clue import Clue
 
 
@@ -18,8 +17,7 @@ class HandCard:
         self.possible_cards = list(all_possible_cards(suits_in_game))
 
     def receive_clue(self, clue: Clue):
-        self.possible_cards = \
-            [card for card in self.possible_cards if clue.touches_card(card) == clue.touches_card(self.real_card)]
+        self.possible_cards = [card for card in self.possible_cards if clue.touches_card(card) == clue.touches_card(self.real_card)]
         self.received_clues.append(clue)
 
     def get_all_possible_cards(self) -> List[Card]:

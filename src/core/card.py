@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum, auto
+from typing import Iterable
 
 from frozendict import frozendict
 
@@ -139,3 +140,40 @@ class Card:
     @property
     def short_name(self) -> str:
         return f"{self.suit.short_name}{self.rank.short_name}"
+
+
+class Variant(Enum):
+    NO_VARIANT = auto()
+    SIX_SUITS = auto()
+    FOUR_SUITS = auto()
+    THREE_SUITS = auto()
+
+
+suits_per_variant: dict[Variant : tuple[Suit, ...]] = frozendict(
+    {
+        Variant.NO_VARIANT: (Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE),
+        Variant.SIX_SUITS: (Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE, Suit.TEAL),
+        Variant.FOUR_SUITS: (Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW),
+        Variant.THREE_SUITS: (Suit.BLUE, Suit.GREEN, Suit.RED),
+    }
+)
+
+
+def all_possible_cards(
+    suits: Iterable[Suit] = suits_per_variant[Variant.NO_VARIANT],
+    ranks: Iterable[Rank] = (Rank.ONE, Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE),
+) -> Iterable[Card]:
+    for suit in suits:
+        for rank in ranks:
+            yield Card(suit, rank)
+
+
+def get_suits(num: int) -> tuple[Suit, ...]:
+    if num == 3:
+        return suits_per_variant[Variant.THREE_SUITS]
+    if num == 4:
+        return suits_per_variant[Variant.FOUR_SUITS]
+    if num == 5:
+        return suits_per_variant[Variant.NO_VARIANT]
+    if num == 6:
+        return suits_per_variant[Variant.SIX_SUITS]
