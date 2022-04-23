@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Iterable
+from typing import Iterable, Iterator
 
 from frozendict import frozendict
 
@@ -141,39 +141,41 @@ class Card:
     def short_name(self) -> str:
         return f"{self.suit.short_name}{self.rank.short_name}"
 
+    def __eq__(self, other):
+        return self.suit == other.suit and self.rank == other.rank
+
 
 class Variant(Enum):
-    NO_VARIANT = auto()
-    SIX_SUITS = auto()
-    FOUR_SUITS = auto()
-    THREE_SUITS = auto()
+    NO_VARIANT = ((Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE),)
+    SIX_SUITS = ((Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE, Suit.TEAL),)
+    FOUR_SUITS = ((Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW),)
+    THREE_SUITS = ((Suit.BLUE, Suit.GREEN, Suit.RED),)
 
+    def __init__(self, suits: tuple[Suit, ...]):
+        self.suits = suits
 
-suits_per_variant: dict[Variant : tuple[Suit, ...]] = frozendict(
-    {
-        Variant.NO_VARIANT: (Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE),
-        Variant.SIX_SUITS: (Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE, Suit.TEAL),
-        Variant.FOUR_SUITS: (Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW),
-        Variant.THREE_SUITS: (Suit.BLUE, Suit.GREEN, Suit.RED),
-    }
-)
+    @staticmethod
+    def get_suits(num: int) -> Variant:
+        if num == 3:
+            return Variant.THREE_SUITS
+        if num == 4:
+            return Variant.FOUR_SUITS
+        if num == 5:
+            return Variant.NO_VARIANT
+        if num == 6:
+            return Variant.SIX_SUITS
+
+    def __iter__(self) -> Iterator[Suit]:
+        return iter(self.suits)
+
+    def __len__(self) -> int:
+        return len(self.suits)
 
 
 def all_possible_cards(
-    suits: Iterable[Suit] = suits_per_variant[Variant.NO_VARIANT],
+    suits: Iterable[Suit] = Variant.NO_VARIANT,
     ranks: Iterable[Rank] = (Rank.ONE, Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE),
 ) -> Iterable[Card]:
     for suit in suits:
         for rank in ranks:
             yield Card(suit, rank)
-
-
-def get_suits(num: int) -> tuple[Suit, ...]:
-    if num == 3:
-        return suits_per_variant[Variant.THREE_SUITS]
-    if num == 4:
-        return suits_per_variant[Variant.FOUR_SUITS]
-    if num == 5:
-        return suits_per_variant[Variant.NO_VARIANT]
-    if num == 6:
-        return suits_per_variant[Variant.SIX_SUITS]

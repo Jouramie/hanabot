@@ -1,9 +1,9 @@
 import logging
 import os
+import time
 from typing import List
 
-import time
-from core.card import Variant, suits_per_variant
+from core import Variant
 from simulator.controller import Controller
 from simulator.game.gameresult import GameResult
 from simulator.players.cheatingplayer import CheatingPlayer
@@ -21,7 +21,7 @@ def print_game_result(result: GameResult):
 
 def play_game_slow(players: List[SimulatorPlayer], variant: Variant):
     controller = Controller()
-    game = controller.new_game(players, suits_per_variant[variant])
+    game = controller.new_game(players, variant)
     while not controller.is_game_over():
         controller.draw_game()
         input("")
@@ -40,7 +40,7 @@ def play_games_fast(players: List[SimulatorPlayer], variant: Variant, number_gam
     games_remaining = number_games
     time_before = time.time()
     while games_remaining > 0:
-        game = controller.new_game(players, suits_per_variant[variant])
+        game = controller.new_game(players, variant)
         controller.play_until_game_is_over()
         result = controller.get_game_result()
         print_game_result(result)
@@ -58,7 +58,11 @@ def play_games_fast(players: List[SimulatorPlayer], variant: Variant, number_gam
     elapsed_milliseconds = elapsed_seconds * 1000
     average_time_milliseconds_rounded = round(elapsed_milliseconds / number_games, 1)
 
-    print("Finished simulating " + str(number_games) + " games in " + str(elapsed_seconds_rounded) + " seconds (Average:" + str(average_time_milliseconds_rounded) + "ms per game)")
+    print(
+        f"Finished simulating {str(number_games)} games in {str(elapsed_seconds_rounded)} seconds "
+        f"(Average:{str(average_time_milliseconds_rounded)} ms per game)"
+    )
+
     print("Survival Rate: " + str(total_survivals / number_games * 100) + "%")
     print("Victory Rate: " + str(total_victories / number_games * 100) + "%")
     print("Average Score: " + str(total_score / number_games))

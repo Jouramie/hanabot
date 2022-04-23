@@ -1,9 +1,9 @@
-from typing import List
+from typing import Iterable
 
-from core.card import Card, Suit
-from core.deck import generate
+from core.card import Suit
+from core.deck import Deck
 
 
 class DeckGenerator:
-    def GenerateDeck(self, suits: List[Suit]) -> List[Card]:
-        return generate(suits)
+    def generate_deck(self, suits: Iterable[Suit]) -> Deck:
+        return Deck.generate(suits)

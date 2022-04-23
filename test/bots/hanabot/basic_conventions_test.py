@@ -9,6 +9,23 @@ from test.bots.domain.model.game_state_test import RelativeGameStateBuilder
 
 
 suits = (Suit.BLUE, Suit.GREEN, Suit.YELLOW, Suit.RED, Suit.PURPLE)
+deck = (
+    Card(Suit.GREEN, Rank.FIVE),
+    Card(Suit.PURPLE, Rank.FIVE),
+    Card(Suit.PURPLE, Rank.THREE),
+    Card(Suit.PURPLE, Rank.ONE),
+    Card(Suit.PURPLE, Rank.FOUR),
+    Card(Suit.RED, Rank.TWO),
+    Card(Suit.YELLOW, Rank.THREE),
+    Card(Suit.PURPLE, Rank.THREE),
+    Card(Suit.YELLOW, Rank.FIVE),
+    Card(Suit.PURPLE, Rank.TWO),
+    Card(Suit.PURPLE, Rank.TWO),
+    Card(Suit.GREEN, Rank.FOUR),
+    Card(Suit.GREEN, Rank.ONE),
+    Card(Suit.RED, Rank.ONE),
+    Card(Suit.BLUE, Rank.TWO),
+)
 
 
 def test_given_first_turn_when_play_turn_then_clue_one():

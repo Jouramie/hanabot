@@ -2,10 +2,9 @@ import logging
 import random
 from typing import List, Dict
 
-from core.card import Card, Suit
+from core import Deck, Card, Suit
 from simulator.game.action import Action, PlayAction, ColorClueAction, RankClueAction, DiscardAction
 from simulator.game.clue import ColorClue, RankClue, Clue
-from simulator.game.deckgenerator import DeckGenerator
 from simulator.game.gamerules import get_hand_size, get_max_turns
 from simulator.game.hand_card import HandCard
 from simulator.game.player import Player
@@ -21,27 +20,24 @@ class GameState:
     current_turn: int
     current_clues: int
     current_strikes: int
-    deck: List[Card]
+    deck: Deck
     discard_pile: List[Card]
     stacks: Dict[Suit, Stack]
     is_over: bool
     turns_remaining: int
-    suits: List[Suit]
 
-    def __init__(self, players: List[str], suits: List[Suit]):
+    def __init__(self, players: List[str], deck: Deck):
         self.current_turn = 0
         self.current_clues = 8
         self.current_strikes = 0
         self.action_history = []
         self.clue_history = []
         self.is_over = False
-        self.suits = suits
 
-        generator = DeckGenerator()
-        self.deck = generator.GenerateDeck(self.suits)
+        self.deck = deck
         self.discard_pile = []
         self.stacks = {}
-        for suit in self.suits:
+        for suit in deck.variant:
             self.stacks[suit] = Stack(suit)
 
         self.players = []
@@ -54,7 +50,7 @@ class GameState:
             player_index = i % number_of_players
             self.player_draw_card(self.players[player_index])
 
-        self.turns_remaining = get_max_turns(number_of_players, len(self.suits))
+        self.turns_remaining = get_max_turns(number_of_players, len(self.deck.variant))
 
     @property
     def player_turn(self) -> int:
@@ -66,8 +62,8 @@ class GameState:
     def player_draw_card(self, player: Player):
         if len(self.deck) == 0:
             return
-        card = self.deck.pop()
-        hand_card = HandCard(card, self.suits)
+        card = self.deck.draw()
+        hand_card = HandCard(card, list(self.deck.variant.suits))
         player.hand.insert(0, hand_card)
         if len(self.deck) == 0:
             self.turns_remaining = len(self.players) + 1

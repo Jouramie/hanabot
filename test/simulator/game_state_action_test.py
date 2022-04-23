@@ -1,12 +1,12 @@
+from core import Deck
 from simulator.game.action import ColorClueAction, RankClueAction, PlayAction, DiscardAction
 from simulator.game.clue import ColorClue, RankClue
-from test.simulator.game_setup import get_player_names, get_suits
-
 from simulator.game.gamestate import GameState
+from test.simulator.game_setup import get_player_names
 
 
 def test_give_color_clue_should_use_clue():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     second_player = gamestate.players[1]
     second_card = second_player.hand[1].real_card
     action = ColorClueAction(second_card.suit, second_player)
@@ -18,7 +18,7 @@ def test_give_color_clue_should_use_clue():
 
 
 def test_give_rank_clue_should_use_clue():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     second_player = gamestate.players[1]
     second_card = second_player.hand[1].real_card
     action = RankClueAction(second_card.rank, second_player)
@@ -30,7 +30,7 @@ def test_give_rank_clue_should_use_clue():
 
 
 def test_give_color_clue_should_add_clue_on_all_hand_cards():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     first_player = gamestate.players[0]
     second_player = gamestate.players[1]
     second_card = second_player.hand[1].real_card
@@ -52,7 +52,7 @@ def test_give_color_clue_should_add_clue_on_all_hand_cards():
 
 
 def test_give_rank_clue_should_add_clue_on_all_hand_cards():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     first_player = gamestate.players[0]
     second_player = gamestate.players[1]
     second_card = second_player.hand[1].real_card
@@ -74,7 +74,7 @@ def test_give_rank_clue_should_add_clue_on_all_hand_cards():
 
 
 def test_give_two_clues_should_add_clues_on_all_hand_cards():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     first_player = gamestate.players[0]
     second_player = gamestate.players[1]
     third_player = gamestate.players[2]
@@ -107,7 +107,7 @@ def test_give_two_clues_should_add_clues_on_all_hand_cards():
 
 
 def test_give_color_clue_should_add_clue_to_history():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     first_player = gamestate.players[0]
     second_player = gamestate.players[1]
     second_card = second_player.hand[1].real_card
@@ -127,7 +127,7 @@ def test_give_color_clue_should_add_clue_to_history():
 
 
 def test_give_rank_clue_should_add_clue_to_history():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     first_player = gamestate.players[0]
     second_player = gamestate.players[1]
     second_card = second_player.hand[1].real_card
@@ -147,7 +147,7 @@ def test_give_rank_clue_should_add_clue_to_history():
 
 
 def test_give_two_clues_should_add_both_clues_to_history():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     first_player = gamestate.players[0]
     second_player = gamestate.players[1]
     third_player = gamestate.players[2]
@@ -179,7 +179,7 @@ def test_give_two_clues_should_add_both_clues_to_history():
 
 
 def test_play_should_draw_card():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
 
     slot0_before = player.hand[0]
@@ -203,7 +203,7 @@ def test_play_should_draw_card():
 
 
 def test_discard_should_draw_card():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
     gamestate.current_clues = 4
 
@@ -228,7 +228,7 @@ def test_discard_should_draw_card():
 
 
 def test_color_clue_should_not_draw_card():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
 
     slot0_before = player.hand[0]
@@ -253,7 +253,7 @@ def test_color_clue_should_not_draw_card():
 
 
 def test_rank_clue_should_not_draw_card():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
 
     slot0_before = player.hand[0]
@@ -278,7 +278,7 @@ def test_rank_clue_should_not_draw_card():
 
 
 def test_empty_deck_play_should_not_draw_card():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
     gamestate.deck = []
 
@@ -300,7 +300,7 @@ def test_empty_deck_play_should_not_draw_card():
 
 
 def test_empty_deck_discard_should_not_draw_card():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
     gamestate.current_clues = 4
     gamestate.deck = []
@@ -323,7 +323,7 @@ def test_empty_deck_discard_should_not_draw_card():
 
 
 def test_empty_deck_color_clue_should_not_draw_card():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
     gamestate.deck = []
 
@@ -349,7 +349,7 @@ def test_empty_deck_color_clue_should_not_draw_card():
 
 
 def test_empty_deck_rank_clue_should_not_draw_card():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
     gamestate.deck = []
 
@@ -375,10 +375,10 @@ def test_empty_deck_rank_clue_should_not_draw_card():
 
 
 def test_finish_deck_play_should_set_remaining_turns():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
     while len(gamestate.deck) > 1:
-        gamestate.deck.pop()
+        gamestate.deck.draw()
 
     action = PlayAction(2)
     gamestate.play_turn(action)
@@ -387,7 +387,7 @@ def test_finish_deck_play_should_set_remaining_turns():
 
 
 def test_discard_should_add_card_to_discard_pile():
-    gamestate = GameState(get_player_names(5), get_suits(5))
+    gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
     gamestate.current_clues = 4
 
