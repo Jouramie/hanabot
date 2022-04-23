@@ -10,7 +10,7 @@ RelativePlayerId = int
 @dataclass(frozen=True)
 class PlayerCard:
     # Without interpretation, only basic clue information
-    probable_cards: Iterable[Card]
+    possible_cards: Iterable[Card]
     is_clued: bool
     drawn_turn: int
     real_card: Card | None = None
@@ -19,7 +19,7 @@ class PlayerCard:
         return self.real_card is not None and self.real_card.matches(suit_or_rank)
 
     def __repr__(self):
-        return f"{self.real_card if self.real_card is not None else self.probable_cards}"
+        return f"{self.real_card if self.real_card is not None else self.possible_cards}"
 
 
 @dataclass(frozen=True)

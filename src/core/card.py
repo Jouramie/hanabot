@@ -7,49 +7,6 @@ from typing import Iterable, Iterator
 from frozendict import frozendict
 
 
-class Suit(Enum):
-    BLUE = auto()
-    GREEN = auto()
-    YELLOW = auto()
-    RED = auto()
-    PURPLE = auto()
-    TEAL = auto()
-
-    @staticmethod
-    def value_of(s: str) -> Suit:
-        suit = suit_abbreviation_mapping.get(s.lower())
-
-        if suit is None:
-            raise ValueError(f"Invalid suit: {s}")
-
-        return suit
-
-    def __repr__(self) -> str:
-        return self.short_name
-
-    @property
-    def short_name(self) -> str:
-        return self.name[0:1].lower()
-
-
-suit_abbreviation_mapping = frozendict(
-    {
-        "b": Suit.BLUE,
-        "bl": Suit.BLUE,
-        "g": Suit.GREEN,
-        "gr": Suit.GREEN,
-        "y": Suit.YELLOW,
-        "ye": Suit.YELLOW,
-        "r": Suit.RED,
-        "re": Suit.RED,
-        "p": Suit.PURPLE,
-        "pu": Suit.PURPLE,
-        "t": Suit.TEAL,
-        "te": Suit.TEAL,
-    }
-)
-
-
 class Rank(Enum):
     ONE = auto()
     TWO = auto()
@@ -59,15 +16,16 @@ class Rank(Enum):
 
     @staticmethod
     def value_of(value: int | str):
-        if str(value) == "1":
+        value = str(value)
+        if value == "1":
             return Rank.ONE
-        elif str(value) == "2":
+        elif value == "2":
             return Rank.TWO
-        elif str(value) == "3":
+        elif value == "3":
             return Rank.THREE
-        elif str(value) == "4":
+        elif value == "4":
             return Rank.FOUR
-        elif str(value) == "5":
+        elif value == "5":
             return Rank.FIVE
         else:
             raise ValueError(f"Invalid rank: {value}")
@@ -126,13 +84,70 @@ class Rank(Enum):
         return self.short_name
 
 
+default_distribution = frozendict(
+    {
+        Rank.ONE: 3,
+        Rank.TWO: 2,
+        Rank.THREE: 2,
+        Rank.FOUR: 2,
+        Rank.FIVE: 1,
+    }
+)
+
+
+class Suit(Enum):
+    BLUE = auto()
+    GREEN = auto()
+    YELLOW = auto()
+    RED = auto()
+    PURPLE = auto()
+    TEAL = auto()
+
+    def __init__(self, _):
+        self.distribution = default_distribution
+
+    @staticmethod
+    def value_of(s: str) -> Suit:
+        suit = suit_abbreviation_mapping.get(s.lower())
+
+        if suit is None:
+            raise ValueError(f"Invalid suit: {s}")
+
+        return suit
+
+    def __repr__(self) -> str:
+        return self.short_name
+
+    @property
+    def short_name(self) -> str:
+        return self.name[0:1].lower()
+
+    def amount_of(self, rank: Rank) -> int:
+        return self.distribution[rank]
+
+
+suit_abbreviation_mapping = frozendict(
+    {
+        "b": Suit.BLUE,
+        "bl": Suit.BLUE,
+        "g": Suit.GREEN,
+        "gr": Suit.GREEN,
+        "y": Suit.YELLOW,
+        "ye": Suit.YELLOW,
+        "r": Suit.RED,
+        "re": Suit.RED,
+        "p": Suit.PURPLE,
+        "pu": Suit.PURPLE,
+        "t": Suit.TEAL,
+        "te": Suit.TEAL,
+    }
+)
+
+
 @dataclass(frozen=True)
 class Card:
     suit: Suit
     rank: Rank
-
-    def __repr__(self) -> str:
-        return self.short_name
 
     def matches(self, suit_or_rank: Suit | Rank) -> bool:
         return self.suit is suit_or_rank or self.rank is suit_or_rank
@@ -141,8 +156,15 @@ class Card:
     def short_name(self) -> str:
         return f"{self.suit.short_name}{self.rank.short_name}"
 
+    @property
+    def number_of_copies(self) -> int:
+        return self.suit.amount_of(self.rank)
+
     def __eq__(self, other):
         return self.suit == other.suit and self.rank == other.rank
+
+    def __repr__(self) -> str:
+        return self.short_name
 
 
 class Variant(Enum):

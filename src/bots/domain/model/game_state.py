@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Iterable
+from typing import List, Iterable, Dict
 
 from bots.domain.model.action import Action
 from bots.domain.model.player import PlayerHand, PlayerCard, RelativePlayerId
@@ -49,6 +49,29 @@ class RelativeGameState:
 
     def can_discard(self):
         return self.clue_count < 8
+
+    def is_possibly_playable(self, card: PlayerCard):
+        filtered_possible_cards = set()
+        visible_cards = self.visible_cards()
+        for possible_card in card.possible_cards:
+            if visible_cards.get(possible_card, 0) < possible_card.number_of_copies:
+                filtered_possible_cards.add(possible_card)
+
+        return self.stacks.are_all_playable_or_already_played(filtered_possible_cards)
+
+    def visible_cards(self) -> Dict[Card, int]:
+        played_cards = {}
+        for card in self.stacks.played_cards:
+            played_cards[card] = played_cards.get(card, 0) + 1
+
+        for card in self.discard:
+            played_cards[card] = played_cards.get(card, 0) + 1
+
+        for hand in self.other_player_hands:
+            for card in hand.cards:
+                played_cards[card.real_card] = played_cards.get(card.real_card, 0) + 1
+
+        return played_cards
 
 
 @dataclass(frozen=True)

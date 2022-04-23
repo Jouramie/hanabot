@@ -4,7 +4,7 @@ from typing import Iterable
 
 from bots.domain.model.action import Action
 from bots.domain.model.game_state import RelativeGameState
-from bots.domain.model.player import PlayerHand, create_unknown_hand, create_unknown_real_card
+from bots.domain.model.player import PlayerHand, create_unknown_hand, create_unknown_real_card, PlayerCard
 from bots.domain.model.stack import Stacks, Stack
 from core import Card, Suit, Rank
 
@@ -99,6 +99,90 @@ def test_given_stacks_at_one_when_find_playable_cards_then_only_ones_are_not_pla
     playable_cards = list(game_state.find_playable_cards())
 
     assert not playable_cards
+
+
+def test_given_cards_in_hands_stacks_and_discard_when_visible_cards_then_all_visible_cards_are_found():
+    game_state = (
+        RelativeGameStateBuilder(SOME_SUITS)
+        .set_stacks(Stacks({A_SUIT: Stack(A_SUIT, Rank.THREE)}))
+        .set_other_player_hands(
+            (
+                PlayerHand(BOB, ((create_unknown_real_card(Card(A_SUIT, Rank.ONE))),)),
+                PlayerHand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.THREE)),)),
+            )
+        )
+        .set_discard((Card(A_SUIT, Rank.ONE), Card(ANOTHER_SUIT, Rank.FIVE), Card(ANOTHER_SUIT, Rank.ONE)))
+        .build()
+    )
+
+    visible_cards = game_state.visible_cards()
+
+    assert visible_cards == {
+        Card(A_SUIT, Rank.ONE): 3,
+        Card(A_SUIT, Rank.TWO): 1,
+        Card(A_SUIT, Rank.THREE): 2,
+        Card(ANOTHER_SUIT, Rank.ONE): 1,
+        Card(ANOTHER_SUIT, Rank.FIVE): 1,
+    }
+
+
+def test_given_all_possible_cards_are_visible_except_playable_when_is_possibly_playable_then_is_playable():
+    game_state = (
+        RelativeGameStateBuilder(SOME_SUITS)
+        .set_stacks(Stacks({A_SUIT: Stack(A_SUIT, Rank.TWO)}))
+        .set_other_player_hands(
+            (
+                PlayerHand(BOB, ((create_unknown_real_card(Card(A_SUIT, Rank.ONE))),)),
+                PlayerHand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.TWO)),)),
+            )
+        )
+        .set_discard((Card(A_SUIT, Rank.ONE), Card(ANOTHER_SUIT, Rank.FIVE), Card(ANOTHER_SUIT, Rank.ONE)))
+        .build()
+    )
+
+    is_possibly_playable = game_state.is_possibly_playable(
+        PlayerCard(
+            (
+                Card(A_SUIT, Rank.ONE),
+                Card(A_SUIT, Rank.TWO),
+                Card(A_SUIT, Rank.THREE),
+            ),
+            True,
+            0,
+        )
+    )
+
+    assert is_possibly_playable is True
+
+
+def test_given_not_all_possible_cards_are_visible_except_playable_when_is_possibly_playable_then_is_playable():
+    game_state = (
+        RelativeGameStateBuilder(SOME_SUITS)
+        .set_stacks(Stacks({A_SUIT: Stack(A_SUIT, Rank.TWO)}))
+        .set_other_player_hands(
+            (
+                PlayerHand(BOB, ((create_unknown_real_card(Card(A_SUIT, Rank.ONE))),)),
+                PlayerHand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.TWO)),)),
+            )
+        )
+        .set_discard((Card(A_SUIT, Rank.ONE), Card(ANOTHER_SUIT, Rank.FIVE), Card(ANOTHER_SUIT, Rank.ONE)))
+        .build()
+    )
+
+    is_possibly_playable = game_state.is_possibly_playable(
+        PlayerCard(
+            (
+                Card(A_SUIT, Rank.ONE),
+                Card(A_SUIT, Rank.TWO),
+                Card(A_SUIT, Rank.THREE),
+                Card(A_SUIT, Rank.FOUR),
+            ),
+            True,
+            0,
+        )
+    )
+
+    assert is_possibly_playable is False
 
 
 class RelativeGameStateBuilder:

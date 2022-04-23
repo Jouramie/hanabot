@@ -25,7 +25,7 @@ class Hanabot(DecisionMaking):
 
         # if possible card if playable or already played, play it (good touch principle)
         for slot, card in enumerate(current_game_state.my_hand):
-            if current_game_state.stacks.are_all_playable_or_already_played(card.probable_cards):
+            if current_game_state.is_possibly_playable(card):
                 return PlayDecision(slot)
 
         if current_game_state.can_give_clue():

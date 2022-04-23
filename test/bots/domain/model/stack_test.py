@@ -79,6 +79,22 @@ def test_given_stack_already_started_when_higher_card_is_already_played_then_is_
     assert is_already_played is False
 
 
+def test_given_empty_stack_when_played_cards_then_no_cards_played():
+    stack = Stack(A_SUIT)
+
+    played_cards = stack.played_cards
+
+    assert not played_cards
+
+
+def test_given_stack_at_five_when_played_cards_then_all_suit_played():
+    stack = Stack(A_SUIT, Rank.FIVE)
+
+    played_cards = stack.played_cards
+
+    assert played_cards == {Card(A_SUIT, Rank.FIVE), Card(A_SUIT, Rank.FOUR), Card(A_SUIT, Rank.THREE), Card(A_SUIT, Rank.TWO), Card(A_SUIT, Rank.ONE)}
+
+
 def test_given_empty_stacks_when_is_one_playable_then_is_playable():
     stacks = Stacks.create_empty_stacks({A_SUIT})
 
@@ -133,3 +149,27 @@ def test_given_nearly_filled_stack_when_are_all_playable_or_already_played_then_
     )
 
     assert are_all_playable_or_already_played is True
+
+
+def test_given_empty_stacks_when_played_cards_then_no_cards_played():
+    stacks = Stacks.create_empty_stacks({A_SUIT})
+
+    played_cards = stacks.played_cards
+
+    assert not played_cards
+
+
+def test_given_nearly_filled_stacks_when_played_cards_then_find_played_cards():
+    stack = Stacks({A_SUIT: Stack(A_SUIT, Rank.FOUR), ANOTHER_SUIT: Stack(ANOTHER_SUIT, Rank.THREE)})
+
+    played_cards = stack.played_cards
+
+    assert played_cards == {
+        Card(A_SUIT, Rank.FOUR),
+        Card(A_SUIT, Rank.THREE),
+        Card(A_SUIT, Rank.TWO),
+        Card(A_SUIT, Rank.ONE),
+        Card(ANOTHER_SUIT, Rank.THREE),
+        Card(ANOTHER_SUIT, Rank.TWO),
+        Card(ANOTHER_SUIT, Rank.ONE),
+    }
