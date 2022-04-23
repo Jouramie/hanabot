@@ -25,8 +25,9 @@ class Suit(Enum):
         return suit
 
     def __repr__(self) -> str:
-        return self.short_name()
+        return self.short_name
 
+    @property
     def short_name(self) -> str:
         return self.name[0:1].lower()
 
@@ -131,10 +132,14 @@ class Card:
     rank: Rank
 
     def __repr__(self) -> str:
-        return f"{repr(self.suit)}{repr(self.rank)}"
+        return self.short_name
 
     def matches(self, suit_or_rank: Suit | Rank) -> bool:
         return self.suit is suit_or_rank or self.rank is suit_or_rank
+
+    @property
+    def short_name(self) -> str:
+        return f"{self.suit.short_name}{self.rank.short_name}"
 
 
 class Variant(Enum):

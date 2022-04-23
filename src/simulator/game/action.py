@@ -1,5 +1,4 @@
-from core.card import Card
-from simulator.game.clue import Clue, ColorClue
+from core.card import Card, Suit, Rank
 from simulator.game.player import Player
 
 
@@ -11,20 +10,34 @@ class Action:
         pass
 
 
-class ClueAction(Action):
-    clue: Clue
+class ColorClueAction(Action):
+    color: Suit
+    target_player: Player
 
-    def __init__(self, clue: Clue):
-        self.clue = clue
+    def __init__(self, color: Suit, player: Player):
+        self.color = color
+        self.target_player = player
 
     def act_on_state(self, gamestate):
-        gamestate.play_turn_clue(self)
+        gamestate.play_turn_color_clue(self)
 
     def __str__(self):
-        if type(self.clue) is ColorClue:
-            return f"{self.clue.giver.name} clued {self.clue.receiver.name} {self.clue.suit.name}."
-        else:
-            return f"{self.clue.giver.name} clued {self.clue.receiver.name} {self.clue.rank.name}."
+        return f"{self.actor.name} clued {self.target_player.name} {self.color.name}."
+
+
+class RankClueAction(Action):
+    rank: Rank
+    target_player: Player
+
+    def __init__(self, rank: Rank, player: Player):
+        self.rank = rank
+        self.target_player = player
+
+    def act_on_state(self, gamestate):
+        gamestate.play_turn_rank_clue(self)
+
+    def __str__(self):
+        return f"{self.actor.name} clued {self.target_player.name} {self.rank.name}."
 
 
 class PlayAction(Action):

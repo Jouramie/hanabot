@@ -34,3 +34,6 @@ class HandCard:
             if clue.touches_card(self.real_card):
                 return True
         return False
+
+    def __repr__(self):
+        return self.real_card.short_name

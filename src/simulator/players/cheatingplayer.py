@@ -3,8 +3,7 @@ import random
 from typing import List, Dict
 
 from core import Suit, Rank, Card
-from simulator.game.action import Action, PlayAction, ClueAction, DiscardAction
-from simulator.game.clue import RankClue
+from simulator.game.action import Action, PlayAction, RankClueAction, DiscardAction
 from simulator.game.gamestate import GameState
 from simulator.game.stack import Stack
 from simulator.players.simulatorplayer import SimulatorPlayer
@@ -19,19 +18,19 @@ def card_is_trash(card: Card, stacks: Dict[Suit, Stack]):
     return stack.last_played.number_value >= card.rank.number_value
 
 
-def card_is_discarded(card: Card, discardPile: List[Card]):
-    for discardedCard in discardPile:
+def card_is_discarded(card: Card, discard_pile: List[Card]):
+    for discardedCard in discard_pile:
         if discardedCard.suit == card.suit and discardedCard.rank == card.rank:
             return True
     return False
 
 
-def get_card_value(card: Card, discardPile: List[Card], stacks: Dict[Suit, Stack]) -> int:
+def get_card_value(card: Card, discard_pile: List[Card], stacks: Dict[Suit, Stack]) -> int:
 
     if card_is_trash(card, stacks):
         return 0
 
-    if card_is_discarded(card, discardPile):
+    if card_is_discarded(card, discard_pile):
         if card.rank == Rank.ONE:
             return 9
         if card.rank == Rank.TWO:
@@ -63,27 +62,24 @@ class CheatingPlayer(SimulatorPlayer):
         myself = game.players[game.player_turn]
         my_hand = myself.hand
         for slot, card in enumerate(my_hand):
-            if game.stacks[card.suit].can_play(card):
+            if game.stacks[card.real_card.suit].can_play(card.real_card):
                 logger.debug(self.name + ": Play slot " + str(slot))
                 return PlayAction(slot)
 
         if game.current_clues > 0:
             next_player = game.players[(game.player_turn + 1) % len(game.players)]
-            next_player_first_card = next_player.hand[0]
+            next_player_first_card = next_player.hand[0].real_card
             next_player_first_card_number = next_player_first_card.rank
             logger.debug(self.name + ": Clue " + str(next_player_first_card_number) + " to " + next_player.name)
-            return ClueAction(RankClue(next_player_first_card_number, next_player))
+            return RankClueAction(next_player_first_card_number, next_player)
 
         lowest_value = 999
         lowest_value_slot = -1
         for slot, card in enumerate(my_hand):
-            value = get_card_value(card, game.discard_pile, game.stacks)
+            value = get_card_value(card.real_card, game.discard_pile, game.stacks)
             if value < lowest_value:
                 lowest_value_slot = slot
                 lowest_value = value
 
         logger.debug(self.name + ": Discard slot " + str(lowest_value_slot))
         return DiscardAction(lowest_value_slot)
-
-    def name(self) -> str:
-        return self.name
