@@ -69,3 +69,7 @@ def create_unknown_hand(player_name: str, size: int = 5) -> PlayerHand:
 
 def create_unknown_real_hand(player_name: str, cards: Iterable[Card]) -> PlayerHand:
     return PlayerHand(player_name, tuple(create_unknown_real_card(card) for card in cards))
+
+
+def create_known_real_card(card: Card) -> PlayerCard:
+    return PlayerCard(frozenset({card}), True, 0, real_card=card)
