@@ -1,4 +1,6 @@
-from core import Deck
+import pytest
+
+from core import Deck, Card, Suit, Rank
 from simulator.game.action import ColorClueAction, RankClueAction, PlayAction, DiscardAction
 from simulator.game.clue import ColorClue, RankClue
 from simulator.game.gamestate import GameState
@@ -353,7 +355,7 @@ def test_empty_deck_color_clue_should_not_draw_card():
 def test_empty_deck_rank_clue_should_not_draw_card():
     gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
-    gamestate.deck = []
+    gamestate.deck = Deck.empty()
 
     slot0_before = player.hand[0]
     slot1_before = player.hand[1]
@@ -376,18 +378,6 @@ def test_empty_deck_rank_clue_should_not_draw_card():
     assert slot3_before == slot3_after
 
 
-def test_finish_deck_play_should_set_remaining_turns():
-    gamestate = GameState(get_player_names(5), Deck.generate())
-    player = gamestate.players[gamestate.player_turn]
-    while len(gamestate.deck) > 1:
-        gamestate.deck.draw()
-
-    action = PlayAction(2)
-    gamestate.play_turn(action)
-
-    assert gamestate.turns_remaining == len(gamestate.players)
-
-
 def test_discard_should_add_card_to_discard_pile():
     gamestate = GameState(get_player_names(5), Deck.generate())
     player = gamestate.players[gamestate.player_turn]
@@ -404,3 +394,152 @@ def test_discard_should_add_card_to_discard_pile():
 
     assert gamestate.discard_pile.cards.count(slot1_before) == 0
     assert gamestate.discard_pile.cards.count(slot2_before) == 1
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_color_cluing_with_a_deck_should_not_reduce_number_of_turns_remaining(number_players):
+    gamestate = GameState(get_player_names(5), Deck.generate())
+
+    turns_remaining_before = gamestate.status.turns_remaining
+
+    second_player = gamestate.players[1]
+    second_card = second_player.hand[1].real_card
+    action = ColorClueAction(second_card.suit, second_player)
+    gamestate.play_turn(action)
+
+    turns_remaining_after = gamestate.status.turns_remaining
+
+    assert turns_remaining_before == turns_remaining_after
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_rank_cluing_with_a_deck_should_not_reduce_number_of_turns_remaining(number_players):
+    gamestate = GameState(get_player_names(5), Deck.generate())
+
+    turns_remaining_before = gamestate.status.turns_remaining
+
+    second_player = gamestate.players[1]
+    second_card = second_player.hand[1].real_card
+    action = RankClueAction(second_card.rank, second_player)
+    gamestate.play_turn(action)
+
+    turns_remaining_after = gamestate.status.turns_remaining
+
+    assert turns_remaining_before == turns_remaining_after
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_color_cluing_empty_deck_should_reduce_number_of_turns_remaining(number_players):
+    gamestate = GameState(get_player_names(5), Deck.generate())
+    gamestate.deck = Deck.empty()
+
+    turns_remaining_before = gamestate.status.turns_remaining
+
+    second_player = gamestate.players[1]
+    second_card = second_player.hand[1].real_card
+    action = ColorClueAction(second_card.suit, second_player)
+    gamestate.play_turn(action)
+
+    turns_remaining_after = gamestate.status.turns_remaining
+
+    assert turns_remaining_before == turns_remaining_after + 1
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_rank_cluing_empty_deck_should_reduce_number_of_turns_remaining(number_players):
+    gamestate = GameState(get_player_names(5), Deck.generate())
+    gamestate.deck = Deck.empty()
+
+    turns_remaining_before = gamestate.status.turns_remaining
+
+    second_player = gamestate.players[1]
+    second_card = second_player.hand[1].real_card
+    action = RankClueAction(second_card.rank, second_player)
+    gamestate.play_turn(action)
+
+    turns_remaining_after = gamestate.status.turns_remaining
+
+    assert turns_remaining_before == turns_remaining_after + 1
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_playing_successfully_with_a_deck_should_reduce_number_of_turns_remaining(number_players):
+    gamestate = GameState(get_player_names(5), Deck.starting_with(Card(Suit.RED, Rank.ONE)))
+
+    turns_remaining_before = gamestate.status.turns_remaining
+    action = PlayAction(0)
+    gamestate.play_turn(action)
+
+    turns_remaining_after = gamestate.status.turns_remaining
+
+    assert turns_remaining_before == turns_remaining_after + 1
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_playing_successfully_without_a_deck_should_reduce_number_of_turns_remaining(number_players):
+    gamestate = GameState(get_player_names(5), Deck.starting_with(Card(Suit.RED, Rank.ONE)))
+    gamestate.deck = Deck.empty()
+
+    turns_remaining_before = gamestate.status.turns_remaining
+    action = PlayAction(0)
+    gamestate.play_turn(action)
+
+    turns_remaining_after = gamestate.status.turns_remaining
+
+    assert turns_remaining_before == turns_remaining_after + 1
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_playing_failed_with_a_deck_should_reduce_number_of_turns_remaining(number_players):
+    gamestate = GameState(get_player_names(5), Deck.starting_with(Card(Suit.RED, Rank.FOUR)))
+
+    turns_remaining_before = gamestate.status.turns_remaining
+    action = PlayAction(0)
+    gamestate.play_turn(action)
+
+    turns_remaining_after = gamestate.status.turns_remaining
+
+    assert turns_remaining_before == turns_remaining_after + 1
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_playing_failed_without_a_deck_should_reduce_number_of_turns_remaining(number_players):
+    gamestate = GameState(get_player_names(5), Deck.starting_with(Card(Suit.RED, Rank.FOUR)))
+    gamestate.deck = Deck.empty()
+
+    turns_remaining_before = gamestate.status.turns_remaining
+    action = PlayAction(0)
+    gamestate.play_turn(action)
+
+    turns_remaining_after = gamestate.status.turns_remaining
+
+    assert turns_remaining_before == turns_remaining_after + 1
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_discard_with_a_deck_should_reduce_number_of_turns_remaining(number_players):
+    gamestate = GameState(get_player_names(5), Deck.generate())
+    gamestate.status.clues = 4
+
+    turns_remaining_before = gamestate.status.turns_remaining
+    action = DiscardAction(0)
+    gamestate.play_turn(action)
+
+    turns_remaining_after = gamestate.status.turns_remaining
+
+    assert turns_remaining_before == turns_remaining_after + 1
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_discard_without_a_deck_should_reduce_number_of_turns_remaining(number_players):
+    gamestate = GameState(get_player_names(5), Deck.generate())
+    gamestate.deck = Deck.empty()
+    gamestate.status.clues = 4
+
+    turns_remaining_before = gamestate.status.turns_remaining
+    action = DiscardAction(0)
+    gamestate.play_turn(action)
+
+    turns_remaining_after = gamestate.status.turns_remaining
+
+    assert turns_remaining_before == turns_remaining_after + 1
