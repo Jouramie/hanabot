@@ -1,8 +1,12 @@
+import logging
+
 from bots.domain.decision import RankClueDecision
-from bots.domain.model.clue import RankClue
+from bots.domain.model.clue import Clue, RankClue
 from bots.domain.model.game_state import RelativeGameState
 from bots.domain.model.player import PlayerCard, PlayerHand, RelativePlayerNumber, Slot
 from bots.hanabot.conventions.convention import Convention, Interpretation, InterpretationType
+
+logger = logging.getLogger(__name__)
 
 
 class SingleCardRankPlayClueConvention(Convention):
@@ -21,8 +25,8 @@ class SingleCardRankPlayClueConvention(Convention):
 
         return None
 
-    def find_interpretation(self, clue: RankClue, current_game_state: RelativeGameState) -> Interpretation | None:
-        if len(clue.touched_slots) != 1:
+    def find_interpretation(self, clue: Clue, current_game_state: RelativeGameState) -> Interpretation | None:
+        if not isinstance(clue, RankClue) or len(clue.touched_slots) != 1:
             return None
 
         (touched_slot,) = clue.touched_slots
@@ -31,6 +35,7 @@ class SingleCardRankPlayClueConvention(Convention):
         playable_cards = {card for card in touched_card.possible_cards if current_game_state.is_playable(card)}
 
         if playable_cards:
+            logger.debug(f"{clue} could be a {self.name}.")
             return Interpretation(InterpretationType.PLAY, self.name, {touched_slot: set(playable_cards)})
 
         return None

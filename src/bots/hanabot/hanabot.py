@@ -1,8 +1,11 @@
+import logging
+
 from bots.domain.decision import DecisionMaking, PlayDecision, DiscardDecision, Decision, SuitClueDecision
 from bots.domain.model.action import ClueAction
 from bots.domain.model.game_state import RelativeGameState, GameHistory
 from bots.hanabot.conventions.convention import Conventions
 
+logger = logging.getLogger(__name__)
 
 SAVE_CLUE_ENABLED = False
 
@@ -48,8 +51,11 @@ class Hanabot(DecisionMaking):
 
         for action in actions_since_last_turn:
             if isinstance(action, ClueAction) and action.recipient == current_game_state.my_hand.owner_name:
+                logger.debug(f"Trying to understand {action.clue}")
                 interpretation = self.conventions.find_interpretations(action.clue, current_game_state)
                 if interpretation:
                     current_game_state.my_hand.add_interpretation(interpretation[0])
+                else:
+                    logger.debug(f"Could not understand {action.clue}")
 
         return current_game_state

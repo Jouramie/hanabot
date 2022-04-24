@@ -36,7 +36,7 @@ class RelativeGameState:
     def find_not_clued_playable_cards(self) -> Iterable[tuple[RelativePlayerNumber, Slot, PlayerCard]]:
         for relative_player_id, hand in enumerate(self.other_player_hands, 1):
             for slot, card in enumerate(hand.cards):
-                if self.stacks.is_playable(card.real_card):
+                if self.stacks.is_playable(card.real_card) and card.real_card not in self.clued_cards:
                     yield relative_player_id, slot, card
 
     @property

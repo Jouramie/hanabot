@@ -1,4 +1,4 @@
-from bots.domain.model.clue import RankClue
+from bots.domain.model.clue import RankClue, SuitClue
 from bots.domain.model.player import PlayerCard
 from bots.hanabot.conventions import SingleCardRankPlayClueConvention
 from bots.hanabot.conventions.convention import Interpretation, InterpretationType
@@ -31,3 +31,12 @@ def test_given_only_multiple_four_playable_when_find_interpretation_then_only_po
     interpretation = convention.find_interpretation(clue, game_state)
 
     assert interpretation == Interpretation(InterpretationType.PLAY, convention.name, {0: expected_cards})
+
+
+def test_given_suit_clue_when_find_interpretation_then_do_not_find_interpretation(mocker):
+    clue = SuitClue(frozenset({0}), Suit.BLUE)
+
+    convention = SingleCardRankPlayClueConvention()
+    interpretation = convention.find_interpretation(clue, mocker.Mock())
+
+    assert interpretation is None
