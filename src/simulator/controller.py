@@ -64,11 +64,7 @@ class Controller:
             score = score + stack.stack_score()
         score = str(score)
         turns = str(self.current_game.status.turns_remaining)
-        print("Clues: " + clues +
-              " | Strikes: " + strikes +
-              " | Score: " + score +
-              " | Turns: " + turns +
-              " | Deck: " + deck)
+        print("Clues: " + clues + " | Strikes: " + strikes + " | Score: " + score + " | Turns: " + turns + " | Deck: " + deck)
 
     def draw_stacks(self):
         stack_string = "Stacks: | "
@@ -82,7 +78,10 @@ class Controller:
             self.draw_hand(player)
 
     def draw_hand(self, player: Player):
-        hand_string = str(player) + ": | "
+        hand_string = f"{str(player) + ':' :{' '}<{8}}" + " |"
         for card in player.hand:
-            hand_string += str(card) + " | "
+            if card.is_clued:
+                hand_string += f"[{str(card)}]|"
+            else:
+                hand_string += f" {str(card)} |"
         print(hand_string)
