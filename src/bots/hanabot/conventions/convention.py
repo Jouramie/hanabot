@@ -1,11 +1,26 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from enum import Enum, auto
 from typing import Iterable
 
 from bots.domain.decision import Decision, RankClueDecision, SuitClueDecision
+from bots.domain.model.clue import Clue
 from bots.domain.model.game_state import RelativeGameState
-from bots.domain.model.player import PlayerHand, PlayerCard, RelativePlayerId
-from core import Rank
+from bots.domain.model.player import PlayerHand, PlayerCard, RelativePlayerNumber, Slot
+from core import Rank, Card
+
+
+class InterpretationType(Enum):
+    SAVE = auto()
+    PLAY = auto()
+    FIX = auto()
+
+
+@dataclass(frozen=True)
+class Interpretation:
+    interpretation_type: InterpretationType
+    convention_name: str
+    possible_cards: dict[Slot, frozenset[Card]]
 
 
 @dataclass(frozen=True)
@@ -13,7 +28,11 @@ class Convention(ABC):
     name: str
 
     @abstractmethod
-    def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerId, int, PlayerCard], current_game_state: RelativeGameState) -> Decision | None:
+    def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerNumber, Slot, PlayerCard], current_game_state: RelativeGameState) -> Decision | None:
+        pass
+
+    @abstractmethod
+    def find_interpretation(self, clue: Clue, current_game_state: RelativeGameState) -> Interpretation | None:
         pass
 
 
@@ -38,7 +57,9 @@ class Conventions:
     def find_card_on_chop(self, player_hand: PlayerHand) -> PlayerCard:
         return player_hand[self.find_chop(player_hand)]
 
-    def find_play_clue(self, owner_slot_cards: Iterable[tuple[RelativePlayerId, int, PlayerCard]], current_game_state: RelativeGameState) -> Iterable[Decision]:
+    def find_play_clue(
+        self, owner_slot_cards: Iterable[tuple[RelativePlayerNumber, Slot, PlayerCard]], current_game_state: RelativeGameState
+    ) -> Iterable[Decision]:
         for owner_slot_card in owner_slot_cards:
             for convention in self.conventions:
                 decision = convention.find_play_clue(owner_slot_card, current_game_state)

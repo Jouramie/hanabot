@@ -5,6 +5,7 @@ class Clue:
     turn: int
     giver_name: str
     receiver_name: str
+    touched_slots: set[int] = set()
 
     def touches_card(self, card: Card):
         pass

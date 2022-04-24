@@ -57,9 +57,11 @@ def assemble_last_performed_action(history: SimulatorHistory) -> Action | None:
     if isinstance(action, SimulatorDiscardAction):
         return DiscardAction(action.discardedCard)
     if isinstance(action, SimulatorColorClueAction):
-        return ClueAction(action.target_player.name, SuitClue(set(), action.color))  # TODO
+        clue = next(clue for clue in history.clues if clue.turn == action.turn)
+        return ClueAction(action.target_player.name, SuitClue(action.turn, frozenset(clue.touched_slots), action.color))  # TODO
     if isinstance(action, SimulatorRankClueAction):
-        return ClueAction(action.target_player.name, RankClue(set(), action.rank))  # TODO
+        clue = next(clue for clue in history.clues if clue.turn == action.turn)
+        return ClueAction(action.target_player.name, RankClue(action.turn, frozenset(clue.touched_slots), action.rank))  # TODO
     return None
 
 

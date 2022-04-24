@@ -1,10 +1,11 @@
 from dataclasses import dataclass
-from typing import Iterable, Sized
+from typing import Iterable, Sized, Iterator, Type
 
 from core import Card, Rank, Suit
 from core.card import all_possible_cards
 
-RelativePlayerId = int
+RelativePlayerNumber = int
+Slot: Type[int] = int
 
 
 @dataclass(frozen=True)
@@ -27,7 +28,7 @@ class PlayerHand(Iterable[PlayerCard], Sized):
     owner_name: str
     cards: tuple[PlayerCard, ...]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[PlayerCard]:
         return iter(self.cards)
 
     def __len__(self) -> int:
