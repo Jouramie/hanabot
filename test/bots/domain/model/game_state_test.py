@@ -78,7 +78,7 @@ def test_given_empty_stacks_when_find_playable_cards_then_only_ones_are_playable
         .build()
     )
 
-    playable_cards = list(game_state.find_not_clued_playable_cards())
+    playable_cards = list(game_state.find_playable_cards())
 
     assert playable_cards == [(1, 0, expected_one_in_bob_hand), (3, 0, expected_one_in_donald_hand)]
 
@@ -96,7 +96,7 @@ def test_given_stacks_at_one_when_find_playable_cards_then_only_ones_are_not_pla
         .build()
     )
 
-    playable_cards = list(game_state.find_not_clued_playable_cards())
+    playable_cards = list(game_state.find_playable_cards())
 
     assert not playable_cards
 

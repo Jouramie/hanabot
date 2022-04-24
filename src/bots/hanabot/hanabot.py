@@ -31,18 +31,17 @@ class Hanabot(DecisionMaking):
 
         # if possible card if playable or already played, play it (good touch principle)
         for slot, card in enumerate(current_game_state.my_hand):
-            if current_game_state.is_possibly_playable(card):
+            if card.is_clued and current_game_state.is_possibly_playable(card):
                 return PlayDecision(slot)
 
         if current_game_state.can_give_clue():
-            owner_slot_cards = current_game_state.find_not_clued_playable_cards()
+            owner_slot_cards = current_game_state.find_playable_cards()
             for possible_decision in self.conventions.find_play_clue(owner_slot_cards, current_game_state):
                 return possible_decision
 
         if current_game_state.can_discard():
             return DiscardDecision(self.conventions.find_chop(current_game_state.my_hand))
 
-        # Waste clue
         return SuitClueDecision(next_player_hand[0].real_card.suit, 1)
 
     def interpret_clues(self, current_game_state: RelativeGameState, history: GameHistory) -> RelativeGameState:
