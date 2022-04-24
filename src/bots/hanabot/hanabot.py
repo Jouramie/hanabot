@@ -1,4 +1,5 @@
 from bots.domain.decision import DecisionMaking, PlayDecision, DiscardDecision, Decision, SuitClueDecision
+from bots.domain.model.action import ClueAction
 from bots.domain.model.game_state import RelativeGameState, GameHistory
 from bots.hanabot.conventions.convention import Conventions
 
@@ -17,6 +18,8 @@ class Hanabot(DecisionMaking):
         perform action
 
         """
+        current_game_state = self.interpret_clues(current_game_state, history)
+
         next_player_hand = current_game_state.other_player_hands[0]
         next_player_chop = self.conventions.find_card_on_chop(next_player_hand)
 
@@ -38,3 +41,15 @@ class Hanabot(DecisionMaking):
 
         # Waste clue
         return SuitClueDecision(next_player_hand[0].real_card.suit, 1)
+
+    def interpret_clues(self, current_game_state: RelativeGameState, history: GameHistory) -> RelativeGameState:
+        # TODO this should go alot deeper than 4 turns
+        actions_since_last_turn = history.action_history[current_game_state.turn_number - len(current_game_state.player_hands) : current_game_state.turn_number]
+
+        for action in actions_since_last_turn:
+            if isinstance(action, ClueAction) and action.recipient == current_game_state.my_hand.owner_name:
+                interpretation = self.conventions.find_interpretations(action.clue, current_game_state)
+                if interpretation:
+                    current_game_state.my_hand.add_interpretation(interpretation[0])
+
+        return current_game_state

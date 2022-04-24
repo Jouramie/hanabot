@@ -56,6 +56,15 @@ class Deck:
         shuffle(other_cards)
         return Deck(cards + other_cards, suits)
 
+    @staticmethod
+    def from_starting_hands(starting_hands: list[list[Card]], suits: Iterable[Suit] = Variant.NO_VARIANT) -> Deck:
+        deck_start = []
+        for slot in reversed(range(0, len(starting_hands[0]))):
+            for starting_hand in starting_hands:
+                deck_start.append(starting_hand[slot])
+
+        return Deck.starting_with(deck_start, suits)
+
     def draw(self) -> Card:
         return self._cards.pop()
 

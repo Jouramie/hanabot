@@ -198,9 +198,11 @@ class Variant(Enum):
 
 
 def all_possible_cards(
-    suits: Iterable[Suit] = Variant.NO_VARIANT,
-    ranks: Iterable[Rank] = (Rank.ONE, Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE),
-) -> Iterable[Card]:
-    for suit in suits:
-        for rank in ranks:
-            yield Card(suit, rank)
+    suits: Iterable[Suit] | Suit = Variant.NO_VARIANT,
+    ranks: Iterable[Rank] | Rank = (Rank.ONE, Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE),
+) -> set[Card]:
+    if isinstance(suits, Suit):
+        suits = (suits,)
+    if isinstance(ranks, Rank):
+        ranks = (ranks,)
+    return {Card(suit, rank) for suit in suits for rank in ranks}

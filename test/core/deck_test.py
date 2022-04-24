@@ -66,6 +66,28 @@ def test_given_two_random_deck_then_are_not_equal():
     assert deck1 != deck2
 
 
+def test_when_generate_deck_with_starting_hands_then_cards_are_drawn_starting_from_oldest():
+    expected_first = Card(Suit.GREEN, Rank.ONE)
+    expected_second = Card(Suit.BLUE, Rank.FOUR)
+    expected_third = Card(Suit.PURPLE, Rank.TWO)
+    expected_fourth = Card(Suit.YELLOW, Rank.ONE)
+    expected_fifth = Card(Suit.PURPLE, Rank.TWO)
+    expected_sixth = Card(Suit.RED, Rank.FIVE)
+    deck = Deck.from_starting_hands(
+        [
+            [expected_fifth, expected_third, expected_first],
+            [expected_sixth, expected_fourth, expected_second],
+        ]
+    )
+
+    assert expected_first == deck.draw()
+    assert expected_second == deck.draw()
+    assert expected_third == deck.draw()
+    assert expected_fourth == deck.draw()
+    assert expected_fifth == deck.draw()
+    assert expected_sixth == deck.draw()
+
+
 def test_3suits_should_contain_correct_number_of_cards():
     generate_deck_and_assert_number_of_cards_per_suit(Variant.THREE_SUITS)
 

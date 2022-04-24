@@ -56,7 +56,7 @@ class RelativeGameState:
     def is_possibly_playable(self, card: PlayerCard):
         filtered_possible_cards = set()
         visible_cards = self.visible_cards
-        for possible_card in card.possible_cards:
+        for possible_card in card.interpreted_cards:
             if visible_cards.get(possible_card, 0) < possible_card.number_of_copies:
                 filtered_possible_cards.add(possible_card)
 
@@ -77,6 +77,9 @@ class RelativeGameState:
 
         return visible_cards
 
+    def is_playable(self, card: Card) -> bool:
+        return self.stacks.is_playable(card)
+
 
 @dataclass(frozen=True)
 class GameHistory:
@@ -84,3 +87,7 @@ class GameHistory:
 
     def add_game_state(self, game_state: RelativeGameState) -> None:
         self.game_states.append(game_state)
+
+    @property
+    def action_history(self) -> list[Action]:
+        return [game_state.last_performed_action for game_state in self.game_states]

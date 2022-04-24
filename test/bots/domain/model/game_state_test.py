@@ -142,11 +142,11 @@ def test_given_all_possible_cards_are_visible_except_playable_when_is_possibly_p
 
     is_possibly_playable = game_state.is_possibly_playable(
         PlayerCard(
-            (
+            {
                 Card(A_SUIT, Rank.ONE),
                 Card(A_SUIT, Rank.TWO),
                 Card(A_SUIT, Rank.THREE),
-            ),
+            },
             True,
             0,
         )
@@ -171,12 +171,12 @@ def test_given_not_all_possible_cards_are_visible_except_playable_when_is_possib
 
     is_possibly_playable = game_state.is_possibly_playable(
         PlayerCard(
-            (
+            {
                 Card(A_SUIT, Rank.ONE),
                 Card(A_SUIT, Rank.TWO),
                 Card(A_SUIT, Rank.THREE),
                 Card(A_SUIT, Rank.FOUR),
-            ),
+            },
             True,
             0,
         )

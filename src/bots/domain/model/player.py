@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Iterable, Sized, Iterator, Type
 
 from core import Card, Rank, Suit
@@ -11,10 +11,14 @@ Slot: Type[int] = int
 @dataclass(frozen=True)
 class PlayerCard:
     # Without interpretation, only basic clue information
-    possible_cards: Iterable[Card]
+    possible_cards: frozenset[Card]
     is_clued: bool
     drawn_turn: int
     real_card: Card | None = None
+    interpreted_cards: set[Card] = field(default_factory=set)
+
+    def __post_init__(self):
+        self.interpreted_cards.update(self.possible_cards)
 
     def is_real(self, suit_or_rank: Suit | Rank) -> bool:
         return self.real_card is not None and self.real_card.matches(suit_or_rank)
@@ -45,13 +49,18 @@ class PlayerHand(Iterable[PlayerCard], Sized):
     def __repr__(self):
         return f"{self.owner_name} {self.cards})"
 
+    # FIXME this do not seem right... It this really a hand concern to update the interpretations?
+    def add_interpretation(self, interpretation: dict[Slot : set[Card]]):
+        for slot, cards in interpretation.possible_cards.items():
+            self.cards[slot].interpreted_cards.intersection_update(cards)
+
 
 def create_unknown_card() -> PlayerCard:
-    return PlayerCard(tuple(all_possible_cards()), False, 0)
+    return PlayerCard(frozenset(all_possible_cards()), False, 0)
 
 
 def create_unknown_real_card(card: Card) -> PlayerCard:
-    return PlayerCard(tuple(all_possible_cards()), False, 0, card)
+    return PlayerCard(frozenset(all_possible_cards()), False, 0, real_card=card)
 
 
 def create_unknown_hand(player_name: str, size: int = 5) -> PlayerHand:
