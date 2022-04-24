@@ -150,3 +150,86 @@ def test_stack_score_2_then_mistakes_then_four():
     stack.play(Card(Suit.RED, Rank.THREE))
     stack.play(Card(Suit.RED, Rank.FOUR))
     assert stack.stack_score() == 4
+
+
+def test_no_cards_no_ranks_played():
+    stack = Stack(Suit.RED)
+    expected_played_ranks = []
+    played_ranks = stack.get_ranks_already_played()
+    assert len(played_ranks) == len(expected_played_ranks)
+    for rank in expected_played_ranks:
+        assert played_ranks.count(rank) == 1
+
+
+def test_one_rank_played():
+    stack = Stack(Suit.RED)
+    stack.play(Card(Suit.RED, Rank.ONE))
+    expected_played_ranks = [Rank.ONE]
+    played_ranks = stack.get_ranks_already_played()
+    assert len(played_ranks) == len(expected_played_ranks)
+    for rank in expected_played_ranks:
+        assert played_ranks.count(rank) == 1
+
+
+def test_two_rank_played():
+    stack = Stack(Suit.RED)
+    stack.play(Card(Suit.RED, Rank.ONE))
+    stack.play(Card(Suit.RED, Rank.TWO))
+    expected_played_ranks = [Rank.ONE, Rank.TWO]
+    played_ranks = stack.get_ranks_already_played()
+    assert len(played_ranks) == len(expected_played_ranks)
+    for rank in expected_played_ranks:
+        assert played_ranks.count(rank) == 1
+
+
+def test_three_rank_played():
+    stack = Stack(Suit.RED)
+    stack.play(Card(Suit.RED, Rank.ONE))
+    stack.play(Card(Suit.RED, Rank.TWO))
+    stack.play(Card(Suit.RED, Rank.THREE))
+    expected_played_ranks = [Rank.ONE, Rank.TWO, Rank.THREE]
+    played_ranks = stack.get_ranks_already_played()
+    assert len(played_ranks) == len(expected_played_ranks)
+    for rank in expected_played_ranks:
+        assert played_ranks.count(rank) == 1
+
+
+def test_four_rank_played():
+    stack = Stack(Suit.RED)
+    stack.play(Card(Suit.RED, Rank.ONE))
+    stack.play(Card(Suit.RED, Rank.TWO))
+    stack.play(Card(Suit.RED, Rank.THREE))
+    stack.play(Card(Suit.RED, Rank.FOUR))
+    expected_played_ranks = [Rank.ONE, Rank.TWO, Rank.THREE, Rank.FOUR]
+    played_ranks = stack.get_ranks_already_played()
+    assert len(played_ranks) == len(expected_played_ranks)
+    for rank in expected_played_ranks:
+        assert played_ranks.count(rank) == 1
+
+
+def test_five_rank_played():
+    stack = Stack(Suit.RED)
+    stack.play(Card(Suit.RED, Rank.ONE))
+    stack.play(Card(Suit.RED, Rank.TWO))
+    stack.play(Card(Suit.RED, Rank.THREE))
+    stack.play(Card(Suit.RED, Rank.FOUR))
+    stack.play(Card(Suit.RED, Rank.FIVE))
+    expected_played_ranks = [Rank.ONE, Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE]
+    played_ranks = stack.get_ranks_already_played()
+    assert len(played_ranks) == len(expected_played_ranks)
+    for rank in expected_played_ranks:
+        assert played_ranks.count(rank) == 1
+
+
+def test_five_rank_played_two_errors():
+    stack = Stack(Suit.RED)
+    stack.play(Card(Suit.RED, Rank.ONE))
+    stack.play(Card(Suit.BLUE, Rank.TWO))
+    stack.play(Card(Suit.RED, Rank.THREE))
+    stack.play(Card(Suit.RED, Rank.TWO))
+    stack.play(Card(Suit.RED, Rank.THREE))
+    expected_played_ranks = [Rank.ONE, Rank.TWO, Rank.THREE]
+    played_ranks = stack.get_ranks_already_played()
+    assert len(played_ranks) == len(expected_played_ranks)
+    for rank in expected_played_ranks:
+        assert played_ranks.count(rank) == 1
