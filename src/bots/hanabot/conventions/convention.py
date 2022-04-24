@@ -18,9 +18,14 @@ class InterpretationType(Enum):
 
 @dataclass(frozen=True)
 class Interpretation:
+    # TODO is the type really useful?
     interpretation_type: InterpretationType
     convention_name: str
-    possible_cards: dict[Slot, frozenset[Card]]
+    # TODO there probably is no override possible with fix clue
+    possible_cards: dict[Slot, set[Card]]
+
+    def __repr__(self) -> str:
+        return f"{self.convention_name} {self.possible_cards})"
 
 
 @dataclass(frozen=True)
@@ -65,3 +70,13 @@ class Conventions:
                 decision = convention.find_play_clue(owner_slot_card, current_game_state)
                 if decision is not None:
                     yield decision
+
+    @abstractmethod
+    def find_interpretations(self, clue: Clue, current_game_state: RelativeGameState) -> list[Interpretation]:
+        interpretations = []
+        for convention in self.conventions:
+            interpretation = convention.find_interpretation(clue, current_game_state)
+            if interpretation is not None:
+                interpretations.append(interpretation)
+
+        return interpretations

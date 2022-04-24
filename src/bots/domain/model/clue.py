@@ -7,8 +7,7 @@ from core import Rank, Suit
 
 @dataclass(frozen=True)
 class AbstractClue(ABC):
-    turn: int
-    hand_slots: frozenset[Slot]
+    touched_slots: frozenset[Slot]
 
 
 @dataclass(frozen=True)
