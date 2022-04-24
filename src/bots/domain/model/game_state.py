@@ -3,7 +3,7 @@ from functools import cached_property
 from typing import List, Iterable, Dict
 
 from bots.domain.model.action import Action
-from bots.domain.model.player import PlayerHand, PlayerCard, RelativePlayerId
+from bots.domain.model.player import PlayerHand, PlayerCard, RelativePlayerNumber, Slot
 from bots.domain.model.stack import Stacks
 from core import Card, Rank
 
@@ -33,7 +33,7 @@ class RelativeGameState:
 
         return card in self.discard
 
-    def find_playable_cards(self) -> Iterable[tuple[RelativePlayerId, int, PlayerCard]]:
+    def find_playable_cards(self) -> Iterable[tuple[RelativePlayerNumber, Slot, PlayerCard]]:
         for relative_player_id, hand in enumerate(self.other_player_hands, 1):
             for slot, card in enumerate(hand.cards):
                 if self.stacks.is_playable(card.real_card):

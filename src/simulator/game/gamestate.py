@@ -3,10 +3,10 @@ import random
 from typing import List
 
 from core import Deck
+from core.gamerules import get_hand_size
 from core.state.discard_pile import DiscardPile
 from core.state.play_area import PlayArea
 from core.state.status import Status
-from core.gamerules import get_hand_size
 from simulator.game.action import Action, PlayAction, ColorClueAction, RankClueAction, DiscardAction
 from simulator.game.clue import ColorClue, RankClue, Clue
 from simulator.game.hand_card import HandCard
@@ -114,8 +114,11 @@ class GameState:
 
         touches_any = False
 
-        for hand_card in target_player.hand:
-            touches_any |= hand_card.receive_clue(clue)
+        for slot, hand_card in enumerate(target_player.hand):
+            touched_the_card = hand_card.receive_clue(clue)
+            if touched_the_card:
+                clue.touched_slots |= {slot}
+            touches_any |= touched_the_card
 
         if not touches_any:
             raise ValueError("Empty clues are not allowed in this game!")

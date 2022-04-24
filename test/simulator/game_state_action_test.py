@@ -43,9 +43,10 @@ def test_give_color_clue_should_add_clue_on_all_hand_cards():
     action = ColorClueAction(second_card.suit, second_player)
     gamestate.play_turn(action)
 
-    for hand_card in second_player.hand:
+    for slot, hand_card in enumerate(second_player.hand):
         assert len(hand_card.received_clues) == 1
         received_clue = hand_card.received_clues[0]
+        assert not hand_card.is_clued or slot in received_clue.touched_slots
         assert received_clue.turn == 1
         assert received_clue.giver_name == first_player.name
         assert received_clue.receiver_name == second_player.name
@@ -65,9 +66,10 @@ def test_give_rank_clue_should_add_clue_on_all_hand_cards():
     action = RankClueAction(second_card.rank, second_player)
     gamestate.play_turn(action)
 
-    for hand_card in second_player.hand:
+    for slot, hand_card in enumerate(second_player.hand):
         assert len(hand_card.received_clues) == 1
         received_clue = hand_card.received_clues[0]
+        assert not hand_card.is_clued or slot in received_clue.touched_slots
         assert received_clue.turn == 1
         assert received_clue.giver_name == first_player.name
         assert received_clue.receiver_name == second_player.name

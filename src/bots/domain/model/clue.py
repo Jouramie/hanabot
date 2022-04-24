@@ -1,16 +1,24 @@
+from abc import ABC
 from dataclasses import dataclass
-from typing import Set
 
+from bots.domain.model.player import Slot
 from core import Rank, Suit
 
 
 @dataclass(frozen=True)
-class SuitClue:
-    hand_positions: Set[int]
+class AbstractClue(ABC):
+    turn: int
+    hand_slots: frozenset[Slot]
+
+
+@dataclass(frozen=True)
+class SuitClue(AbstractClue):
     suit: Suit
 
 
 @dataclass(frozen=True)
-class RankClue:
-    hand_positions: Set[int]
+class RankClue(AbstractClue):
     rank: Rank
+
+
+Clue = SuitClue | RankClue
