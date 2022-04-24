@@ -22,10 +22,11 @@ def print_game_result(result: GameResult):
 def play_game_slow(players: List[SimulatorPlayer], suits: Iterable[Suit]):
     controller = Controller()
     game = controller.new_game(players, suits)
+    controller.draw_game()
     while not controller.is_game_over():
-        controller.draw_game()
         input("")
         controller.play_turn()
+        controller.draw_game()
 
     result = controller.get_game_result()
     print(result.final_state)

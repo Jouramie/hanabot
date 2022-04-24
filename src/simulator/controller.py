@@ -58,12 +58,17 @@ class Controller:
     def draw_game_numbers(self):
         clues = str(self.current_game.status.clues)
         strikes = str(self.current_game.status.strikes)
+        deck = str(self.current_game.deck.number_cards())
         score = 0
         for stack in self.current_game.play_area.stacks.values():
             score = score + stack.stack_score()
         score = str(score)
-        turns = str(self.current_game.turns_remaining)
-        print("Clues: " + clues + " | Strikes: " + strikes + " | Score: " + score + " | Turns: " + turns)
+        turns = str(self.current_game.status.turns_remaining)
+        print("Clues: " + clues +
+              " | Strikes: " + strikes +
+              " | Score: " + score +
+              " | Turns: " + turns +
+              " | Deck: " + deck)
 
     def draw_stacks(self):
         stack_string = "Stacks: | "
