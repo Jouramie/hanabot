@@ -55,7 +55,7 @@ def test_new_gamestate_should_have_many_turns_remaining(number_players):
     number_suits = len(deck.suits)
     player_names = get_player_names(number_players)
     gamestate = GameState(player_names, deck)
-    assert gamestate.turns_remaining == number_players + gamestate.deck.number_cards()
+    assert gamestate.status.turns_remaining == number_players + gamestate.deck.number_cards()
 
 
 @pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])

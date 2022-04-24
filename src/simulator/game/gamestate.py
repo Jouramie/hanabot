@@ -27,7 +27,6 @@ class GameState:
     def __init__(self, players: List[str], deck: Deck):
         self.deck = deck
         self.discard_pile = DiscardPile()
-        self.status = Status()
         self.history = History()
         self.play_area = PlayArea(deck.suits)
 
@@ -41,7 +40,7 @@ class GameState:
             player_index = i % number_of_players
             self.player_draw_card(self.players[player_index])
 
-        self.turns_remaining = number_of_players + self.deck.number_cards()
+        self.status = Status(number_of_players + self.deck.number_cards())
 
     @property
     def player_turn(self) -> int:
@@ -56,8 +55,6 @@ class GameState:
         card = self.deck.draw()
         hand_card = HandCard(card, list(self.deck.suits))
         player.hand.insert(0, hand_card)
-        if len(self.deck) == 0:
-            self.turns_remaining = len(self.players) + 1
 
     def play_turn(self, action: Action):
         action.actor = self.current_player
@@ -68,8 +65,7 @@ class GameState:
         action.turn = self.status.turn
 
         self.history.add_action(action)
-        self.turns_remaining = self.turns_remaining - 1
-        if self.turns_remaining == 0:
+        if self.status.turns_remaining == 0:
             self.status.is_over = True
 
     def play_turn_play(self, action: PlayAction):
@@ -88,6 +84,7 @@ class GameState:
             action.success = False
         self.player_draw_card(player)
         action.playedCard = card_to_play
+        self.status.turns_remaining -= 1
 
     def play_turn_color_clue(self, action: ColorClueAction):
         suit_is_in_game = False
@@ -124,6 +121,9 @@ class GameState:
             raise ValueError("Empty clues are not allowed in this game!")
 
         self.history.add_clue(clue)
+        if self.deck.is_empty():
+            self.status.turns_remaining -= 1
+
 
     def play_turn_discard(self, action: DiscardAction):
         player = self.current_player
@@ -138,6 +138,7 @@ class GameState:
         self.status.generate_clue()
         self.player_draw_card(player)
         action.discardedCard = card_to_discard.real_card
+        self.status.turns_remaining -= 1
 
     @property
     def current_player(self):

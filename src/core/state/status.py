@@ -5,11 +5,12 @@ class Status:
     is_over: bool
     turns_remaining: int
 
-    def __init__(self):
+    def __init__(self, turns_remaining: int):
         self.turn = 0
         self.clues = 8
         self.strikes = 0
         self.is_over = False
+        self.turns_remaining = turns_remaining
 
     def generate_clue(self):
         self.clues = self.clues + 1
@@ -26,3 +27,8 @@ class Status:
 
     def next_turn(self):
         self.turn = self.turn + 1
+
+    def decrement_turns_remaining(self):
+        self.turns_remaining -= 1
+        if self.turns_remaining <= 0:
+            self.is_over = True
