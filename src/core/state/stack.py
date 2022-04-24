@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 
 from core.card import Card, Rank, Suit
 from core.gamerules import get_suit_short_name
@@ -32,3 +33,22 @@ class Stack:
             self.last_played = card.rank
             return True
         return False
+
+    def get_ranks_already_played(self) -> List[Rank]:
+        ranks = []
+        if self.last_played is None:
+            return ranks
+        ranks.append(Rank.ONE)
+        if self.last_played == Rank.ONE:
+            return ranks
+        ranks.append(Rank.TWO)
+        if self.last_played == Rank.TWO:
+            return ranks
+        ranks.append(Rank.THREE)
+        if self.last_played == Rank.THREE:
+            return ranks
+        ranks.append(Rank.FOUR)
+        if self.last_played == Rank.FOUR:
+            return ranks
+        ranks.append(Rank.FIVE)
+        return ranks
