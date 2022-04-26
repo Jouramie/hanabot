@@ -7,6 +7,7 @@ from core import Variant, Suit
 from simulator.controller import Controller
 from simulator.game.gameresult import GameResult
 from simulator.players.cheatingplayer import CheatingPlayer
+from simulator.players.goodtouchplayer import GoodTouchPlayer
 from simulator.players.simulatorplayer import SimulatorPlayer
 
 
@@ -76,7 +77,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     clear = lambda: os.system("cls")
-    simulation_players = [CheatingPlayer(), CheatingPlayer(), CheatingPlayer(), CheatingPlayer()]
+    simulation_players = [GoodTouchPlayer(), GoodTouchPlayer(), GoodTouchPlayer(), GoodTouchPlayer()]
     simulation_suits = Variant.NO_VARIANT
 
     print("Input 'Slow' to play one game slowly")
