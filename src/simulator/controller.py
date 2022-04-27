@@ -11,6 +11,9 @@ class Controller:
     current_game: GameState
     current_players: Dict[str, SimulatorPlayer]
 
+    def __init__(self, verbose=True):
+        self.verbose = verbose
+
     def new_game(self, players: List[SimulatorPlayer], suits: Iterable[Suit]) -> GameState:
         self.current_game = GameState([player.name for player in players], Deck.generate(suits))
         self._initialize_players(players)
@@ -36,7 +39,8 @@ class Controller:
     def play_until_game_is_over(self) -> GameResult:
         while not self.is_game_over():
             self.play_turn()
-            self.draw_game()
+            if self.verbose:
+                self.draw_game()
         return self.get_game_result()
 
     def is_game_over(self) -> bool:

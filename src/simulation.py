@@ -7,7 +7,6 @@ import plotext
 
 from core import Variant, Suit
 from simulator.controller import Controller
-from simulator.players.cheatingplayer import CheatingPlayer
 from simulator.players.goodtouchplayer import GoodTouchPlayer
 from simulator.players.simulatorplayer import SimulatorPlayer
 
@@ -26,7 +25,7 @@ def play_game_slow(players: List[SimulatorPlayer], suits: Iterable[Suit]):
 
 
 def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], number_games: int, verbose: bool = True):
-    controller = Controller()
+    controller = Controller(verbose)
     total_score = 0
     total_survivals = 0
     total_victories = 0
