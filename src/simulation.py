@@ -80,7 +80,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     clear = lambda: os.system("cls")
-    simulation_players = [GoodTouchPlayer(), GoodTouchPlayer(), GoodTouchPlayer(), GoodTouchPlayer(), GoodTouchPlayer()]
+    simulation_players = [GoodTouchPlayer(), GoodTouchPlayer(), GoodTouchPlayer(), GoodTouchPlayer()]
     simulation_suits = Variant.NO_VARIANT
 
     print("Input 'Slow' to play one game slowly")

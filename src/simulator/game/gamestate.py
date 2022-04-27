@@ -81,6 +81,7 @@ class GameState:
             action.success = True
         else:
             self.status.add_strike()
+            self.discard_pile.discard(card_to_play.real_card)
             action.success = False
         self.player_draw_card(player)
         action.playedCard = card_to_play

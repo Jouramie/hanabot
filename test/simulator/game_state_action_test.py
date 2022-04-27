@@ -396,6 +396,36 @@ def test_discard_should_add_card_to_discard_pile():
     assert gamestate.discard_pile.cards.count(slot2_before) == 1
 
 
+def test_play_fail_should_add_card_to_discard_pile():
+    gamestate = GameState(get_player_names(5), Deck.starting_with(Card(Suit.RED, Rank.FOUR)))
+    player = gamestate.players[gamestate.player_turn]
+
+    slot4_before = player.hand[3].real_card
+    slot3_before = player.hand[2].real_card
+
+    assert gamestate.discard_pile.cards.count(slot4_before) == 0
+    assert gamestate.discard_pile.cards.count(slot3_before) == 0
+
+    action = PlayAction(3)
+    gamestate.play_turn(action)
+
+    assert gamestate.discard_pile.cards.count(slot4_before) == 1
+    assert gamestate.discard_pile.cards.count(slot3_before) == 0
+
+
+def test_play_fail_should_add_strike():
+    gamestate = GameState(get_player_names(5), Deck.starting_with(Card(Suit.RED, Rank.FOUR)))
+    player = gamestate.players[gamestate.player_turn]
+
+    strikes_before = gamestate.status.strikes
+
+    action = PlayAction(3)
+    gamestate.play_turn(action)
+
+    strikes_after = gamestate.status.strikes
+    assert strikes_after == strikes_before + 1
+
+
 @pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
 def test_color_cluing_with_a_deck_should_not_reduce_number_of_turns_remaining(number_players):
     gamestate = GameState(get_player_names(5), Deck.generate())
