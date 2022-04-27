@@ -127,7 +127,6 @@ class GameState:
         if self.deck.is_empty():
             self.status.turns_remaining -= 1
 
-
     def play_turn_discard(self, action: DiscardAction):
         player = self.current_player
 

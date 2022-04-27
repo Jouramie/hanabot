@@ -173,6 +173,18 @@ docs = ["furo (>=2021.7.5b38)", "proselint (>=0.10.2)", "sphinx-autodoc-typehint
 test = ["appdirs (==1.4.4)", "pytest-cov (>=2.7)", "pytest-mock (>=3.6)", "pytest (>=6)"]
 
 [[package]]
+name = "plotext"
+version = "5.0.2"
+description = "plotext plots directly on terminal"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+image = ["pillow (>=8.4)"]
+video = ["ffpyplayer (>=4.3.5)", "opencv-python (>=4.5.5)", "pafy (>=0.5.5)", "pillow (>=8.4)"]
+
+[[package]]
 name = "pluggy"
 version = "1.0.0"
 description = "plugin and hook calling mechanisms for python"
@@ -2238,7 +2250,7 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "35def9255ed29c2d564853905f49683e134112165541c85de1e5f238ac35a972"
+content-hash = "7496f781036b2de5a22daf365afb8d41d03e7beb01ab9cdc7e03a7382df39cf1"
 
 [metadata.files]
 atomicwrites = [
@@ -2398,6 +2410,10 @@ pillow = [
 platformdirs = [
     {file = "platformdirs-2.5.2-py3-none-any.whl", hash = "sha256:027d8e83a2d7de06bbac4e5ef7e023c02b863d7ea5d079477e722bb41ab25788"},
     {file = "platformdirs-2.5.2.tar.gz", hash = "sha256:58c8abb07dcb441e6ee4b11d8df0ac856038f944ab98b7be6b27b2a3c7feef19"},
+]
+plotext = [
+    {file = "plotext-5.0.2-py3-none-any.whl", hash = "sha256:04facb1dd01693f95a08d6aed845c250728b04c6ef08b805546164a57fa16386"},
+    {file = "plotext-5.0.2.tar.gz", hash = "sha256:e1ece29999f241dcc2806a55331265659bcbe8cbd896743067b941f97a8348dc"},
 ]
 pluggy = [
     {file = "pluggy-1.0.0-py2.py3-none-any.whl", hash = "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"},

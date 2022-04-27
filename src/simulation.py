@@ -3,20 +3,12 @@ import os
 import time
 from typing import List, Iterable
 
+import plotext
+
 from core import Variant, Suit
 from simulator.controller import Controller
-from simulator.game.gameresult import GameResult
 from simulator.players.cheatingplayer import CheatingPlayer
 from simulator.players.simulatorplayer import SimulatorPlayer
-
-
-def print_game_result(result: GameResult):
-    if result.is_victory:
-        print("The team has won with a max score of " + str(result.score))
-    elif result.is_survival:
-        print("The team has survived with a score of " + str(result.score) + " out of " + str(result.max_score))
-    else:
-        print("The team has struck out after playing " + str(result.played_cards))
 
 
 def play_game_slow(players: List[SimulatorPlayer], suits: Iterable[Suit]):
@@ -29,8 +21,7 @@ def play_game_slow(players: List[SimulatorPlayer], suits: Iterable[Suit]):
         controller.draw_game()
 
     result = controller.get_game_result()
-    print(result.final_state)
-    print_game_result(result)
+    print(repr(result))
 
 
 def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], number_games: int, verbose: bool = True):
@@ -40,12 +31,14 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
     total_victories = 0
     games_remaining = number_games
     time_before = time.time()
+    results = []
+
     while games_remaining > 0:
         game = controller.new_game(players, suits)
         controller.play_until_game_is_over()
         result = controller.get_game_result()
         if verbose:
-            print_game_result(result)
+            print(repr(result))
         elif games_remaining % 100 == 0:
             print(f"({number_games-games_remaining}/{number_games})")
 
@@ -55,6 +48,8 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
         if result.is_victory:
             total_victories = total_victories + 1
         games_remaining = games_remaining - 1
+
+        results.append(result)
 
     time_after = time.time()
     elapsed_seconds = time_after - time_before
@@ -70,6 +65,15 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
     print("Survival Rate: " + str(total_survivals / number_games * 100) + "%")
     print("Victory Rate: " + str(total_victories / number_games * 100) + "%")
     print("Average Score: " + str(total_score / number_games))
+
+    possible_scores = list(range(0, 26))
+    scores = {score: 0 for score in possible_scores}
+    for result in results:
+        scores[result.played_cards] = scores[result.played_cards] + 1
+    plotext.bar(possible_scores, scores)
+    plotext.title("Score Distribution")
+    plotext.clc()
+    plotext.show()
 
 
 if __name__ == "__main__":
