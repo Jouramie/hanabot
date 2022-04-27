@@ -63,7 +63,7 @@ class GoodTouchPlayer(SimulatorPlayer):
             return PlayAction(best_play_slot)
 
         best_clue = None
-        best_clue_value = -1
+        best_clue_value = -100
         for player in game.players:
             if player.name == self.name:
                 continue

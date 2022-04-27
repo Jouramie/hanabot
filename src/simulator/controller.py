@@ -36,7 +36,6 @@ class Controller:
     def play_until_game_is_over(self) -> GameResult:
         while not self.is_game_over():
             self.play_turn()
-            self.draw_game()
         return self.get_game_result()
 
     def is_game_over(self) -> bool:
