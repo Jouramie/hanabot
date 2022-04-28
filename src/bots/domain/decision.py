@@ -1,8 +1,7 @@
 from abc import ABC
 from dataclasses import dataclass
 
-from bots.domain.model.game_state import RelativeGameState, GameHistory
-from bots.domain.model.player import RelativePlayerNumber
+from bots.domain.model.game_state import RelativeGameState, GameHistory, RelativePlayerNumber
 from core import Suit, Rank
 
 

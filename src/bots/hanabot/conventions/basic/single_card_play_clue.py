@@ -1,10 +1,11 @@
 import logging
 
 from bots.domain.decision import RankClueDecision, SuitClueDecision
-from bots.domain.model.clue import Clue, RankClue, SuitClue
-from bots.domain.model.game_state import RelativeGameState
-from bots.domain.model.player import PlayerCard, PlayerHand, RelativePlayerNumber, Slot
-from bots.hanabot.conventions.convention import Convention, Interpretation, InterpretationType
+from bots.domain.model.action import ClueAction, RankClueAction, SuitClueAction
+from bots.domain.model.game_state import RelativeGameState, RelativePlayerNumber
+from bots.domain.model.hand import HandCard, Hand, Slot
+from bots.hanabot.blackboard import Interpretation, InterpretationType
+from bots.hanabot.conventions.convention import Convention
 
 logger = logging.getLogger(__name__)
 
@@ -13,10 +14,10 @@ class SingleCardRankPlayClueConvention(Convention):
     def __init__(self):
         super().__init__("Single card rank play clue")
 
-    def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerNumber, Slot, PlayerCard], current_game_state: RelativeGameState) -> RankClueDecision | None:
+    def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> RankClueDecision | None:
         owner, slot, player_card = owner_slot_cards
 
-        hand: PlayerHand = current_game_state.player_hands[owner]
+        hand: Hand = current_game_state.player_hands[owner]
 
         rank = player_card.real_card.rank
         real_cards_with_rank = list(hand.get_real(rank))
@@ -25,18 +26,20 @@ class SingleCardRankPlayClueConvention(Convention):
 
         return None
 
-    def find_interpretation(self, clue: Clue, current_game_state: RelativeGameState) -> Interpretation | None:
-        if not isinstance(clue, RankClue) or len(clue.touched_slots) != 1:
+    def find_interpretation(self, clue_action: ClueAction, current_game_state: RelativeGameState) -> Interpretation | None:
+        if not isinstance(clue_action, RankClueAction) or len(clue_action.touched_slots) != 1:
             return None
 
-        (touched_slot,) = clue.touched_slots
+        (touched_slot,) = clue_action.touched_slots
         touched_card = current_game_state.my_hand[touched_slot]
 
         playable_cards = {card for card in touched_card.possible_cards if current_game_state.is_playable(card)}
 
         if playable_cards:
-            logger.debug(f"{clue} could be a {self.name}.")
-            return Interpretation(InterpretationType.PLAY, self.name, {touched_slot: set(playable_cards)})
+            logger.debug(f"{clue_action} could be a {self.name}.")
+            return Interpretation(
+                clue_action, interpretation_type=InterpretationType.PLAY, convention_name=self.name, possible_cards={touched_slot: set(playable_cards)}
+            )
 
         return None
 
@@ -45,10 +48,10 @@ class SingleCardSuitPlayClueConvention(Convention):
     def __init__(self):
         super().__init__("Single card suit play clue")
 
-    def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerNumber, Slot, PlayerCard], current_game_state: RelativeGameState) -> SuitClueDecision | None:
+    def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> SuitClueDecision | None:
         owner, slot, player_card = owner_slot_cards
 
-        hand: PlayerHand = current_game_state.player_hands[owner]
+        hand: Hand = current_game_state.player_hands[owner]
 
         suit = player_card.real_card.suit
         real_cards_with_rank = list(hand.get_real(suit))
@@ -57,17 +60,19 @@ class SingleCardSuitPlayClueConvention(Convention):
 
         return None
 
-    def find_interpretation(self, clue: Clue, current_game_state: RelativeGameState) -> Interpretation | None:
-        if not isinstance(clue, SuitClue) or len(clue.touched_slots) != 1:
+    def find_interpretation(self, clue_action: ClueAction, current_game_state: RelativeGameState) -> Interpretation | None:
+        if not isinstance(clue_action, SuitClueAction) or len(clue_action.touched_slots) != 1:
             return None
 
-        (touched_slot,) = clue.touched_slots
+        (touched_slot,) = clue_action.touched_slots
         touched_card = current_game_state.my_hand[touched_slot]
 
         playable_cards = {card for card in touched_card.possible_cards if current_game_state.is_playable(card)}
 
         if playable_cards:
-            logger.debug(f"{clue} could be a {self.name}.")
-            return Interpretation(InterpretationType.PLAY, self.name, {touched_slot: set(playable_cards)})
+            logger.debug(f"{clue_action} could be a {self.name}.")
+            return Interpretation(
+                clue_action, interpretation_type=InterpretationType.PLAY, convention_name=self.name, possible_cards={touched_slot: set(playable_cards)}
+            )
 
         return None

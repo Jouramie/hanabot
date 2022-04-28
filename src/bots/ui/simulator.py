@@ -1,8 +1,7 @@
 from bots.domain.decision import DecisionMaking, Decision, PlayDecision, DiscardDecision, SuitClueDecision, RankClueDecision
-from bots.domain.model.action import Action, PlayAction, DiscardAction, ClueAction
-from bots.domain.model.clue import SuitClue, RankClue
+from bots.domain.model.action import Action, PlayAction, DiscardAction, SuitClueAction, RankClueAction
 from bots.domain.model.game_state import RelativeGameState, GameHistory
-from bots.domain.model.player import PlayerHand, PlayerCard
+from bots.domain.model.hand import Hand, HandCard
 from bots.domain.model.stack import Stacks, Stack
 from core import Suit
 from core.state.stack import Stack as SimulatorStack
@@ -24,19 +23,19 @@ def assemble_stacks(stacks: dict[Suit, SimulatorStack]) -> Stacks:
     return Stacks({suit: Stack(stack.suit, stack.last_played) for suit, stack in stacks.items()})
 
 
-def assemble_my_hand(me: Player) -> PlayerHand:
+def assemble_my_hand(me: Player) -> Hand:
     # TODO add drawn turn
-    return PlayerHand(me.name, tuple(PlayerCard(frozenset(hand_card.possible_cards), hand_card.is_clued, None) for hand_card in me.hand))
+    return Hand(me.name, tuple(HandCard(frozenset(hand_card.possible_cards), hand_card.is_clued, None) for hand_card in me.hand))
 
 
-def assemble_other_player_hands(player: Player) -> PlayerHand:
-    return PlayerHand(
+def assemble_other_player_hands(player: Player) -> Hand:
+    return Hand(
         player.name,
-        tuple(PlayerCard(frozenset(hand_card.possible_cards), len(hand_card.received_clues) > 0, None, hand_card.real_card) for hand_card in player.hand),
+        tuple(HandCard(frozenset(hand_card.possible_cards), len(hand_card.received_clues) > 0, None, hand_card.real_card) for hand_card in player.hand),
     )
 
 
-def assemble_player_hands(global_state: GlobalGameState) -> tuple[PlayerHand, ...]:
+def assemble_player_hands(global_state: GlobalGameState) -> tuple[Hand, ...]:
     hands = []
 
     for player in global_state.players:
@@ -55,10 +54,10 @@ def assemble_action(action: SimulatorAction, clues: list[SimulatorClue]) -> Acti
         return DiscardAction(action.discardedCard)
     if isinstance(action, SimulatorColorClueAction):
         clue = next(clue for clue in clues if clue.turn == action.turn)
-        return ClueAction(action.target_player.name, SuitClue(frozenset(clue.touched_slots), action.color))
+        return SuitClueAction(action.target_player.name, frozenset(clue.touched_slots), action.color)
     if isinstance(action, SimulatorRankClueAction):
         clue = next(clue for clue in clues if clue.turn == action.turn)
-        return ClueAction(action.target_player.name, RankClue(frozenset(clue.touched_slots), action.rank))
+        return RankClueAction(action.target_player.name, frozenset(clue.touched_slots), action.rank)
     return None
 
 

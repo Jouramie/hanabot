@@ -4,7 +4,7 @@ from typing import Iterable
 
 from bots.domain.model.action import Action
 from bots.domain.model.game_state import RelativeGameState
-from bots.domain.model.player import PlayerHand, create_unknown_hand, create_unknown_real_card, PlayerCard, create_known_real_card
+from bots.domain.model.hand import Hand, create_unknown_hand, create_unknown_real_card, HandCard, create_known_real_card
 from bots.domain.model.stack import Stacks, Stack
 from core import Card, Suit, Rank
 
@@ -70,9 +70,9 @@ def test_given_empty_stacks_when_find_playable_cards_then_only_ones_are_playable
         .set_stacks(Stacks.create_empty_stacks(SOME_SUITS))
         .set_other_player_hands(
             (
-                PlayerHand(BOB, (expected_one_in_bob_hand,)),
-                PlayerHand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.TWO)),)),
-                PlayerHand(DONALD, (expected_one_in_donald_hand,)),
+                Hand(BOB, (expected_one_in_bob_hand,)),
+                Hand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.TWO)),)),
+                Hand(DONALD, (expected_one_in_donald_hand,)),
             )
         )
         .build()
@@ -89,8 +89,8 @@ def test_given_stacks_at_one_when_find_playable_cards_then_only_ones_are_not_pla
         .set_stacks(Stacks({A_SUIT: Stack(A_SUIT, Rank.ONE)}))
         .set_other_player_hands(
             (
-                PlayerHand(BOB, ((create_unknown_real_card(Card(A_SUIT, Rank.ONE))),)),
-                PlayerHand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.THREE)),)),
+                Hand(BOB, ((create_unknown_real_card(Card(A_SUIT, Rank.ONE))),)),
+                Hand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.THREE)),)),
             )
         )
         .build()
@@ -107,8 +107,8 @@ def test_given_cards_in_hands_stacks_and_discard_when_visible_cards_then_all_vis
         .set_stacks(Stacks({A_SUIT: Stack(A_SUIT, Rank.THREE)}))
         .set_other_player_hands(
             (
-                PlayerHand(BOB, ((create_unknown_real_card(Card(A_SUIT, Rank.ONE))),)),
-                PlayerHand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.THREE)),)),
+                Hand(BOB, ((create_unknown_real_card(Card(A_SUIT, Rank.ONE))),)),
+                Hand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.THREE)),)),
             )
         )
         .set_discard((Card(A_SUIT, Rank.ONE), Card(ANOTHER_SUIT, Rank.FIVE), Card(ANOTHER_SUIT, Rank.ONE)))
@@ -132,8 +132,8 @@ def test_given_clued_cards_in_hands_when_clued_cards_then_all_clued_cards_are_fo
         .set_stacks(Stacks({A_SUIT: Stack(A_SUIT, Rank.THREE)}))
         .set_other_player_hands(
             (
-                PlayerHand(BOB, (create_known_real_card(Card(A_SUIT, Rank.ONE)), create_unknown_real_card(Card(ANOTHER_SUIT, Rank.ONE)))),
-                PlayerHand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.THREE)), create_known_real_card(Card(A_SUIT, Rank.FIVE)))),
+                Hand(BOB, (create_known_real_card(Card(A_SUIT, Rank.ONE)), create_unknown_real_card(Card(ANOTHER_SUIT, Rank.ONE)))),
+                Hand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.THREE)), create_known_real_card(Card(A_SUIT, Rank.FIVE)))),
             )
         )
         .set_discard((Card(A_SUIT, Rank.ONE), Card(ANOTHER_SUIT, Rank.FIVE), Card(ANOTHER_SUIT, Rank.ONE)))
@@ -151,8 +151,8 @@ def test_given_all_possible_cards_are_visible_except_playable_when_is_possibly_p
         .set_stacks(Stacks({A_SUIT: Stack(A_SUIT, Rank.TWO)}))
         .set_other_player_hands(
             (
-                PlayerHand(BOB, ((create_unknown_real_card(Card(A_SUIT, Rank.ONE))),)),
-                PlayerHand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.TWO)),)),
+                Hand(BOB, ((create_unknown_real_card(Card(A_SUIT, Rank.ONE))),)),
+                Hand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.TWO)),)),
             )
         )
         .set_discard((Card(A_SUIT, Rank.ONE), Card(ANOTHER_SUIT, Rank.FIVE), Card(ANOTHER_SUIT, Rank.ONE)))
@@ -160,7 +160,7 @@ def test_given_all_possible_cards_are_visible_except_playable_when_is_possibly_p
     )
 
     is_possibly_playable = game_state.is_possibly_playable(
-        PlayerCard(
+        HandCard(
             frozenset(
                 {
                     Card(A_SUIT, Rank.ONE),
@@ -182,8 +182,8 @@ def test_given_not_all_possible_cards_are_visible_except_playable_when_is_possib
         .set_stacks(Stacks({A_SUIT: Stack(A_SUIT, Rank.TWO)}))
         .set_other_player_hands(
             (
-                PlayerHand(BOB, ((create_unknown_real_card(Card(A_SUIT, Rank.ONE))),)),
-                PlayerHand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.TWO)),)),
+                Hand(BOB, ((create_unknown_real_card(Card(A_SUIT, Rank.ONE))),)),
+                Hand(CATHY, (create_unknown_real_card(Card(A_SUIT, Rank.TWO)),)),
             )
         )
         .set_discard((Card(A_SUIT, Rank.ONE), Card(ANOTHER_SUIT, Rank.FIVE), Card(ANOTHER_SUIT, Rank.ONE)))
@@ -191,7 +191,7 @@ def test_given_not_all_possible_cards_are_visible_except_playable_when_is_possib
     )
 
     is_possibly_playable = game_state.is_possibly_playable(
-        PlayerCard(
+        HandCard(
             frozenset(
                 {
                     Card(A_SUIT, Rank.ONE),
@@ -226,11 +226,11 @@ class RelativeGameStateBuilder:
         self.discard = discard
         return self
 
-    def set_my_hand(self, my_hand: PlayerHand) -> RelativeGameStateBuilder:
+    def set_my_hand(self, my_hand: Hand) -> RelativeGameStateBuilder:
         self.hands[0] = my_hand
         return self
 
-    def set_other_player_hands(self, other_player_hands: tuple[PlayerHand, ...]) -> RelativeGameStateBuilder:
+    def set_other_player_hands(self, other_player_hands: tuple[Hand, ...]) -> RelativeGameStateBuilder:
         self.hands = [self.hands[0]] + list(other_player_hands)
         return self
 

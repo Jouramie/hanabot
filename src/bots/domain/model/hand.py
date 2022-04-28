@@ -4,12 +4,11 @@ from typing import Iterable, Sized, Iterator, Type
 from core import Card, Rank, Suit
 from core.card import all_possible_cards
 
-RelativePlayerNumber = int
 Slot: Type[int] = int
 
 
 @dataclass(frozen=True)
-class PlayerCard:
+class HandCard:
     # Without interpretation, only basic clue information
     possible_cards: frozenset[Card]
     is_clued: bool
@@ -28,11 +27,11 @@ class PlayerCard:
 
 
 @dataclass(frozen=True)
-class PlayerHand(Iterable[PlayerCard], Sized):
+class Hand(Iterable[HandCard], Sized):
     owner_name: str
-    cards: tuple[PlayerCard, ...]
+    cards: tuple[HandCard, ...]
 
-    def __iter__(self) -> Iterator[PlayerCard]:
+    def __iter__(self) -> Iterator[HandCard]:
         return iter(self.cards)
 
     def __len__(self) -> int:
@@ -41,7 +40,7 @@ class PlayerHand(Iterable[PlayerCard], Sized):
     def __getitem__(self, item):
         return self.cards[item]
 
-    def get_real(self, suit_or_rank: Suit | Rank) -> Iterable[PlayerCard]:
+    def get_real(self, suit_or_rank: Suit | Rank) -> Iterable[HandCard]:
         for card in self:
             if card.is_real(suit_or_rank):
                 yield card
@@ -55,21 +54,21 @@ class PlayerHand(Iterable[PlayerCard], Sized):
             self.cards[slot].interpreted_cards.intersection_update(cards)
 
 
-def create_unknown_card() -> PlayerCard:
-    return PlayerCard(frozenset(all_possible_cards()), False, 0)
+def create_unknown_card() -> HandCard:
+    return HandCard(frozenset(all_possible_cards()), False, 0)
 
 
-def create_unknown_real_card(card: Card) -> PlayerCard:
-    return PlayerCard(frozenset(all_possible_cards()), False, 0, real_card=card)
+def create_unknown_real_card(card: Card) -> HandCard:
+    return HandCard(frozenset(all_possible_cards()), False, 0, real_card=card)
 
 
-def create_unknown_hand(player_name: str, size: int = 5) -> PlayerHand:
-    return PlayerHand(player_name, tuple(create_unknown_card() for i in range(size)))
+def create_unknown_hand(player_name: str, size: int = 5) -> Hand:
+    return Hand(player_name, tuple(create_unknown_card() for i in range(size)))
 
 
-def create_unknown_real_hand(player_name: str, cards: Iterable[Card]) -> PlayerHand:
-    return PlayerHand(player_name, tuple(create_unknown_real_card(card) for card in cards))
+def create_unknown_real_hand(player_name: str, cards: Iterable[Card]) -> Hand:
+    return Hand(player_name, tuple(create_unknown_real_card(card) for card in cards))
 
 
-def create_known_real_card(card: Card) -> PlayerCard:
-    return PlayerCard(frozenset({card}), True, 0, real_card=card)
+def create_known_real_card(card: Card) -> HandCard:
+    return HandCard(frozenset({card}), True, 0, real_card=card)
