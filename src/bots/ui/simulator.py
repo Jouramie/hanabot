@@ -25,13 +25,16 @@ def assemble_stacks(stacks: dict[Suit, SimulatorStack]) -> Stacks:
 
 def assemble_my_hand(me: Player) -> Hand:
     # TODO add drawn turn
-    return Hand(me.name, tuple(HandCard(frozenset(hand_card.possible_cards), hand_card.is_clued, None) for hand_card in me.hand))
+    return Hand(me.name, tuple(HandCard(frozenset(hand_card.possible_cards), hand_card.is_clued, hand_card.draw_id) for hand_card in me.hand))
 
 
 def assemble_other_player_hands(player: Player) -> Hand:
     return Hand(
         player.name,
-        tuple(HandCard(frozenset(hand_card.possible_cards), len(hand_card.received_clues) > 0, None, hand_card.real_card) for hand_card in player.hand),
+        tuple(
+            HandCard(frozenset(hand_card.possible_cards), len(hand_card.received_clues) > 0, hand_card.draw_id, hand_card.real_card)
+            for hand_card in player.hand
+        ),
     )
 
 

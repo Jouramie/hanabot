@@ -60,7 +60,7 @@ class Hanabot(DecisionMaking):
                 logger.debug(f"Trying to understand {action}")
                 interpretation = self.conventions.find_new_interpretations(action, self.blackboard)
                 if interpretation:
-                    self.blackboard.current_game_state.my_hand.add_interpretation(interpretation[0])
+                    self.blackboard.current_game_state.my_hand.add_interpretation(interpretation[0].possible_cards)
                 else:
                     logger.debug(f"Could not understand {action}")
 

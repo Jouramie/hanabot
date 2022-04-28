@@ -22,8 +22,9 @@ def test_given_starting_with_a_card_when_draw_then_drawn_card_it_the_card():
     the_card = Card(Suit.PURPLE, Rank.TWO)
     deck = Deck.starting_with(the_card)
 
-    drawn_card = deck.draw()
+    draw_id, drawn_card = deck.draw()
 
+    assert draw_id == 0
     assert drawn_card == the_card
 
 
@@ -80,12 +81,12 @@ def test_when_generate_deck_with_starting_hands_then_cards_are_drawn_starting_fr
         ]
     )
 
-    assert expected_first == deck.draw()
-    assert expected_second == deck.draw()
-    assert expected_third == deck.draw()
-    assert expected_fourth == deck.draw()
-    assert expected_fifth == deck.draw()
-    assert expected_sixth == deck.draw()
+    assert (0, expected_first) == deck.draw()
+    assert (1, expected_second) == deck.draw()
+    assert (2, expected_third) == deck.draw()
+    assert (3, expected_fourth) == deck.draw()
+    assert (4, expected_fifth) == deck.draw()
+    assert (5, expected_sixth) == deck.draw()
 
 
 def test_3suits_should_contain_correct_number_of_cards():

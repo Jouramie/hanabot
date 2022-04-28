@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from random import shuffle
 from typing import Iterable, Iterator, Sized, Union, Container
 
-from core.card import Card, Rank, Variant, Suit
+from core.card import Card, Rank, Variant, Suit, amount_of_cards
 
 
 @dataclass(frozen=True)
@@ -35,12 +35,12 @@ class Deck:
             cards.append(Card(suit, Rank.FIVE))
 
         shuffle(cards)
-        return Deck(cards, suits)
+        return Deck(cards, suits=suits)
 
     @staticmethod
     def empty(suits: Iterable[Suit] = Variant.NO_VARIANT) -> Deck:
         cards = []
-        return Deck(cards, suits)
+        return Deck(cards, suits=suits)
 
     @staticmethod
     def starting_with(cards: Iterable[Card] | Card, suits: Iterable[Suit] = Variant.NO_VARIANT) -> Deck:
@@ -54,7 +54,7 @@ class Deck:
             other_cards.remove(card)
 
         shuffle(other_cards)
-        return Deck(cards + other_cards, suits)
+        return Deck(cards + other_cards, suits=suits)
 
     @staticmethod
     def from_starting_hands(starting_hands: list[list[Card]], suits: Iterable[Suit] = Variant.NO_VARIANT) -> Deck:
@@ -65,8 +65,8 @@ class Deck:
 
         return Deck.starting_with(deck_start, suits)
 
-    def draw(self) -> Card:
-        return self._cards.pop()
+    def draw(self) -> tuple[int, Card]:
+        return amount_of_cards(self.suits) - len(self), self._cards.pop()
 
     def is_empty(self) -> bool:
         return not self._cards

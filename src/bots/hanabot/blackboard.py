@@ -3,7 +3,7 @@ from enum import Enum, auto
 
 from bots.domain.model.action import Action
 from bots.domain.model.game_state import RelativeGameState, GameHistory
-from bots.domain.model.hand import Slot
+from bots.domain.model.hand import Slot, DrawId
 from core import Card
 
 
@@ -21,7 +21,7 @@ class Interpretation:
     interpretation_type: InterpretationType | None = None
     convention_name: str | None = None
     # TODO there probably is no override possible with fix clue
-    possible_cards: dict[Slot, set[Card]] = field(default_factory=dict)
+    possible_cards: dict[DrawId, set[Card]] = field(default_factory=dict)
 
     def __repr__(self) -> str:
         return f"{self.convention_name} {self.possible_cards})"

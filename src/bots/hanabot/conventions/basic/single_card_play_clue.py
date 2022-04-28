@@ -38,7 +38,7 @@ class SingleCardRankPlayClueConvention(Convention):
         if playable_cards:
             logger.debug(f"{clue_action} could be a {self.name}.")
             return Interpretation(
-                clue_action, interpretation_type=InterpretationType.PLAY, convention_name=self.name, possible_cards={touched_slot: set(playable_cards)}
+                clue_action, interpretation_type=InterpretationType.PLAY, convention_name=self.name, possible_cards={touched_card.draw_id: set(playable_cards)}
             )
 
         return None
@@ -72,7 +72,7 @@ class SingleCardSuitPlayClueConvention(Convention):
         if playable_cards:
             logger.debug(f"{clue_action} could be a {self.name}.")
             return Interpretation(
-                clue_action, interpretation_type=InterpretationType.PLAY, convention_name=self.name, possible_cards={touched_slot: set(playable_cards)}
+                clue_action, interpretation_type=InterpretationType.PLAY, convention_name=self.name, possible_cards={touched_card.draw_id: set(playable_cards)}
             )
 
         return None

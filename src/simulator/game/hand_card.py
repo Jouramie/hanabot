@@ -5,12 +5,14 @@ from simulator.game.clue import Clue
 
 
 class HandCard:
+    draw_id: int
     real_card: Card
     received_clues: List[Clue]
     suits_in_game: List[Suit]
     possible_cards: List[Card]
 
-    def __init__(self, card: Card, suits_in_game: List[Suit]):
+    def __init__(self, draw_id: int, card: Card, suits_in_game: List[Suit]):
+        self.draw_id = draw_id
         self.real_card = card
         self.suits_in_game = suits_in_game
         self.is_clued = False

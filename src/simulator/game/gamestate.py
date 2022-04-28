@@ -52,8 +52,8 @@ class GameState:
     def player_draw_card(self, player: Player):
         if len(self.deck) == 0:
             return
-        card = self.deck.draw()
-        hand_card = HandCard(card, list(self.deck.suits))
+        draw_id, card = self.deck.draw()
+        hand_card = HandCard(draw_id, card, list(self.deck.suits))
         player.hand.insert(0, hand_card)
 
     def play_turn(self, action: Action):

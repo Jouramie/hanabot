@@ -206,3 +206,7 @@ def all_possible_cards(
     if isinstance(ranks, Rank):
         ranks = (ranks,)
     return {Card(suit, rank) for suit in suits for rank in ranks}
+
+
+def amount_of_cards(variant: Iterable[Suit]) -> int:
+    return sum(suit.amount_of(rank) for suit in variant for rank in Rank)

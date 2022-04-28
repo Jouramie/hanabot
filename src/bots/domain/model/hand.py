@@ -4,7 +4,8 @@ from typing import Iterable, Sized, Iterator, Type
 from core import Card, Rank, Suit
 from core.card import all_possible_cards
 
-Slot: Type[int] = int
+Slot: Type = int
+DrawId: Type = int
 
 
 @dataclass(frozen=True)
@@ -12,7 +13,7 @@ class HandCard:
     # Without interpretation, only basic clue information
     possible_cards: frozenset[Card]
     is_clued: bool
-    drawn_turn: int
+    draw_id: DrawId
     real_card: Card | None = None
     interpreted_cards: set[Card] = field(default_factory=set)
 
@@ -23,7 +24,7 @@ class HandCard:
         return self.real_card is not None and self.real_card.matches(suit_or_rank)
 
     def __repr__(self):
-        return f"{self.real_card if self.real_card is not None else self.possible_cards}"
+        return f"{self.draw_id} -> {self.real_card if self.real_card is not None else self.possible_cards}"
 
 
 @dataclass(frozen=True)
@@ -49,9 +50,10 @@ class Hand(Iterable[HandCard], Sized):
         return f"{self.owner_name} {self.cards})"
 
     # FIXME this do not seem right... It this really a hand concern to update the interpretations?
-    def add_interpretation(self, interpretation: dict[Slot : set[Card]]):
-        for slot, cards in interpretation.possible_cards.items():
-            self.cards[slot].interpreted_cards.intersection_update(cards)
+    def add_interpretation(self, interpretation: dict[DrawId, set[Card]]):
+        for card in self:
+            if card.draw_id in interpretation:
+                card.interpreted_cards.intersection_update(interpretation[card.draw_id])
 
 
 def create_unknown_card() -> HandCard:
