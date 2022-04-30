@@ -37,9 +37,8 @@ class Conventions:
 
         return SuitClueDecision(card.real_card.suit, player_hand.owner)
 
-    def find_chop(self, player_hand: Hand) -> int:
-        # TODO that's not the chop lol
-        return len(player_hand) - 1
+    def find_chop(self, hand: Hand) -> int | None:
+        return next((slot for slot, card in list(enumerate(hand))[::-1] if not card.is_clued), None)
 
     def find_card_on_chop(self, player_hand: Hand) -> HandCard:
         return player_hand[self.find_chop(player_hand)]

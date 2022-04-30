@@ -26,6 +26,45 @@ class Hanabot(DecisionMaking):
 
         current_game_state = self.interpret_actions()
 
+        return self.make_decision(current_game_state)
+
+    def interpret_actions(self) -> RelativeGameState:
+        """
+        1. For each action
+            - Find chop
+            - Match and resolve interpretation with expected action
+            - Match interpretation with unexpected action
+            - Find new interpretation
+            - Log non-interpretable actions
+        2. Write notes on cards
+        """
+        for action in self.blackboard.uninterpreted_actions:
+            self.blackboard.chop = self.conventions.find_chop(self.blackboard.my_hand)
+
+            if isinstance(action, PlayAction):
+                for interpretation in self.blackboard.ongoing_interpretations:
+                    if action.draw_id not in interpretation.notes_on_cards:
+                        continue
+
+                    interpretation.notes_on_cards.pop(action.draw_id)
+                    if interpretation.notes_on_cards:
+                        continue
+
+                    self.blackboard.move_interpretation_to_resolved(interpretation)
+
+            elif isinstance(action, ClueAction) and action.recipient == self.blackboard.current_game_state.my_hand.owner_name:
+                logger.debug(f"Trying to understand {action}")
+                interpretation = self.conventions.find_new_interpretations(action, self.blackboard)
+                if interpretation:
+                    self.blackboard.write_new_interpretation(interpretation[0])
+                else:
+                    logger.debug(f"WTF is this Charles {action}")
+
+        self.blackboard.write_notes_on_cards()
+
+        return self.blackboard.current_game_state
+
+    def make_decision(self, current_game_state):
         next_player_hand = current_game_state.other_player_hands[0]
         next_player_chop = self.conventions.find_card_on_chop(next_player_hand)
 
@@ -46,36 +85,3 @@ class Hanabot(DecisionMaking):
             return DiscardDecision(self.conventions.find_chop(current_game_state.my_hand))
 
         return SuitClueDecision(next_player_hand[0].real_card.suit, 1)
-
-    def interpret_actions(self) -> RelativeGameState:
-        """
-        1. For each action
-            - Match and resolve interpretation with expected action
-            - Match interpretation with unexpected action
-            - Find new interpretation
-            - Log non-interpretable actions
-        2. Write notes on cards
-        """
-        for action in self.blackboard.uninterpreted_actions:
-            if isinstance(action, PlayAction):
-                for interpretation in self.blackboard.ongoing_interpretations:
-                    if action.draw_id not in interpretation.notes_on_cards:
-                        continue
-
-                    interpretation.notes_on_cards.pop(action.draw_id)
-                    if interpretation.notes_on_cards:
-                        continue
-
-                    self.blackboard.move_interpretation_to_resolved(interpretation)
-
-            elif isinstance(action, ClueAction) and action.recipient == self.blackboard.current_game_state.my_hand.owner_name:
-                logger.debug(f"Trying to understand {action}")
-                interpretation = self.conventions.find_new_interpretations(action, self.blackboard)
-                if interpretation:
-                    self.blackboard.write_new_interpretation(interpretation[0])
-                else:
-                    logger.debug(f"Could not understand {action}")
-
-        self.blackboard.write_notes_on_cards()
-
-        return self.blackboard.current_game_state
