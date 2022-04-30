@@ -18,13 +18,11 @@ class Hanabot(DecisionMaking):
 
     def play_turn(self, current_game_state: RelativeGameState, history: GameHistory) -> Decision:
         """
-        choose action (all hands + interpreted hands + stacks)
-
-        perform action
-
+        1. wipe
+        2. interpret actions
+        3. make decision
         """
-        self.blackboard.current_game_state = current_game_state
-        self.blackboard.history = history
+        self.blackboard.wipe_for_new_turn(current_game_state, history)
 
         current_game_state = self.interpret_actions()
 
@@ -50,20 +48,25 @@ class Hanabot(DecisionMaking):
         return SuitClueDecision(next_player_hand[0].real_card.suit, 1)
 
     def interpret_actions(self) -> RelativeGameState:
-        self.blackboard.uninterpreted_actions = self.blackboard.history.action_history[
-            self.blackboard.current_game_state.turn_number
-            - len(self.blackboard.current_game_state.player_hands) : self.blackboard.current_game_state.turn_number
-        ]
+        """
+        1. For each action
+            - Match and resolve interpretation with expected action
+            - Match interpretation with unexpected action
+            - Find new interpretation
+            - Log non-interpretable actions
+        2. Write notes on cards
+        """
 
         for action in self.blackboard.uninterpreted_actions:
             if isinstance(action, ClueAction) and action.recipient == self.blackboard.current_game_state.my_hand.owner_name:
                 logger.debug(f"Trying to understand {action}")
                 interpretation = self.conventions.find_new_interpretations(action, self.blackboard)
                 if interpretation:
-                    self.blackboard.current_game_state.my_hand.add_interpretation(interpretation[0].possible_cards)
+                    self.blackboard.write_new_interpretation(interpretation[0])
                 else:
                     logger.debug(f"Could not understand {action}")
 
+        self.blackboard.write_notes_on_cards()
         # TODO reapply interpretations on hand
 
         return self.blackboard.current_game_state

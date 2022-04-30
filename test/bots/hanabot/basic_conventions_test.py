@@ -1,3 +1,5 @@
+import logging
+
 from bots.hanabot.conventions import basic
 from bots.hanabot.hanabot import Hanabot
 from bots.ui.simulator import SimulatorBot
@@ -5,6 +7,8 @@ from core import Deck
 from core.card import Card, Suit, Rank, Variant
 from simulator.controller import Controller
 from simulator.game.gamestate import GameState
+
+logging.basicConfig(level=logging.DEBUG)
 
 deck = Deck.from_starting_hands(
     [
