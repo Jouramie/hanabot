@@ -33,12 +33,12 @@ class SingleCardRankPlayClueConvention(Convention):
         (touched_slot,) = clue_action.touched_slots
         touched_card = current_game_state.my_hand[touched_slot]
 
-        playable_cards = {card for card in touched_card.possible_cards if current_game_state.is_playable(card)}
+        playable_cards = {card for card in touched_card.notes_on_cards if current_game_state.is_playable(card)}
 
         if playable_cards:
             logger.debug(f"{clue_action} could be a {self.name}.")
             return Interpretation(
-                clue_action, interpretation_type=InterpretationType.PLAY, convention_name=self.name, possible_cards={touched_card.draw_id: set(playable_cards)}
+                clue_action, interpretation_type=InterpretationType.PLAY, convention_name=self.name, notes_on_cards={touched_card.draw_id: set(playable_cards)}
             )
 
         return None
@@ -67,12 +67,12 @@ class SingleCardSuitPlayClueConvention(Convention):
         (touched_slot,) = clue_action.touched_slots
         touched_card = current_game_state.my_hand[touched_slot]
 
-        playable_cards = {card for card in touched_card.possible_cards if current_game_state.is_playable(card)}
+        playable_cards = {card for card in touched_card.notes_on_cards if current_game_state.is_playable(card)}
 
         if playable_cards:
             logger.debug(f"{clue_action} could be a {self.name}.")
             return Interpretation(
-                clue_action, interpretation_type=InterpretationType.PLAY, convention_name=self.name, possible_cards={touched_card.draw_id: set(playable_cards)}
+                clue_action, interpretation_type=InterpretationType.PLAY, convention_name=self.name, notes_on_cards={touched_card.draw_id: set(playable_cards)}
             )
 
         return None

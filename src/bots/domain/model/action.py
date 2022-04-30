@@ -1,16 +1,18 @@
 from dataclasses import dataclass
 
-from bots.domain.model.hand import Slot
+from bots.domain.model.hand import Slot, DrawId
 from core import Card, Suit, Rank
 
 
 @dataclass(frozen=True)
 class PlayAction:
+    draw_id: DrawId
     played_card: Card
 
 
 @dataclass(frozen=True)
 class DiscardAction:
+    draw_id: DrawId
     discarded_card: Card
 
 

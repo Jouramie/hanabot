@@ -52,9 +52,9 @@ def assemble_player_hands(global_state: GlobalGameState) -> tuple[Hand, ...]:
 
 def assemble_action(action: SimulatorAction, clues: list[SimulatorClue]) -> Action:
     if isinstance(action, SimulatorPlayAction):
-        return PlayAction(action.playedCard)
+        return PlayAction(action.drawId, action.playedCard)
     if isinstance(action, SimulatorDiscardAction):
-        return DiscardAction(action.discardedCard)
+        return DiscardAction(action.drawId, action.discardedCard)
     if isinstance(action, SimulatorColorClueAction):
         clue = next(clue for clue in clues if clue.turn == action.turn)
         return SuitClueAction(action.target_player.name, frozenset(clue.touched_slots), action.color)

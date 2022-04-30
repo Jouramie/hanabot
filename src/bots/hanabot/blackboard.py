@@ -21,10 +21,10 @@ class Interpretation:
     interpretation_type: InterpretationType | None = None
     convention_name: str | None = None
     # TODO there probably is no override possible with fix clue
-    possible_cards: dict[DrawId, set[Card]] = field(default_factory=dict)
+    notes_on_cards: dict[DrawId, set[Card]] = field(default_factory=dict)
 
     def __repr__(self) -> str:
-        return f"{self.convention_name} {self.possible_cards})"
+        return f"{self.convention_name} {self.notes_on_cards})"
 
 
 @dataclass
@@ -36,6 +36,7 @@ class Blackboard:
 
     uninterpreted_actions: list[Action] = field(default_factory=list)
     ongoing_interpretations: list[Interpretation] = field(default_factory=list)
+    # TODO is this of any use?
     resolved_interpretations: list[Interpretation] = field(default_factory=list)
 
     def wipe_for_new_turn(self, current_game_state: RelativeGameState, history: GameHistory):
@@ -54,10 +55,14 @@ class Blackboard:
 
     def write_notes_on_cards(self):
         for interpretation in self.ongoing_interpretations:
-            for draw_id, cards in interpretation.possible_cards.items():
+            for draw_id, cards in interpretation.notes_on_cards.items():
                 hand_card = next((card for card in self.my_hand if card.draw_id == draw_id), None)
                 if hand_card is not None:
-                    hand_card.interpreted_cards.intersection_update(cards)
+                    hand_card.notes_on_cards.intersection_update(cards)
+
+    def move_interpretation_to_resolved(self, interpretation: Interpretation):
+        self.ongoing_interpretations.remove(interpretation)
+        self.resolved_interpretations.append(interpretation)
 
     @property
     def is_hand_locked(self):

@@ -17,7 +17,7 @@ def test_given_one_one_left_to_play_when_find_interpretation_then_only_possible_
     interpretation = convention.find_interpretation(clue, game_state)
 
     assert interpretation == Interpretation(
-        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, possible_cards={0: {expected_card}}
+        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, notes_on_cards={0: {expected_card}}
     )
 
 
@@ -33,7 +33,7 @@ def test_given_only_multiple_four_playable_when_find_interpretation_then_only_po
     interpretation = convention.find_interpretation(clue, game_state)
 
     assert interpretation == Interpretation(
-        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, possible_cards={0: expected_cards}
+        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, notes_on_cards={0: expected_cards}
     )
 
 

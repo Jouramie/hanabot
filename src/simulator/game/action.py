@@ -43,6 +43,7 @@ class RankClueAction(Action):
 class PlayAction(Action):
     playedCard: Card
     cardSlot: int
+    drawId: int
     success: bool
 
     def __init__(self, slot: int):
@@ -58,6 +59,7 @@ class PlayAction(Action):
 class DiscardAction(Action):
     discardedCard: Card
     cardSlot: int
+    drawId: int
 
     def __init__(self, slot: int):
         self.cardSlot = slot

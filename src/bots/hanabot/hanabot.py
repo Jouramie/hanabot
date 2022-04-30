@@ -1,7 +1,7 @@
 import logging
 
 from bots.domain.decision import DecisionMaking, PlayDecision, DiscardDecision, Decision, SuitClueDecision
-from bots.domain.model.action import ClueAction
+from bots.domain.model.action import ClueAction, PlayAction
 from bots.domain.model.game_state import RelativeGameState, GameHistory
 from bots.hanabot.blackboard import Blackboard
 from bots.hanabot.conventions.convention import Conventions
@@ -56,9 +56,19 @@ class Hanabot(DecisionMaking):
             - Log non-interpretable actions
         2. Write notes on cards
         """
-
         for action in self.blackboard.uninterpreted_actions:
-            if isinstance(action, ClueAction) and action.recipient == self.blackboard.current_game_state.my_hand.owner_name:
+            if isinstance(action, PlayAction):
+                for interpretation in self.blackboard.ongoing_interpretations:
+                    if action.draw_id not in interpretation.notes_on_cards:
+                        continue
+
+                    interpretation.notes_on_cards.pop(action.draw_id)
+                    if interpretation.notes_on_cards:
+                        continue
+
+                    self.blackboard.move_interpretation_to_resolved(interpretation)
+
+            elif isinstance(action, ClueAction) and action.recipient == self.blackboard.current_game_state.my_hand.owner_name:
                 logger.debug(f"Trying to understand {action}")
                 interpretation = self.conventions.find_new_interpretations(action, self.blackboard)
                 if interpretation:
@@ -67,6 +77,5 @@ class Hanabot(DecisionMaking):
                     logger.debug(f"Could not understand {action}")
 
         self.blackboard.write_notes_on_cards()
-        # TODO reapply interpretations on hand
 
         return self.blackboard.current_game_state

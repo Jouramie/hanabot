@@ -15,10 +15,10 @@ class HandCard:
     is_clued: bool
     draw_id: DrawId
     real_card: Card | None = None
-    interpreted_cards: set[Card] = field(default_factory=set)
+    notes_on_cards: set[Card] = field(default_factory=set)
 
     def __post_init__(self):
-        self.interpreted_cards.update(self.possible_cards)
+        self.notes_on_cards.update(self.possible_cards)
 
     def is_real(self, suit_or_rank: Suit | Rank) -> bool:
         return self.real_card is not None and self.real_card.matches(suit_or_rank)
@@ -53,7 +53,7 @@ class Hand(Iterable[HandCard], Sized):
     def add_interpretation(self, interpretation: dict[DrawId, set[Card]]):
         for card in self:
             if card.draw_id in interpretation:
-                card.interpreted_cards.intersection_update(interpretation[card.draw_id])
+                card.notes_on_cards.intersection_update(interpretation[card.draw_id])
 
 
 def create_unknown_card() -> HandCard:

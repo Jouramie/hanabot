@@ -87,10 +87,10 @@ def test_given_uninterpreted_action_when_write_new_interpretation_then_ongoing_i
 def test_given_ongoing_interpretation_when_write_notes_on_cards_then_concerned_cards_receive_interpretation(mocker):
     blackboard = Blackboard()
     expected_card = Card(Suit.RED, Rank.FIVE)
-    blackboard.ongoing_interpretations = [Interpretation(mocker.Mock(), possible_cards={0: {expected_card}})]
+    blackboard.ongoing_interpretations = [Interpretation(mocker.Mock(), notes_on_cards={0: {expected_card}})]
     blackboard.current_game_state = mocker.Mock()
     blackboard.current_game_state.my_hand = Hand("alfred", (HandCard(frozenset(all_possible_cards()), True, 0),))
 
     blackboard.write_notes_on_cards()
 
-    assert blackboard.my_hand[0].interpreted_cards == {expected_card}
+    assert blackboard.my_hand[0].notes_on_cards == {expected_card}

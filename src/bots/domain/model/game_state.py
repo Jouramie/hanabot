@@ -63,7 +63,7 @@ class RelativeGameState:
     def is_possibly_playable(self, card: HandCard):
         filtered_possible_cards = set()
         visible_cards = self.visible_cards
-        for possible_card in card.interpreted_cards:
+        for possible_card in card.notes_on_cards:
             if visible_cards.get(possible_card, 0) < possible_card.number_of_copies:
                 filtered_possible_cards.add(possible_card)
 

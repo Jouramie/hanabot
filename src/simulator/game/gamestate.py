@@ -85,6 +85,7 @@ class GameState:
             action.success = False
         self.player_draw_card(player)
         action.playedCard = card_to_play
+        action.drawId = card_to_play.draw_id
         self.status.turns_remaining -= 1
 
     def play_turn_color_clue(self, action: ColorClueAction):
@@ -141,6 +142,7 @@ class GameState:
         self.status.generate_clue()
         self.player_draw_card(player)
         action.discardedCard = card_to_discard.real_card
+        action.drawId = card_to_discard.draw_id
         self.status.turns_remaining -= 1
 
     @property
