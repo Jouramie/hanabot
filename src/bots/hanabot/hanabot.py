@@ -52,7 +52,7 @@ class Hanabot(DecisionMaking):
 
                     self.blackboard.move_interpretation_to_resolved(interpretation)
 
-            elif isinstance(action, ClueAction) and action.recipient == self.blackboard.current_game_state.my_hand.owner_name:
+            elif isinstance(action, ClueAction):
                 logger.debug(f"Trying to understand {action}")
                 interpretation = self.conventions.find_new_interpretations(action, self.blackboard)
                 if interpretation:
@@ -64,7 +64,7 @@ class Hanabot(DecisionMaking):
 
         return self.blackboard.current_game_state
 
-    def make_decision(self, current_game_state):
+    def make_decision(self, current_game_state: RelativeGameState) -> Decision:
         next_player_hand = current_game_state.other_player_hands[0]
         next_player_chop = self.conventions.find_card_on_chop(next_player_hand)
 

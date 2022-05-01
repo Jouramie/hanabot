@@ -5,7 +5,7 @@ from typing import Iterable, Set
 
 from frozendict import frozendict
 
-from core import Rank, Suit, Card
+from core import Rank, Suit, Card, Variant
 
 
 @dataclass(frozen=True)
@@ -34,6 +34,14 @@ class Stacks:
     @staticmethod
     def create_empty_stacks(suits: Iterable[Suit]) -> Stacks:
         return Stacks({suit: Stack(suit) for suit in suits})
+
+    @staticmethod
+    def create_from_cards(cards: Iterable[Card]) -> Stacks:
+        return Stacks(frozendict({card.suit: Stack(card.suit, card.rank) for card in cards}))
+
+    @staticmethod
+    def create_from_dict(played_ranks: dict[Suit, Rank], suits: Iterable[Suit] = Variant.NO_VARIANT) -> Stacks:
+        return Stacks({suit: Stack(suit, played_ranks.get(suit, None)) for suit in suits})
 
     def are_all_playable_or_already_played(self, possible_cards: Iterable[Card]) -> bool:
         return all(self.is_playable(card) or self.is_already_played(card) for card in possible_cards)

@@ -55,6 +55,7 @@ class Conventions:
     def find_new_interpretations(self, action: Action, blackboard: Blackboard) -> list[Interpretation]:
         interpretations = []
         for convention in self.conventions:
+            # TODO should probably pass the game state at the time the clue was given
             interpretation = convention.find_interpretation(action, blackboard.current_game_state)
             if interpretation is not None:
                 interpretations.append(interpretation)

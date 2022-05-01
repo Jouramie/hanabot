@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Iterable, Sized, Iterator, Type
 
@@ -17,6 +19,36 @@ class HandCard:
     real_card: Card | None = None
     notes_on_cards: set[Card] = field(default_factory=set)
 
+    @staticmethod
+    def unknown_card(draw_id: DrawId = 0) -> HandCard:
+        return HandCard(frozenset(all_possible_cards()), False, draw_id)
+
+    @staticmethod
+    def clued_card(suit: Suit | None = None, rank: Rank | None = None, draw_id: DrawId = 0) -> HandCard:
+        if suit is not None and rank is not None:
+            return HandCard(frozenset(all_possible_cards(suit, rank)), True, draw_id)
+        elif suit is not None:
+            return HandCard(frozenset(all_possible_cards(suits=suit)), True, draw_id)
+        elif rank is not None:
+            return HandCard(frozenset(all_possible_cards(ranks=rank)), True, draw_id)
+
+    @staticmethod
+    def unknown_real_card(card: Card) -> HandCard:
+        return HandCard(frozenset(all_possible_cards()), False, 0, real_card=card)
+
+    @staticmethod
+    def clued_real_card(card: Card, suit_known: bool = False, rank_known: bool = False, draw_id: DrawId = 0) -> HandCard:
+        if suit_known and rank_known:
+            return HandCard(frozenset({card}), True, draw_id, real_card=card)
+        elif suit_known:
+            return HandCard(frozenset(all_possible_cards(suits=card.suit)), True, draw_id, real_card=card)
+        elif rank_known:
+            return HandCard(frozenset(all_possible_cards(ranks=card.rank)), True, draw_id, real_card=card)
+
+    @staticmethod
+    def known_real_card(card: Card, draw_id: DrawId = 0) -> HandCard:
+        return HandCard.clued_real_card(card, True, True, draw_id)
+
     def __post_init__(self):
         self.notes_on_cards.update(self.possible_cards)
 
@@ -26,11 +58,22 @@ class HandCard:
     def __repr__(self):
         return f"{self.draw_id} -> {self.real_card if self.real_card is not None else self.possible_cards}"
 
+    def is_known(self, suit_or_rank: Suit | Rank) -> bool:
+        return all(card.matches(suit_or_rank) for card in self.possible_cards)
+
 
 @dataclass(frozen=True)
 class Hand(Iterable[HandCard], Sized):
     owner_name: str
     cards: tuple[HandCard, ...]
+
+    @staticmethod
+    def create_unknown_hand(player_name: str, size: int = 5) -> Hand:
+        return Hand(player_name, tuple(HandCard.unknown_card() for i in range(size)))
+
+    @staticmethod
+    def create_unknown_real_hand(player_name: str, cards: Iterable[Card]) -> Hand:
+        return Hand(player_name, tuple(HandCard.unknown_real_card(card) for card in cards))
 
     def __iter__(self) -> Iterator[HandCard]:
         return iter(self.cards)
@@ -55,22 +98,11 @@ class Hand(Iterable[HandCard], Sized):
             if card.draw_id in interpretation:
                 card.notes_on_cards.intersection_update(interpretation[card.draw_id])
 
+    def find_most_probable(self, cards: list[Card]) -> list[HandCard]:
+        most_probable = []
+        for card in cards:
+            for hand_card in self:
+                if hand_card.is_clued and hand_card not in most_probable and (hand_card.is_known(card.suit) or hand_card.is_known(card.rank)):
+                    most_probable.append(hand_card)
 
-def create_unknown_card() -> HandCard:
-    return HandCard(frozenset(all_possible_cards()), False, 0)
-
-
-def create_unknown_real_card(card: Card) -> HandCard:
-    return HandCard(frozenset(all_possible_cards()), False, 0, real_card=card)
-
-
-def create_unknown_hand(player_name: str, size: int = 5) -> Hand:
-    return Hand(player_name, tuple(create_unknown_card() for i in range(size)))
-
-
-def create_unknown_real_hand(player_name: str, cards: Iterable[Card]) -> Hand:
-    return Hand(player_name, tuple(create_unknown_real_card(card) for card in cards))
-
-
-def create_known_real_card(card: Card) -> HandCard:
-    return HandCard(frozenset({card}), True, 0, real_card=card)
+        return most_probable

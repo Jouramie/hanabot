@@ -166,6 +166,9 @@ class Card:
     def __repr__(self) -> str:
         return self.short_name
 
+    def is_playable_over(self, card: Card) -> bool:
+        return self.suit == card.suit and self.rank.is_playable_over(card.rank)
+
 
 class Variant(Enum):
     NO_VARIANT = ((Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE),)

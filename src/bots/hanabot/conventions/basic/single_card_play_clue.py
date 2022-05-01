@@ -27,13 +27,13 @@ class SingleCardRankPlayClueConvention(Convention):
         return None
 
     def find_interpretation(self, clue_action: ClueAction, current_game_state: RelativeGameState) -> Interpretation | None:
-        if not isinstance(clue_action, RankClueAction) or len(clue_action.touched_slots) != 1:
+        if not isinstance(clue_action, RankClueAction) or len(clue_action.touched_slots) != 1 or clue_action.recipient != current_game_state.my_hand.owner_name:
             return None
 
         (touched_slot,) = clue_action.touched_slots
         touched_card = current_game_state.my_hand[touched_slot]
 
-        playable_cards = {card for card in touched_card.notes_on_cards if current_game_state.is_playable(card)}
+        playable_cards = {card for card in touched_card.possible_cards if current_game_state.is_playable(card)}
 
         if playable_cards:
             logger.debug(f"{clue_action} could be a {self.name}.")
@@ -61,13 +61,13 @@ class SingleCardSuitPlayClueConvention(Convention):
         return None
 
     def find_interpretation(self, clue_action: ClueAction, current_game_state: RelativeGameState) -> Interpretation | None:
-        if not isinstance(clue_action, SuitClueAction) or len(clue_action.touched_slots) != 1:
+        if not isinstance(clue_action, SuitClueAction) or len(clue_action.touched_slots) != 1 or clue_action.recipient != current_game_state.my_hand.owner_name:
             return None
 
         (touched_slot,) = clue_action.touched_slots
         touched_card = current_game_state.my_hand[touched_slot]
 
-        playable_cards = {card for card in touched_card.notes_on_cards if current_game_state.is_playable(card)}
+        playable_cards = {card for card in touched_card.possible_cards if current_game_state.is_playable(card)}
 
         if playable_cards:
             logger.debug(f"{clue_action} could be a {self.name}.")

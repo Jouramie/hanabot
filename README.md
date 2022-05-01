@@ -55,10 +55,10 @@
 - Play
 - Discard
 - Donner un play clue
+- prompts
 - Focus
 - 5 save
 - critical save
-- prompts
 - 2 save
 - finesse (1 card)
 

@@ -5,7 +5,7 @@ from typing import List, Iterable
 from bots.domain.model.action import Action
 from bots.domain.model.hand import Hand, HandCard, Slot
 from bots.domain.model.stack import Stacks
-from core import Card, Rank
+from core import Card, Rank, all_possible_cards
 
 RelativePlayerNumber = int
 
@@ -54,6 +54,11 @@ class RelativeGameState:
     def other_player_hands(self) -> tuple[Hand]:
         return self.player_hands[1:]
 
+    def find_player_hand(self, player_name: str) -> Hand:
+        for hand in self.player_hands:
+            if hand.owner_name == player_name:
+                return hand
+
     def can_give_clue(self):
         return self.clue_count > 0
 
@@ -94,8 +99,33 @@ class RelativeGameState:
 
         return clued_cards
 
+    @property
+    def clued_playable_cards(self) -> set[Card]:
+        clued_playable_cards = set()
+        for card in self.clued_cards:
+            if self.is_playable(card):
+                clued_playable_cards.add(card)
+
+        return clued_playable_cards
+
     def is_playable(self, card: Card) -> bool:
         return self.stacks.is_playable(card)
+
+    def is_playable_over_clued_playable(self, card: Card) -> bool:
+        for clued_playable_card in self.clued_playable_cards:
+            if card.is_playable_over(clued_playable_card):
+                return True
+
+    def is_already_played(self, card: Card) -> bool:
+        return self.stacks.is_already_played(card)
+
+    def is_already_clued(self, card: Card) -> bool:
+        return card in self.clued_cards
+
+    def find_missing_cards_to_play(self, card: Card) -> list[Card]:
+        return [
+            missing_card for missing_card in all_possible_cards(suits=card.suit) if missing_card.rank < card.rank and not self.is_already_played(missing_card)
+        ]
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,125 @@
+from bots.domain.model.action import SuitClueAction
+from bots.domain.model.hand import Hand, HandCard
+from bots.domain.model.stack import Stacks
+from bots.hanabot.blackboard import Interpretation, InterpretationType
+from bots.hanabot.conventions.basic.prompt import Prompt
+from core import Suit, Card, Rank
+from test.bots.domain.model.game_state_test import RelativeGameStateBuilder
+
+
+def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_clue_then_clued_card_is_interpreted_as_next_playable():
+    clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
+    expected_card = Card(Suit.RED, Rank.FOUR)
+
+    game_state = (
+        RelativeGameStateBuilder()
+        .set_stacks(Stacks.create_from_dict({Suit.RED: Rank.TWO}))
+        .set_my_hand(
+            Hand(
+                "cathy",
+                (
+                    HandCard.unknown_card(),
+                    HandCard.clued_card(suit=Suit.RED, draw_id=7),
+                    HandCard.unknown_card(),
+                ),
+            )
+        )
+        .set_other_player_hands(
+            Hand.create_unknown_hand("alice", 3),
+            Hand(
+                "bob",
+                (
+                    HandCard.unknown_card(),
+                    HandCard.clued_real_card(Card(Suit.RED, Rank.THREE), suit_known=True),
+                    HandCard.unknown_card(),
+                ),
+            ),
+        )
+        .build()
+    )
+
+    convention = Prompt()
+    interpretation = convention.find_interpretation(clue, game_state)
+
+    assert interpretation == Interpretation(
+        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, notes_on_cards={7: {expected_card}}
+    )
+
+
+def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when_interpret_clue_then_clued_card_is_interpreted_as_next_playable():
+    clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
+    expected_card = Card(Suit.RED, Rank.THREE)
+
+    game_state = (
+        RelativeGameStateBuilder()
+        .set_stacks(Stacks.create_from_dict({Suit.RED: Rank.TWO}))
+        .set_my_hand(
+            Hand(
+                "bob",
+                (
+                    HandCard.unknown_card(),
+                    HandCard.clued_card(suit=Suit.RED, draw_id=4),
+                    HandCard.unknown_card(),
+                ),
+            )
+        )
+        .set_other_player_hands(
+            Hand(
+                "cathy",
+                (
+                    HandCard.unknown_card(),
+                    HandCard.clued_real_card(
+                        Card(Suit.RED, Rank.FOUR),
+                        suit_known=True,
+                    ),
+                    HandCard.unknown_card(),
+                ),
+            ),
+            Hand.create_unknown_hand("alice", 3),
+        )
+        .build()
+    )
+
+    convention = Prompt()
+    interpretation = convention.find_interpretation(clue, game_state)
+
+    assert interpretation == Interpretation(
+        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, notes_on_cards={4: {expected_card}}
+    )
+
+
+def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interpreted():
+    clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
+    expected_card = Card(Suit.RED, Rank.THREE)
+
+    game_state = (
+        RelativeGameStateBuilder()
+        .set_stacks(Stacks.create_from_dict({Suit.RED: Rank.TWO}))
+        .set_my_hand(
+            Hand.create_unknown_hand("alice", 3),
+        )
+        .set_other_player_hands(
+            Hand(
+                "bob",
+                (
+                    HandCard.unknown_card(),
+                    HandCard.clued_real_card(Card(Suit.RED, Rank.THREE), suit_known=True, draw_id=4),
+                    HandCard.unknown_card(),
+                ),
+            ),
+            Hand(
+                "cathy",
+                (
+                    HandCard.unknown_card(),
+                    HandCard.clued_real_card(Card(Suit.RED, Rank.FOUR), suit_known=True, draw_id=5),
+                    HandCard.unknown_card(),
+                ),
+            ),
+        )
+        .build()
+    )
+
+    convention = Prompt()
+    interpretation = convention.find_interpretation(clue, game_state)
+
+    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name)
