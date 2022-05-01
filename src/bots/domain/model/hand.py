@@ -38,7 +38,7 @@ class Hand(Iterable[HandCard], Sized):
     def __len__(self) -> int:
         return len(self.cards)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item) -> HandCard:
         return self.cards[item]
 
     def get_real(self, suit_or_rank: Suit | Rank) -> Iterable[HandCard]:
