@@ -77,8 +77,8 @@ class Hanabot(DecisionMaking):
                 return PlayDecision(slot)
 
         if current_game_state.can_give_clue():
-            owner_slot_cards = current_game_state.find_playable_cards()
-            for possible_decision in self.conventions.find_play_clue(owner_slot_cards, current_game_state):
+            playable_cards = current_game_state.find_not_known_playable_cards()
+            for possible_decision in self.conventions.find_play_clue(playable_cards, current_game_state):
                 return possible_decision
 
         if current_game_state.can_discard():

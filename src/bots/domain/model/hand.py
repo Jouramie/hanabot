@@ -33,8 +33,8 @@ class HandCard:
             return HandCard(frozenset(all_possible_cards(ranks=rank)), True, draw_id)
 
     @staticmethod
-    def unknown_real_card(card: Card) -> HandCard:
-        return HandCard(frozenset(all_possible_cards()), False, 0, real_card=card)
+    def unknown_real_card(card: Card, draw_id: DrawId = 0) -> HandCard:
+        return HandCard(frozenset(all_possible_cards()), False, draw_id, real_card=card)
 
     @staticmethod
     def clued_real_card(card: Card, suit_known: bool = False, rank_known: bool = False, draw_id: DrawId = 0) -> HandCard:
@@ -60,6 +60,10 @@ class HandCard:
 
     def is_known(self, suit_or_rank: Suit | Rank) -> bool:
         return all(card.matches(suit_or_rank) for card in self.possible_cards)
+
+    @property
+    def is_fully_known(self) -> bool:
+        return len(self.notes_on_cards) == 1
 
 
 @dataclass(frozen=True)

@@ -1,3 +1,4 @@
+from bots.domain.decision import SuitClueDecision
 from bots.domain.model.action import SuitClueAction
 from bots.domain.model.hand import Hand, HandCard
 from bots.domain.model.stack import Stacks
@@ -90,7 +91,6 @@ def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when
 
 def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interpreted():
     clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
-    expected_card = Card(Suit.RED, Rank.THREE)
 
     game_state = (
         RelativeGameStateBuilder()
@@ -123,3 +123,38 @@ def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interp
     interpretation = convention.find_interpretation(clue, game_state)
 
     assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name)
+
+
+def test_given_playable_card_clued_and_next_playable_accessible_when_find_play_clue_then_clue_next_playable():
+    not_fully_known_playable = HandCard.clued_real_card(Card(Suit.RED, Rank.THREE), suit_known=True, draw_id=4)
+    game_state = (
+        RelativeGameStateBuilder()
+        .set_stacks(Stacks.create_from_dict({Suit.RED: Rank.TWO}))
+        .set_my_hand(
+            Hand.create_unknown_hand("alice", 3),
+        )
+        .set_other_player_hands(
+            Hand(
+                "bob",
+                (
+                    HandCard.unknown_real_card(Card(Suit.YELLOW, Rank.THREE)),
+                    not_fully_known_playable,
+                    HandCard.unknown_real_card(Card(Suit.YELLOW, Rank.THREE)),
+                ),
+            ),
+            Hand(
+                "cathy",
+                (
+                    HandCard.unknown_real_card(Card(Suit.BLUE, Rank.THREE)),
+                    HandCard.unknown_real_card(Card(Suit.RED, Rank.FOUR), draw_id=5),
+                    HandCard.unknown_real_card(Card(Suit.BLUE, Rank.THREE)),
+                ),
+            ),
+        )
+        .build()
+    )
+
+    convention = Prompt()
+    decision = convention.find_play_clue((1, 1, not_fully_known_playable), game_state)
+
+    assert decision == [SuitClueDecision(Suit.RED, 2)]

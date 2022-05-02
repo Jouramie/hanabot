@@ -5,17 +5,36 @@ from bots.domain.model.action import Action, ClueAction
 from bots.domain.model.game_state import RelativePlayerNumber, RelativeGameState
 from bots.domain.model.hand import Slot, HandCard
 from bots.hanabot.blackboard import Interpretation, InterpretationType
+from bots.hanabot.conventions.basic.single_card_play_clue import SingleCardPlayClueConvention
 from bots.hanabot.conventions.convention import Convention
 
 logger = logging.getLogger(__name__)
+
+clue_convention = SingleCardPlayClueConvention()
 
 
 class Prompt(Convention):
     def __init__(self):
         super().__init__("prompt")
 
-    def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> Decision | None:
-        pass
+    def find_play_clue(self, playable_card: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[Decision] | None:
+        global clue_convention
+        owner, slot, player_card = playable_card
+
+        next_card = player_card.real_card.next_card
+        if next_card not in current_game_state.visible_cards:
+            return None
+
+        available_next_cards = current_game_state.find(next_card)
+
+        decisions = []
+        for available_next_card in available_next_cards:
+            decision = clue_convention.find_play_clue(available_next_card, current_game_state)
+            if decision is None:
+                continue
+            decisions.extend(decision)
+
+        return decisions if len(decisions) > 0 else None
 
     def find_interpretation(self, action: Action, current_game_state: RelativeGameState) -> Interpretation | None:
         if not isinstance(action, ClueAction):

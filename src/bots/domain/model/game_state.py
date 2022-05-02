@@ -40,6 +40,11 @@ class RelativeGameState:
             if card.real_card not in self.clued_cards:
                 yield relative_player_id, slot, card
 
+    def find_not_known_playable_cards(self) -> Iterable[tuple[RelativePlayerNumber, Slot, HandCard]]:
+        for relative_player_id, slot, card in self.find_playable_cards():
+            if not card.is_fully_known:
+                yield relative_player_id, slot, card
+
     def find_playable_cards(self) -> Iterable[tuple[RelativePlayerNumber, Slot, HandCard]]:
         for relative_player_id, hand in enumerate(self.other_player_hands, 1):
             for slot, card in enumerate(hand.cards):
@@ -125,6 +130,14 @@ class RelativeGameState:
     def find_missing_cards_to_play(self, card: Card) -> list[Card]:
         return [
             missing_card for missing_card in all_possible_cards(suits=card.suit) if missing_card.rank < card.rank and not self.is_already_played(missing_card)
+        ]
+
+    def find(self, searched_card: Card) -> list[tuple[RelativePlayerNumber, Slot, HandCard]]:
+        return [
+            (relative_player_id, slot, card)
+            for relative_player_id, hand in enumerate(self.other_player_hands, 1)
+            for slot, card in enumerate(hand.cards)
+            if card.real_card == searched_card
         ]
 
 

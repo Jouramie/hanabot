@@ -15,7 +15,7 @@ class Convention(ABC):
     name: str
 
     @abstractmethod
-    def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> Decision | None:
+    def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[Decision] | None:
         pass
 
     @abstractmethod
@@ -52,9 +52,9 @@ class Conventions:
     ) -> Iterable[Decision]:
         for owner_slot_card in owner_slot_cards:
             for convention in self.conventions:
-                decision = convention.find_play_clue(owner_slot_card, current_game_state)
-                if decision is not None:
-                    yield decision
+                decisions = convention.find_play_clue(owner_slot_card, current_game_state)
+                if decisions is not None:
+                    yield decisions[0]
 
     def find_new_interpretations(self, action: Action, blackboard: Blackboard) -> list[Interpretation]:
         interpretations = []

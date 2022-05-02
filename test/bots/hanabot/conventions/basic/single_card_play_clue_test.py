@@ -1,7 +1,7 @@
 from bots.domain.model.action import SuitClueAction, RankClueAction
 from bots.domain.model.hand import HandCard, Hand
 from bots.hanabot.blackboard import Interpretation, InterpretationType
-from bots.hanabot.conventions import SingleCardRankPlayClueConvention
+from bots.hanabot.conventions import SingleCardPlayClueConvention
 from core import Rank, all_possible_cards, Card, Suit
 
 ME = "alice"
@@ -15,7 +15,7 @@ def test_given_one_one_left_to_play_when_find_interpretation_then_only_possible_
     game_state.my_hand = Hand(ME, (HandCard(frozenset(all_possible_cards(ranks=Rank.ONE)), True, 0),))
     game_state.is_playable = lambda card: card == expected_card
 
-    convention = SingleCardRankPlayClueConvention()
+    convention = SingleCardPlayClueConvention()
     interpretation = convention.find_interpretation(clue, game_state)
 
     assert interpretation == Interpretation(
@@ -31,7 +31,7 @@ def test_given_only_multiple_four_playable_when_find_interpretation_then_only_po
     game_state.my_hand = Hand(ME, (HandCard(frozenset(all_possible_cards(ranks=Rank.FOUR)), True, 0),))
     game_state.is_playable = lambda card: card in expected_cards
 
-    convention = SingleCardRankPlayClueConvention()
+    convention = SingleCardPlayClueConvention()
     interpretation = convention.find_interpretation(clue, game_state)
 
     assert interpretation == Interpretation(
@@ -42,7 +42,7 @@ def test_given_only_multiple_four_playable_when_find_interpretation_then_only_po
 def test_given_suit_clue_when_find_interpretation_then_do_not_find_interpretation(mocker):
     clue = SuitClueAction("alice", frozenset({0}), Suit.BLUE)
 
-    convention = SingleCardRankPlayClueConvention()
+    convention = SingleCardPlayClueConvention()
     interpretation = convention.find_interpretation(clue, mocker.Mock())
 
     assert interpretation is None

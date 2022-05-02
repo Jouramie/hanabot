@@ -68,6 +68,17 @@ class Rank(Enum):
         elif self is Rank.FIVE:
             return already_played_rank is Rank.FOUR
 
+    @property
+    def next(self) -> Rank:
+        if self is Rank.ONE:
+            return Rank.TWO
+        elif self is Rank.TWO:
+            return Rank.THREE
+        elif self is Rank.THREE:
+            return Rank.FOUR
+        elif self is Rank.FOUR:
+            return Rank.FIVE
+
     def __gt__(self, other):
         return self.number_value > other.number_value
 
@@ -168,6 +179,10 @@ class Card:
 
     def is_playable_over(self, card: Card) -> bool:
         return self.suit == card.suit and self.rank.is_playable_over(card.rank)
+
+    @property
+    def next_card(self) -> Card:
+        return Card(self.suit, self.rank.next)
 
 
 class Variant(Enum):
