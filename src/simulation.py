@@ -90,6 +90,6 @@ if __name__ == "__main__":
     if response == "slow":
         play_game_slow(simulation_players, simulation_suits)
     elif words[0] == "fast" and len(words) == 2:
-        play_games_fast(simulation_players, simulation_suits, int(words[1]))
+        play_games_fast(simulation_players, simulation_suits, int(words[1]), False)
     else:
         print("you suck at typing")
