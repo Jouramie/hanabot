@@ -9,7 +9,7 @@ from bots.hanabot.conventions.convention import Convention
 
 logger = logging.getLogger(__name__)
 
-
+# TODO handle duplicate cards
 class SingleCardRankPlayClueConvention(Convention):
     def __init__(self):
         super().__init__("Single card rank play clue")

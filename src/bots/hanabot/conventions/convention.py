@@ -40,7 +40,11 @@ class Conventions:
     def find_chop(self, hand: Hand) -> int | None:
         return next((slot for slot, card in list(enumerate(hand))[::-1] if not card.is_clued), None)
 
-    def find_card_on_chop(self, player_hand: Hand) -> HandCard:
+    def find_card_on_chop(self, player_hand: Hand) -> HandCard | None:
+        chop = self.find_chop(player_hand)
+        if chop is None:
+            return None
+
         return player_hand[self.find_chop(player_hand)]
 
     def find_play_clue(
