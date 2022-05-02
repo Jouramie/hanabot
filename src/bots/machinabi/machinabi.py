@@ -1,6 +1,6 @@
 import logging
 
-from bots.domain.decision import DecisionMaking, DiscardDecision, Decision
+from bots.domain.decision import DecisionMaking, DiscardDecision, Decision, ClueDecision, SuitClueDecision
 from bots.domain.model.game_state import RelativeGameState, GameHistory
 from bots.domain.model.hand import Hand
 
@@ -12,6 +12,9 @@ class Machinabi(DecisionMaking):
         pass
 
     def play_turn(self, current_game_state: RelativeGameState, history: GameHistory) -> Decision:
+        # if current_game_state.clue_count > 0:
+        #     return SuitClueDecision(current_game_state.other_player_hands[0].cards[-1].real_card.suit, 1)
+
         if current_game_state.clue_count < 8:
             return self.discard_chop(current_game_state)
         pass

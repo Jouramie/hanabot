@@ -8,6 +8,11 @@ from test.simulator.game_setup import get_player_names
 from simulator.game.gamestate import GameState
 
 
+def get_game_state_random(number_players: int, suits: Iterable[Suit]):
+    gamestate = GameState(get_player_names(number_players), Deck.generate(suits))
+    return gamestate
+
+
 def get_game_state_nothing_to_do(number_players: int, suits: Iterable[Suit]):
     gamestate = GameState(get_player_names(number_players), Deck.starting_with(get_all_threes_and_fours(suits)))
     gamestate.status.clues = 4
