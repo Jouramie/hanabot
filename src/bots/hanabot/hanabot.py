@@ -16,7 +16,7 @@ class Hanabot(DecisionMaking):
         self.conventions = conventions
         self.blackboard = Blackboard()
 
-    def start_new_game(self):
+    def new_game(self):
         self.blackboard = Blackboard()
 
     def play_turn(self, current_game_state: RelativeGameState, history: GameHistory) -> Decision:

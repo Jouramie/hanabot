@@ -33,7 +33,7 @@ ClueDecision = SuitClueDecision | RankClueDecision
 
 class DecisionMaking(ABC):
     @abstractmethod
-    def start_new_game(self):
+    def new_game(self):
         pass
 
     @abstractmethod

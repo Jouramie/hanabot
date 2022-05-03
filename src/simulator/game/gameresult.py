@@ -24,8 +24,8 @@ class GameResult:
 
     def __repr__(self):
         if self.is_victory:
-            return f"The team has won with a max score of {str(self.score)}"
+            return f"The team has won with a max score of {str(self.score)}."
         elif self.is_survival:
-            return f"The team has survived with a score of {str(self.score)} out of {str(self.max_score)}"
+            return f"The team has survived with a score of {str(self.score)} out of {str(self.max_score)}."
         else:
-            return f"The team has struck out after playing {str(self.played_cards)}"
+            return f"The team has struck out after playing {str(self.played_cards)} cards."

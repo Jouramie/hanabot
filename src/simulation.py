@@ -9,12 +9,11 @@ from bots.machinabi.machinabi import Machinabi
 from bots.ui.simulator import SimulatorBot
 from core import Variant, Suit
 from simulator.controller import Controller
-from simulator.players.goodtouchplayer import GoodTouchPlayer
 from simulator.players.simulatorplayer import SimulatorPlayer
 
 
-def play_game_slow(players: List[SimulatorPlayer], suits: Iterable[Suit]):
-    controller = Controller()
+def play_game_slow(players: List[SimulatorPlayer], suits: Iterable[Suit], draw_game: bool = True, log_game: bool = False):
+    controller = Controller(draw_game, log_game)
     game = controller.new_game(players, suits)
     controller.draw_game()
     while not controller.is_game_over():
@@ -22,12 +21,9 @@ def play_game_slow(players: List[SimulatorPlayer], suits: Iterable[Suit]):
         controller.play_turn()
         controller.draw_game()
 
-    result = controller.get_game_result()
-    print(repr(result))
 
-
-def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], number_games: int, verbose: bool = True):
-    controller = Controller(verbose)
+def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], number_games: int, draw_game: bool = True, log_game: bool = False):
+    controller = Controller(draw_game, log_game)
     total_score = 0
     total_survivals = 0
     total_victories = 0
@@ -39,9 +35,7 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
         game = controller.new_game(players, suits)
         controller.try_play_until_game_is_over()
         result = controller.get_game_result()
-        if verbose:
-            print(repr(result))
-        elif games_remaining % 100 == 0:
+        if not draw_game and games_remaining % 100 == 0:
             print(f"({number_games-games_remaining}/{number_games})")
 
         total_score = total_score + result.played_cards

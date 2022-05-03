@@ -47,9 +47,9 @@ if __name__ == "__main__":
     response = input().lower()
     words = response.split(" ")
     if response == "slow":
-        play_game_slow(players, suits)
+        play_game_slow(players, suits, log_game=True)
     elif words[0] == "fast" and len(words) == 2:
         logging.root.setLevel(logging.WARNING)
-        play_games_fast(players, suits, int(words[1]), verbose=False)
+        play_games_fast(players, suits, int(words[1]), draw_game=False, log_game=True)
     else:
         print("you suck at typing")

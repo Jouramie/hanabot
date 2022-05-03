@@ -1,8 +1,7 @@
 import logging
 from typing import Dict, Tuple
 
-from bots.domain.decision import DecisionMaking, DiscardDecision, Decision, ClueDecision, SuitClueDecision, \
-    RankClueDecision
+from bots.domain.decision import DecisionMaking, DiscardDecision, Decision, ClueDecision, SuitClueDecision, RankClueDecision
 from bots.domain.model.game_state import RelativeGameState, GameHistory
 from bots.domain.model.hand import Hand, DrawId
 from core import Card
@@ -17,7 +16,7 @@ class Machinabi(DecisionMaking):
     def __init__(self):
         pass
 
-    def start_new_game(self):
+    def new_game(self):
         pass
 
     def play_turn(self, current_game_state: RelativeGameState, history: GameHistory) -> Decision:

@@ -11,7 +11,7 @@ class SimulatorPlayer(ABC):
         self.name = name
 
     @abstractmethod
-    def start_new_game(self):
+    def new_game(self):
         pass
 
     @abstractmethod

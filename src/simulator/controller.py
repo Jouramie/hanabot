@@ -1,4 +1,6 @@
 import logging
+import os
+from datetime import datetime
 from typing import List, Dict, Iterable
 
 from core import Deck, Suit
@@ -9,17 +11,27 @@ from simulator.players.simulatorplayer import SimulatorPlayer
 
 logger = logging.getLogger(__name__)
 
+CURRENT_GAME_FILE = "logs/current_game.txt"
+PAST_GAMES_FOLDER = "logs/past_games"
+MAX_LOGGED_GAMES = 100
+
 
 class Controller:
     current_game: GameState
     current_players: Dict[str, SimulatorPlayer]
 
-    def __init__(self, verbose=True):
-        self.verbose = verbose
+    def __init__(self, verbose=True, log_game=True):
+        self.draw_game_enabled = verbose
+        self.log_game_enabled = log_game
+        self.current_game_file = None
 
     def new_game(self, players: List[SimulatorPlayer], suits: Iterable[Suit]) -> GameState:
         self.current_game = GameState([player.name for player in players], Deck.generate(suits))
         self._initialize_players(players)
+        if self.log_game_enabled:
+            if os.path.isfile(CURRENT_GAME_FILE):
+                os.remove(CURRENT_GAME_FILE)
+            self.current_game_file = open(CURRENT_GAME_FILE, "w+")
         return self.current_game
 
     def resume_game(self, players: List[SimulatorPlayer], game_state: GameState) -> GameState:
@@ -30,7 +42,7 @@ class Controller:
     def _initialize_players(self, players: List[SimulatorPlayer]):
         self.current_players = {}
         for player in players:
-            player.start_new_game()
+            player.new_game()
             self.current_players[player.name] = player
 
     def play_turn(self) -> GameState:
@@ -41,19 +53,25 @@ class Controller:
         return self.current_game
 
     def try_play_until_game_is_over(self):
+        result = None
         try:
-            return self.play_until_game_is_over()
+            result = self.play_until_game_is_over()
+            return result
         except Exception as e:
             logger.exception(e)
             self.current_game.status.is_over = True
             self.current_game.status.strikes = 3
-            return GameResult.from_game_state(self.current_game)
+            result = GameResult.from_game_state(self.current_game)
+            return result
+        finally:
+            self.draw_and_log(repr(result))
+            if self.current_game_file is not None:
+                self.close_game_log(result.score)
 
     def play_until_game_is_over(self) -> GameResult:
         while not self.is_game_over():
             self.play_turn()
-            if self.verbose:
-                self.draw_game()
+            self.draw_game()
         return self.get_game_result()
 
     def is_game_over(self) -> bool:
@@ -67,11 +85,11 @@ class Controller:
         self.draw_game_numbers()
         self.draw_stacks()
         self.draw_hands()
-        print("-------------------------------")
+        self.draw_and_log("-------------------------------")
 
     def draw_last_action(self):
         if self.current_game.history.actions:
-            print(str(self.current_game.history.actions[-1]))
+            self.draw_and_log(f"{self.current_game.history.actions[-1]}")
 
     def draw_game_numbers(self):
         clues = str(self.current_game.status.clues)
@@ -82,16 +100,16 @@ class Controller:
             score = score + stack.stack_score()
         score = str(score)
         turns = str(self.current_game.status.turns_remaining)
-        print("Clues: " + clues + " | Strikes: " + strikes + " | Score: " + score + " | Turns: " + turns + " | Deck: " + deck)
+        self.draw_and_log("Clues: " + clues + " | Strikes: " + strikes + " | Score: " + score + " | Turns: " + turns + " | Deck: " + deck)
 
     def draw_stacks(self):
         stack_string = "Stacks: | "
         for suit, stack in self.current_game.play_area.stacks.items():
             stack_string += str(stack) + " | "
-        print(stack_string)
+        self.draw_and_log(stack_string)
 
     def draw_hands(self):
-        print("")
+        self.draw_and_log("")
         for player in self.current_game.players:
             self.draw_hand(player)
 
@@ -102,4 +120,23 @@ class Controller:
                 hand_string += f"[{str(card)}]|"
             else:
                 hand_string += f" {str(card)} |"
-        print(hand_string)
+        self.draw_and_log(hand_string)
+
+    def draw_and_log(self, string: str):
+        if self.draw_game_enabled:
+            print(string)
+        if self.log_game_enabled:
+            self.current_game_file.write(string + "\n")
+
+    def close_game_log(self, score: int | None):
+        self.current_game_file.close()
+        if not os.path.isdir(PAST_GAMES_FOLDER):
+            os.mkdir(PAST_GAMES_FOLDER)
+        if score is not None:
+            file_destination = f"{PAST_GAMES_FOLDER}/{datetime.now().replace().isoformat().replace(':', '')}-{str(score)}.txt"
+        else:
+            file_destination = f"{PAST_GAMES_FOLDER}/{datetime.now().replace().isoformat().replace(':', '')}.txt"
+        os.rename(CURRENT_GAME_FILE, file_destination)
+        saved_games = os.listdir(PAST_GAMES_FOLDER)
+        if len(saved_games) > MAX_LOGGED_GAMES:
+            os.remove(f"{PAST_GAMES_FOLDER}/{sorted(saved_games)[0]}")

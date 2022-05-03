@@ -108,8 +108,8 @@ class SimulatorBot(SimulatorPlayer):
         super().__init__(name)
         self.decision_making = decision_making
 
-    def start_new_game(self):
-        self.decision_making.start_new_game()
+    def new_game(self):
+        self.decision_making.new_game()
 
     def play_turn(self, global_game_state: GlobalGameState) -> SimulatorAction:
         relative_game_state = assemble_relative_gamestate(global_game_state)
