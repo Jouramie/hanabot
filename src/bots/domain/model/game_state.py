@@ -70,7 +70,7 @@ class RelativeGameState:
     def can_discard(self):
         return self.clue_count < 8
 
-    def is_possibly_playable(self, card: HandCard):
+    def is_possibly_playable(self, card: HandCard) -> bool:
         filtered_possible_cards = set()
         visible_cards = self.visible_cards
         for possible_card in card.notes_on_cards:

@@ -56,8 +56,8 @@
 - Discard
 - Donner un play clue
 - prompts
-- Focus
 - 5 save
+- Focus
 - critical save
 - 2 save
 - finesse (1 card)

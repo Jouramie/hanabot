@@ -83,7 +83,7 @@ class Hanabot(DecisionMaking):
 
         # if possible card if playable or already played, play it (good touch principle)
         for slot, card in enumerate(current_game_state.my_hand):
-            if card.is_clued and current_game_state.is_possibly_playable(card):
+            if (card.is_fully_known and current_game_state.is_playable(card)) or (card.is_clued and current_game_state.is_possibly_playable(card)):
                 return PlayDecision(slot)
 
         if current_game_state.can_give_clue():
@@ -92,6 +92,7 @@ class Hanabot(DecisionMaking):
                 return possible_decision
 
         if current_game_state.can_discard():
-            return DiscardDecision(self.conventions.find_chop(current_game_state.my_hand))
+            chop = self.conventions.find_chop(current_game_state.my_hand)
+            return DiscardDecision(chop if chop is not None else len(current_game_state.my_hand) - 1)
 
         return SuitClueDecision(next_player_hand[0].real_card.suit, 1)
