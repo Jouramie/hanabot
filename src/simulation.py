@@ -35,7 +35,7 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
 
     while games_remaining > 0:
         game = controller.new_game(players, suits)
-        controller.play_until_game_is_over()
+        controller.try_play_until_game_is_over()
         result = controller.get_game_result()
         if verbose:
             print(repr(result))

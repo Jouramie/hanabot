@@ -20,6 +20,7 @@ class DiscardAction:
 class SuitClueAction:
     recipient: str
     touched_slots: frozenset[Slot]
+    touched_draw_ids: frozenset[DrawId]
     suit: Suit
 
     def __repr__(self):
@@ -30,6 +31,7 @@ class SuitClueAction:
 class RankClueAction:
     recipient: str
     touched_slots: frozenset[Slot]
+    touched_draw_ids: frozenset[DrawId]
     rank: Rank
 
     def __repr__(self):

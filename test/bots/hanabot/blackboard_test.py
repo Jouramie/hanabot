@@ -46,7 +46,7 @@ def test_given_empty_blackboard_when_wipe_for_new_turn_then_add_uninterpreted_ac
 def test_given_used_blackboard_when_wipe_for_new_turn_then_add_uninterpreted_actions_from_history(mocker):
     blackboard = Blackboard()
     blackboard.current_game_state = mocker.Mock()
-    blackboard.current_game_state.turn_number = 2
+    blackboard.current_game_state.turn_number = 3
 
     new_game_state = mocker.Mock()
     new_game_state.turn_number = 5

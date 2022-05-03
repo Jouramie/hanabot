@@ -6,14 +6,18 @@ class Clue:
     giver_name: str
     receiver_name: str
     touched_slots: set[int]
+    touched_draw_ids: set[int]
 
-    def __init__(self, turn: int, giver_name: str, receiver_name: str, touched_slots=None):
+    def __init__(self, turn: int, giver_name: str, receiver_name: str, touched_slots=None, touched_draw_ids=None):
         if touched_slots is None:
             touched_slots = set()
+        if touched_draw_ids is None:
+            touched_draw_ids = set()
         self.turn = turn
         self.giver_name = giver_name
         self.receiver_name = receiver_name
         self.touched_slots = touched_slots
+        self.touched_draw_ids = touched_draw_ids
 
     def touches_card(self, card: Card):
         pass

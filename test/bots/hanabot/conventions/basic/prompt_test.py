@@ -9,7 +9,7 @@ from test.bots.domain.model.game_state_test import RelativeGameStateBuilder
 
 
 def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_clue_then_clued_card_is_interpreted_as_next_playable():
-    clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
+    clue = SuitClueAction("cathy", frozenset({1}), frozenset({5}), Suit.RED)
     expected_card = Card(Suit.RED, Rank.FOUR)
 
     game_state = (
@@ -20,7 +20,7 @@ def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_cl
                 "cathy",
                 (
                     HandCard.unknown_card(),
-                    HandCard.clued_card(suit=Suit.RED, draw_id=7),
+                    HandCard.clued_card(suit=Suit.RED, draw_id=5),
                     HandCard.unknown_card(),
                 ),
             )
@@ -43,12 +43,12 @@ def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_cl
     interpretation = convention.find_interpretation(clue, game_state)
 
     assert interpretation == Interpretation(
-        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, notes_on_cards={7: {expected_card}}
+        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, notes_on_cards={5: {expected_card}}
     )
 
 
 def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when_interpret_clue_then_clued_card_is_interpreted_as_next_playable():
-    clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
+    clue = SuitClueAction("cathy", frozenset({1}), frozenset({5}), Suit.RED)
     expected_card = Card(Suit.RED, Rank.THREE)
 
     game_state = (
@@ -69,10 +69,7 @@ def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when
                 "cathy",
                 (
                     HandCard.unknown_card(),
-                    HandCard.clued_real_card(
-                        Card(Suit.RED, Rank.FOUR),
-                        suit_known=True,
-                    ),
+                    HandCard.clued_real_card(Card(Suit.RED, Rank.FOUR), suit_known=True, draw_id=5),
                     HandCard.unknown_card(),
                 ),
             ),
@@ -90,7 +87,7 @@ def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when
 
 
 def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interpreted():
-    clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
+    clue = SuitClueAction("cathy", frozenset({1}), frozenset({5}), Suit.RED)
 
     game_state = (
         RelativeGameStateBuilder()

@@ -22,6 +22,7 @@ class Interpretation:
     convention_name: str | None = None
     # TODO there probably is no override possible with fix clue
     notes_on_cards: dict[DrawId, set[Card]] = field(default_factory=dict)
+    played_cards: set[DrawId] = field(default_factory=set)
 
     def __repr__(self) -> str:
         return f"{self.convention_name} {self.notes_on_cards})"
@@ -43,7 +44,7 @@ class Blackboard:
         if self.current_game_state is None:
             self.uninterpreted_actions = history.action_history
         else:
-            self.uninterpreted_actions = history.action_history[self.current_game_state.turn_number + 1 :]
+            self.uninterpreted_actions = history.action_history[self.current_game_state.turn_number :]
         self.chop = None
 
         self.current_game_state = current_game_state

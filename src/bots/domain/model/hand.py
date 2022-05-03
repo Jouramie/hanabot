@@ -110,3 +110,8 @@ class Hand(Iterable[HandCard], Sized):
                     most_probable.append(hand_card)
 
         return most_probable
+
+    def find_card_by_draw_id(self, draw_id: DrawId) -> HandCard | None:
+        for card in self:
+            if card.draw_id == draw_id:
+                return card

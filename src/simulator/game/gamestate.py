@@ -119,7 +119,8 @@ class GameState:
         for slot, hand_card in enumerate(target_player.hand):
             touched_the_card = hand_card.receive_clue(clue)
             if touched_the_card:
-                clue.touched_slots |= {slot}
+                clue.touched_slots.add(slot)
+                clue.touched_draw_ids.add(hand_card.draw_id)
             touches_any |= touched_the_card
 
         if not touches_any:
@@ -134,7 +135,7 @@ class GameState:
 
         if self.status.clues >= 8:
             raise ValueError("You cannot discard at 8 clues!")
-        if action.cardSlot < 0 or action.cardSlot >= len(player.hand):
+        if action.cardSlot is None or action.cardSlot < 0 or action.cardSlot >= len(player.hand):
             raise ValueError("You cannot discard this slot!")
 
         card_to_discard = player.hand.pop(action.cardSlot)

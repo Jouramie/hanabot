@@ -11,5 +11,9 @@ class SimulatorPlayer(ABC):
         self.name = name
 
     @abstractmethod
+    def start_new_game(self):
+        pass
+
+    @abstractmethod
     def play_turn(self, gamestate: GameState) -> Action:
         pass

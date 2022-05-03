@@ -1,7 +1,7 @@
 import logging
 
 from bots.domain.decision import DecisionMaking, PlayDecision, DiscardDecision, Decision, SuitClueDecision
-from bots.domain.model.action import ClueAction, PlayAction
+from bots.domain.model.action import ClueAction, PlayAction, DiscardAction
 from bots.domain.model.game_state import RelativeGameState, GameHistory
 from bots.hanabot.blackboard import Blackboard
 from bots.hanabot.conventions.convention import Conventions
@@ -16,6 +16,9 @@ class Hanabot(DecisionMaking):
         self.conventions = conventions
         self.blackboard = Blackboard()
 
+    def start_new_game(self):
+        self.blackboard = Blackboard()
+
     def play_turn(self, current_game_state: RelativeGameState, history: GameHistory) -> Decision:
         """
         1. wipe
@@ -24,9 +27,16 @@ class Hanabot(DecisionMaking):
         """
         self.blackboard.wipe_for_new_turn(current_game_state, history)
 
-        current_game_state = self.interpret_actions()
+        current_game_state = self.try_interpret_actions()
 
         return self.make_decision(current_game_state)
+
+    def try_interpret_actions(self) -> RelativeGameState:
+        try:
+            return self.interpret_actions()
+        except Exception as e:
+            logger.exception(e)
+            return self.blackboard.current_game_state
 
     def interpret_actions(self) -> RelativeGameState:
         """
@@ -41,19 +51,19 @@ class Hanabot(DecisionMaking):
         for action in self.blackboard.uninterpreted_actions:
             self.blackboard.chop = self.conventions.find_chop(self.blackboard.my_hand)
 
-            if isinstance(action, PlayAction):
-                for interpretation in self.blackboard.ongoing_interpretations:
+            if isinstance(action, PlayAction) or isinstance(action, DiscardAction):
+                for interpretation in self.blackboard.ongoing_interpretations.copy():
                     if action.draw_id not in interpretation.notes_on_cards:
                         continue
 
-                    interpretation.notes_on_cards.pop(action.draw_id)
-                    if interpretation.notes_on_cards:
+                    interpretation.played_cards.add(action.draw_id)
+                    if interpretation.played_cards != interpretation.notes_on_cards.keys():
                         continue
 
+                    logger.debug(f"{action} resolved interpretation {interpretation}.")
                     self.blackboard.move_interpretation_to_resolved(interpretation)
 
             elif isinstance(action, ClueAction):
-                logger.debug(f"Trying to understand {action}")
                 interpretation = self.conventions.find_new_interpretations(action, self.blackboard)
                 if interpretation:
                     self.blackboard.write_new_interpretation(interpretation[0])

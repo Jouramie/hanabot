@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class SingleCardPlayClueConvention(Convention):
     def __init__(self):
-        super().__init__("Single card rank play clue")
+        super().__init__("Single card play clue")
 
     def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[ClueDecision] | None:
         # TODO handle duplicate cards
@@ -23,12 +23,16 @@ class SingleCardPlayClueConvention(Convention):
         suit = player_card.real_card.suit
         real_cards_with_suit = list(hand.get_real(suit))
         if len(real_cards_with_suit) == 1:
-            return [SuitClueDecision(suit, owner)]
+            decision = SuitClueDecision(suit, owner)
+            logger.debug(f"{decision}.")
+            return [decision]
 
         rank = player_card.real_card.rank
         real_cards_with_rank = list(hand.get_real(rank))
         if len(real_cards_with_rank) == 1:
-            return [RankClueDecision(rank, owner)]
+            decision = RankClueDecision(rank, owner)
+            logger.debug(f"{decision}.")
+            return [decision]
 
         return None
 
@@ -36,8 +40,10 @@ class SingleCardPlayClueConvention(Convention):
         if len(clue_action.touched_slots) != 1 or clue_action.recipient != current_game_state.my_hand.owner_name:
             return None
 
-        (touched_slot,) = clue_action.touched_slots
-        touched_card = current_game_state.my_hand[touched_slot]
+        (touched_draw_id,) = clue_action.touched_draw_ids
+        touched_card = current_game_state.my_hand.find_card_by_draw_id(touched_draw_id)
+        if touched_card is None:
+            return None
 
         playable_cards = {card for card in touched_card.possible_cards if current_game_state.is_playable(card)}
 

@@ -11,6 +11,9 @@ class Machinabi(DecisionMaking):
     def __init__(self):
         pass
 
+    def start_new_game(self):
+        pass
+
     def play_turn(self, current_game_state: RelativeGameState, history: GameHistory) -> Decision:
         if current_game_state.clue_count < 8:
             return self.discard_chop(current_game_state)

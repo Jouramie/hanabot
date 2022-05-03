@@ -54,10 +54,10 @@ def assemble_action(action: SimulatorAction, clues: list[SimulatorClue]) -> Acti
         return DiscardAction(action.drawId, action.discardedCard)
     if isinstance(action, SimulatorColorClueAction):
         clue = next(clue for clue in clues if clue.turn == action.turn)
-        return SuitClueAction(action.target_player.name, frozenset(clue.touched_slots), action.color)
+        return SuitClueAction(action.target_player.name, frozenset(clue.touched_slots), frozenset(clue.touched_draw_ids), action.color)
     if isinstance(action, SimulatorRankClueAction):
         clue = next(clue for clue in clues if clue.turn == action.turn)
-        return RankClueAction(action.target_player.name, frozenset(clue.touched_slots), action.rank)
+        return RankClueAction(action.target_player.name, frozenset(clue.touched_slots), frozenset(clue.touched_draw_ids), action.rank)
     return None
 
 
@@ -93,20 +93,23 @@ def assemble_history(global_game_state: GlobalGameState) -> GameHistory:
 
 def assemble_relative_gamestate(global_gamestate: GlobalGameState) -> RelativeGameState:
     return RelativeGameState(
-            assemble_stacks(global_gamestate.play_area.stacks),
-            tuple(global_gamestate.discard_pile.cards),
-            assemble_player_hands(global_gamestate),
-            assemble_last_performed_action(global_gamestate.history),
-            global_gamestate.status.turn,
-            global_gamestate.status.clues,
-            global_gamestate.status.strikes,
-        )
+        assemble_stacks(global_gamestate.play_area.stacks),
+        tuple(global_gamestate.discard_pile.cards),
+        assemble_player_hands(global_gamestate),
+        assemble_last_performed_action(global_gamestate.history),
+        global_gamestate.status.turn,
+        global_gamestate.status.clues,
+        global_gamestate.status.strikes,
+    )
 
 
 class SimulatorBot(SimulatorPlayer):
     def __init__(self, name: str, decision_making: DecisionMaking):
         super().__init__(name)
         self.decision_making = decision_making
+
+    def start_new_game(self):
+        self.decision_making.start_new_game()
 
     def play_turn(self, global_game_state: GlobalGameState) -> SimulatorAction:
         relative_game_state = assemble_relative_gamestate(global_game_state)

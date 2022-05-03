@@ -14,5 +14,5 @@ class DiscardPile:
 
     def discard(self, card: Card):
         if card.rank is Rank.FIVE:
-            logger.debug(f"Good job everyone, a five going in the trash! 👏")
+            logger.info("Good job everyone, a five going in the trash! 👏")
         self.cards.append(card)

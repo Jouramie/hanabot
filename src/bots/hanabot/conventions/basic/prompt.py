@@ -21,6 +21,9 @@ class Prompt(Convention):
         global clue_convention
         owner, slot, player_card = playable_card
 
+        if not player_card.is_clued:
+            return None
+
         next_card = player_card.real_card.next_card
         if next_card not in current_game_state.visible_cards:
             return None
@@ -32,17 +35,21 @@ class Prompt(Convention):
             decision = clue_convention.find_play_clue(available_next_card, current_game_state)
             if decision is None:
                 continue
+            logger.debug(f"{player_card} should also get played.")
             decisions.extend(decision)
 
         return decisions if len(decisions) > 0 else None
 
     def find_interpretation(self, action: Action, current_game_state: RelativeGameState) -> Interpretation | None:
-        if not isinstance(action, ClueAction):
+        # FIXME should accept clues touching more than one card
+        if not isinstance(action, ClueAction) or len(action.touched_draw_ids) > 1:
             return None
 
         if action.recipient == current_game_state.my_hand.owner_name:
-            (touched_slot,) = action.touched_slots
-            touched_card = current_game_state.my_hand[touched_slot]
+            (touched_draw_id,) = action.touched_draw_ids
+            touched_card = current_game_state.my_hand.find_card_by_draw_id(touched_draw_id)
+            if touched_card is None:
+                return None
 
             playable_cards = {card for card in touched_card.possible_cards if current_game_state.is_playable_over_clued_playable(card)}
 
@@ -52,8 +59,10 @@ class Prompt(Convention):
                     action, interpretation_type=InterpretationType.PLAY, convention_name=self.name, notes_on_cards={touched_card.draw_id: set(playable_cards)}
                 )
         else:
-            (touched_slot,) = action.touched_slots
-            touched_card = current_game_state.find_player_hand(action.recipient)[touched_slot]
+            (touched_draw_id,) = action.touched_draw_ids
+            touched_card = current_game_state.find_player_hand(action.recipient).find_card_by_draw_id(touched_draw_id)
+            if touched_card is None:
+                return None
 
             if current_game_state.is_playable(touched_card.real_card):
                 return None

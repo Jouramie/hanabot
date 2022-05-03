@@ -1,3 +1,4 @@
+import logging
 from typing import List, Dict, Iterable
 
 from core import Deck, Suit
@@ -5,6 +6,8 @@ from simulator.game.gameresult import GameResult
 from simulator.game.gamestate import GameState
 from simulator.game.player import Player
 from simulator.players.simulatorplayer import SimulatorPlayer
+
+logger = logging.getLogger(__name__)
 
 
 class Controller:
@@ -27,6 +30,7 @@ class Controller:
     def _initialize_players(self, players: List[SimulatorPlayer]):
         self.current_players = {}
         for player in players:
+            player.start_new_game()
             self.current_players[player.name] = player
 
     def play_turn(self) -> GameState:
@@ -35,6 +39,15 @@ class Controller:
         action = player_to_play.play_turn(self.current_game)
         self.current_game.play_turn(action)
         return self.current_game
+
+    def try_play_until_game_is_over(self):
+        try:
+            return self.play_until_game_is_over()
+        except Exception as e:
+            logger.exception(e)
+            self.current_game.status.is_over = True
+            self.current_game.status.strikes = 3
+            return GameResult.from_game_state(self.current_game)
 
     def play_until_game_is_over(self) -> GameResult:
         while not self.is_game_over():
@@ -47,7 +60,7 @@ class Controller:
         return self.current_game.status.is_over
 
     def get_game_result(self) -> GameResult:
-        return GameResult(self.current_game)
+        return GameResult.from_game_state(self.current_game)
 
     def draw_game(self):
         self.draw_last_action()
