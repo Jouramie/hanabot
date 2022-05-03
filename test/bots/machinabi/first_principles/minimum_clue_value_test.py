@@ -10,7 +10,7 @@ from test.bots.machinabi.game_state_generation import assemble_relative_gamestat
 
 @pytest.mark.skip
 @pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
-def test_clue_should_always_have_value(number_players):
+def test_clue_should_always_have_one_new_card(number_players):
     gamestate = get_game_state_random(number_players, Variant.NO_VARIANT)
 
     players = []

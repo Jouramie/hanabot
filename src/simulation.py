@@ -5,6 +5,8 @@ from typing import List, Iterable
 
 import plotext
 
+from bots.machinabi.machinabi import Machinabi
+from bots.ui.simulator import SimulatorBot
 from core import Variant, Suit
 from simulator.controller import Controller
 from simulator.players.goodtouchplayer import GoodTouchPlayer
@@ -80,7 +82,12 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     clear = lambda: os.system("cls")
-    simulation_players = [GoodTouchPlayer(), GoodTouchPlayer(), GoodTouchPlayer(), GoodTouchPlayer()]
+    simulation_players = [
+        SimulatorBot("Alice", Machinabi()),
+        SimulatorBot("Bob", Machinabi()),
+        SimulatorBot("Cathy", Machinabi()),
+        SimulatorBot("Donald", Machinabi()),
+    ]
     simulation_suits = Variant.NO_VARIANT
 
     print("Input 'Slow' to play one game slowly")
