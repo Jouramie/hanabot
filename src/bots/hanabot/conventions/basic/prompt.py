@@ -28,7 +28,7 @@ class Prompt(Convention):
         if next_card not in current_game_state.visible_cards:
             return None
 
-        available_next_cards = current_game_state.find(next_card)
+        available_next_cards = current_game_state.find_hand_card(next_card)
 
         decisions = []
         for available_next_card in available_next_cards:

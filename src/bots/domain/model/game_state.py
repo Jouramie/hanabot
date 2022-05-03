@@ -47,6 +47,29 @@ class RelativeGameState:
             previous_card = previous_card.previous_card
         return False
 
+    def is_possibly_playable(self, card: HandCard) -> bool:
+        filtered_possible_cards = set()
+        visible_cards = self.visible_cards
+        for possible_card in card.notes_on_cards:
+            if visible_cards.get(possible_card, 0) < possible_card.number_of_copies:
+                filtered_possible_cards.add(possible_card)
+
+        return self.stacks.are_all_playable_or_already_played(filtered_possible_cards)
+
+    def is_playable(self, card: Card) -> bool:
+        return self.stacks.is_playable(card)
+
+    def is_playable_over_clued_playable(self, card: Card) -> bool:
+        for clued_playable_card in self.clued_playable_cards:
+            if card.is_playable_over(clued_playable_card):
+                return True
+
+    def is_already_played(self, card: Card) -> bool:
+        return self.stacks.is_already_played(card)
+
+    def is_already_clued(self, card: Card) -> bool:
+        return card in self.clued_cards
+
     def find_not_clued_playable_cards(self) -> Iterable[tuple[RelativePlayerNumber, Slot, HandCard]]:
         for relative_player_id, slot, card in self.find_playable_cards():
             if card.real_card not in self.clued_cards:
@@ -68,6 +91,25 @@ class RelativeGameState:
             if self.is_critical(card.real_card) and not card.is_clued:
                 yield card.real_card
 
+    def find_missing_cards_to_play(self, card: Card) -> list[Card]:
+        return [
+            missing_card for missing_card in all_possible_cards(suits=card.suit) if missing_card.rank < card.rank and not self.is_already_played(missing_card)
+        ]
+
+    def find_hand_card(self, searched_card: Card) -> list[tuple[RelativePlayerNumber, Slot, HandCard]]:
+        return [
+            (relative_player_id, slot, card)
+            for relative_player_id, hand in enumerate(self.other_player_hands, 1)
+            for slot, card in enumerate(hand.cards)
+            if card.real_card == searched_card
+        ]
+
+    def find_card_by_draw_id(self, draw_id: DrawId) -> HandCard | None:
+        for hand in self.player_hands:
+            for card in hand.cards:
+                if card.draw_id == draw_id:
+                    return card
+
     @property
     def my_hand(self) -> Hand:
         return self.player_hands[0]
@@ -86,15 +128,6 @@ class RelativeGameState:
 
     def can_discard(self):
         return self.clue_count < 8
-
-    def is_possibly_playable(self, card: HandCard) -> bool:
-        filtered_possible_cards = set()
-        visible_cards = self.visible_cards
-        for possible_card in card.notes_on_cards:
-            if visible_cards.get(possible_card, 0) < possible_card.number_of_copies:
-                filtered_possible_cards.add(possible_card)
-
-        return self.stacks.are_all_playable_or_already_played(filtered_possible_cards)
 
     @cached_property
     def visible_cards(self) -> dict[Card, int]:
@@ -129,39 +162,6 @@ class RelativeGameState:
                 clued_playable_cards.add(card)
 
         return clued_playable_cards
-
-    def is_playable(self, card: Card) -> bool:
-        return self.stacks.is_playable(card)
-
-    def is_playable_over_clued_playable(self, card: Card) -> bool:
-        for clued_playable_card in self.clued_playable_cards:
-            if card.is_playable_over(clued_playable_card):
-                return True
-
-    def is_already_played(self, card: Card) -> bool:
-        return self.stacks.is_already_played(card)
-
-    def is_already_clued(self, card: Card) -> bool:
-        return card in self.clued_cards
-
-    def find_missing_cards_to_play(self, card: Card) -> list[Card]:
-        return [
-            missing_card for missing_card in all_possible_cards(suits=card.suit) if missing_card.rank < card.rank and not self.is_already_played(missing_card)
-        ]
-
-    def find(self, searched_card: Card) -> list[tuple[RelativePlayerNumber, Slot, HandCard]]:
-        return [
-            (relative_player_id, slot, card)
-            for relative_player_id, hand in enumerate(self.other_player_hands, 1)
-            for slot, card in enumerate(hand.cards)
-            if card.real_card == searched_card
-        ]
-
-    def find_card_by_draw_id(self, draw_id: DrawId) -> HandCard | None:
-        for hand in self.player_hands:
-            for card in hand.cards:
-                if card.draw_id == draw_id:
-                    return card
 
 
 @dataclass(frozen=True)
