@@ -37,11 +37,11 @@ class SingleCardPlayClueConvention(Convention):
         return None
 
     def find_interpretation(self, clue_action: ClueAction, current_game_state: RelativeGameState) -> Interpretation | None:
-        if len(clue_action.touched_slots) != 1 or clue_action.recipient != current_game_state.my_hand.owner_name:
+        if len(clue_action.touched_slots) != 1:
             return None
 
         (touched_draw_id,) = clue_action.touched_draw_ids
-        touched_card = current_game_state.my_hand.find_card_by_draw_id(touched_draw_id)
+        touched_card = current_game_state.find_card_by_draw_id(touched_draw_id)
         if touched_card is None:
             return None
 

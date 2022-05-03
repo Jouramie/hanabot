@@ -3,7 +3,7 @@ from functools import cached_property
 from typing import List, Iterable
 
 from bots.domain.model.action import Action
-from bots.domain.model.hand import Hand, HandCard, Slot
+from bots.domain.model.hand import Hand, HandCard, Slot, DrawId
 from bots.domain.model.stack import Stacks
 from core import Card, Rank, all_possible_cards
 
@@ -139,6 +139,12 @@ class RelativeGameState:
             for slot, card in enumerate(hand.cards)
             if card.real_card == searched_card
         ]
+
+    def find_card_by_draw_id(self, draw_id: DrawId) -> HandCard | None:
+        for hand in self.player_hands:
+            for card in hand.cards:
+                if card.draw_id == draw_id:
+                    return card
 
 
 @dataclass(frozen=True)
