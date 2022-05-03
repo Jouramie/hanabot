@@ -8,7 +8,7 @@ from bots.hanabot.conventions.convention import Conventions
 
 logger = logging.getLogger(__name__)
 
-SAVE_CLUE_ENABLED = False
+EMERGENCY_SAVE_CLUE_ENABLED = False
 
 
 class Hanabot(DecisionMaking):
@@ -78,12 +78,14 @@ class Hanabot(DecisionMaking):
         next_player_hand = current_game_state.other_player_hands[0]
         next_player_chop = self.conventions.find_card_on_chop(next_player_hand)
 
-        if SAVE_CLUE_ENABLED and current_game_state.can_give_clue() and current_game_state.is_critical(next_player_chop.real_card):
+        if EMERGENCY_SAVE_CLUE_ENABLED and current_game_state.can_give_clue() and current_game_state.is_critical(next_player_chop.real_card):
             return self.conventions.find_save(next_player_chop, next_player_hand)
 
         # if possible card if playable or already played, play it (good touch principle)
         for slot, card in enumerate(current_game_state.my_hand):
-            if (card.is_fully_known and current_game_state.is_playable(card)) or (card.is_clued and current_game_state.is_possibly_playable(card)):
+            if (card.is_fully_known and current_game_state.is_playable(card.fully_known_card)) or (
+                card.is_clued and current_game_state.is_possibly_playable(card)
+            ):
                 return PlayDecision(slot)
 
         if current_game_state.can_give_clue():

@@ -1,11 +1,11 @@
 from dataclasses import dataclass, field
-from functools import cached_property
+from functools import cached_property, reduce
 from typing import List, Iterable
 
 from bots.domain.model.action import Action
 from bots.domain.model.hand import Hand, HandCard, Slot, DrawId
 from bots.domain.model.stack import Stacks
-from core import Card, Rank, all_possible_cards
+from core import Card, all_possible_cards
 
 RelativePlayerNumber = int
 
@@ -26,14 +26,26 @@ class RelativeGameState:
         return self.last_performed_action is None
 
     def is_critical(self, card: Card) -> bool:
-        # TODO should take into account that card could be unplayable because of the discard
-        if card.rank is Rank.FIVE:
+        if self.is_trash(card):
+            return False
+
+        if card.number_of_copies == 1:
             return True
 
-        if card.rank is Rank.ONE:
-            return self.discard.count(card) == 2
+        return card.number_of_copies == 2 and card in self.discard
 
-        return card in self.discard
+    def is_trash(self, card: Card) -> bool:
+        is_already_played = self.is_already_played(card)
+        if is_already_played:
+            return True
+
+        previous_card = card.previous_card
+        while previous_card is not None:
+            count = reduce(lambda x, y: x + y, [1 for discarded in self.discard if discarded == previous_card], 0)
+            if count == previous_card.number_of_copies:
+                return True
+            previous_card = previous_card.previous_card
+        return False
 
     def find_not_clued_playable_cards(self) -> Iterable[tuple[RelativePlayerNumber, Slot, HandCard]]:
         for relative_player_id, slot, card in self.find_playable_cards():
@@ -50,6 +62,11 @@ class RelativeGameState:
             for slot, card in enumerate(hand.cards):
                 if self.stacks.is_playable(card.real_card):
                     yield relative_player_id, slot, card
+
+    def find_not_clued_critical(self) -> Iterable[Card]:
+        for card in self.my_hand.cards:
+            if self.is_critical(card.real_card) and not card.is_clued:
+                yield card.real_card
 
     @property
     def my_hand(self) -> Hand:

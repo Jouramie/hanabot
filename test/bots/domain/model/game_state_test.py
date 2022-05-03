@@ -22,44 +22,36 @@ EMPTY_DISCARD = tuple()
 def test_given_empty_discard_when_is_five_critical_then_is_critical():
     game_state = RelativeGameStateBuilder(SOME_SUITS).set_discard(EMPTY_DISCARD).build()
 
-    is_five_critical = game_state.is_critical(Card(A_SUIT, Rank.FIVE))
+    is_critical = game_state.is_critical(Card(A_SUIT, Rank.FIVE))
 
-    assert is_five_critical is True
+    assert is_critical is True
 
 
 def test_given_empty_discard_when_is_one_critical_then_is_not_critical():
     game_state = RelativeGameStateBuilder(SOME_SUITS).set_discard(EMPTY_DISCARD).build()
 
-    is_five_critical = game_state.is_critical(Card(A_SUIT, Rank.ONE))
+    is_critical = game_state.is_critical(Card(A_SUIT, Rank.ONE))
 
-    assert is_five_critical is False
+    assert is_critical is False
 
 
 def test_given_discard_with_a_two_when_is_the_other_two_critical_then_is_critical():
     a_two = Card(A_SUIT, Rank.TWO)
     game_state = RelativeGameStateBuilder(SOME_SUITS).set_discard((a_two,)).build()
 
-    is_five_critical = game_state.is_critical(a_two)
+    is_critical = game_state.is_critical(a_two)
 
-    assert is_five_critical is True
-
-
-def test_given_discard_with_a_one_when_is_the_last_one_critical_then_is_not_critical():
-    a_one = Card(A_SUIT, Rank.ONE)
-    game_state = RelativeGameStateBuilder(SOME_SUITS).set_discard((a_one,)).build()
-
-    is_five_critical = game_state.is_critical(a_one)
-
-    assert is_five_critical is False
+    assert is_critical is True
 
 
-def test_given_discard_with_two_ones_when_is_the_last_one_critical_then_is_critical():
-    a_one = Card(A_SUIT, Rank.ONE)
-    game_state = RelativeGameStateBuilder(SOME_SUITS).set_discard((a_one, a_one)).build()
+def test_given_discard_with_all_four_when_is_five_critical_then_is_not_critical():
+    the_five = Card(A_SUIT, Rank.FIVE)
+    a_four = Card(A_SUIT, Rank.FOUR)
+    game_state = RelativeGameStateBuilder(SOME_SUITS).set_discard((a_four, a_four)).build()
 
-    is_five_critical = game_state.is_critical(a_one)
+    is_critical = game_state.is_critical(the_five)
 
-    assert is_five_critical is True
+    assert is_critical is False
 
 
 def test_given_empty_stacks_when_find_playable_cards_then_only_ones_are_playable():

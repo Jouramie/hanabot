@@ -65,6 +65,10 @@ class HandCard:
     def is_fully_known(self) -> bool:
         return len(self.notes_on_cards) == 1
 
+    @property
+    def fully_known_card(self) -> Card | None:
+        return next(iter(self.notes_on_cards), None)
+
 
 @dataclass(frozen=True)
 class Hand(Iterable[HandCard], Sized):
