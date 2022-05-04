@@ -1,16 +1,34 @@
 import logging
-import os
 import signal
 import sys
 from time import sleep
 
+from app.console import start_console_app
 from bots.hanabot import conventions
 from bots.hanabot.hanabot import Hanabot
+from bots.machinabi.machinabi import Machinabi
 from bots.ui.simulator import SimulatorBot
 from context.hanabot_context import HanabotContext
-from core.card import Variant
-from simulation import play_game_slow, play_games_fast
-from simulator.controller import Controller
+from simulator.players.cheatingplayer import CheatingPlayer
+
+game_title = """   
+   Let's play       
+
+  ██╗  ██╗ █████╗ ███╗   ██╗ █████╗ ██████╗ ██╗    ██╗
+  ██║  ██║██╔══██╗████╗  ██║██╔══██╗██╔══██╗██║    ██║
+  ███████║███████║██╔██╗ ██║███████║██████╔╝██║    ██║
+  ██╔══██║██╔══██║██║╚██╗██║██╔══██║██╔══██╗██║    ╚═╝
+  ██║  ██║██║  ██║██║ ╚████║██║  ██║██████╔╝██║    ██╗
+  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═════╝ ╚═╝    ╚═╝
+"""
+player_selection_text = """Select your players:
+  h  - Hanabot
+  m  - Machinabi
+  c  - Cheater bots"""
+speed_selection_text = """:
+Input 'Slow' to play one game slowly
+Input 'Fast X' to play X games quickly
+"""
 
 
 def bootstrap_reading_bot():
@@ -28,28 +46,35 @@ def bootstrap_reading_bot():
         sleep(1)
 
 
+players_names = {
+    "h": "Hanabot",
+    "m": "Machinabi",
+    "c": "CheatingPlayer",
+}
+
+hanabot_players = [
+    SimulatorBot("Alice", Hanabot(conventions.basic)),
+    SimulatorBot("Bob", Hanabot(conventions.basic)),
+    SimulatorBot("Cathy", Hanabot(conventions.basic)),
+    SimulatorBot("Donald", Hanabot(conventions.basic)),
+]
+machinabi_players = [
+    SimulatorBot("Alice", Machinabi()),
+    SimulatorBot("Bob", Machinabi()),
+    SimulatorBot("Cathy", Machinabi()),
+    SimulatorBot("Donald", Machinabi()),
+]
+cheater_players = [
+    CheatingPlayer(),
+    CheatingPlayer(),
+    CheatingPlayer(),
+    CheatingPlayer(),
+]
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
+    logging.getLogger("console").setLevel(logging.INFO)
     logger = logging.getLogger(__name__)
 
-    clear = lambda: os.system("cls")
-    controller = Controller()
-    players = [
-        SimulatorBot("Alice", Hanabot(conventions.basic)),
-        SimulatorBot("Bob", Hanabot(conventions.basic)),
-        SimulatorBot("Cathy", Hanabot(conventions.basic)),
-        SimulatorBot("Donald", Hanabot(conventions.basic)),
-    ]
-    suits = Variant.NO_VARIANT
-
-    print("Input 'Slow' to play one game slowly")
-    print("Input 'Fast X' to play X games quickly")
-    response = input().lower()
-    words = response.split(" ")
-    if response == "slow":
-        play_game_slow(players, suits, log_game=True)
-    elif words[0] == "fast" and len(words) == 2:
-        logging.root.setLevel(logging.WARNING)
-        play_games_fast(players, suits, int(words[1]), draw_game=False, log_game=True)
-    else:
-        print("you suck at typing")
+    start_console_app()
