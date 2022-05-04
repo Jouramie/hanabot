@@ -143,7 +143,8 @@ def start_console_app():
     suits = Variant.NO_VARIANT
 
     with console.screen.Screen() as screen:
-        print(game_title)
+        with screen.location(0, 0):
+            print(game_title)
         with screen.location(10, 0):
             print(player_selection_text)
             with screen.hidden_cursor():
