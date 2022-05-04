@@ -83,3 +83,6 @@ class CheatingPlayer(SimulatorPlayer):
 
         logger.debug(self.name + ": Discard slot " + str(lowest_value_slot))
         return DiscardAction(lowest_value_slot)
+
+    def new_game(self):
+        pass

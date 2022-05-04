@@ -9,6 +9,7 @@ from bots.machinabi.machinabi import Machinabi
 from bots.ui.simulator import SimulatorBot
 from core import Variant, Suit
 from simulator.controller import Controller
+from simulator.players.cheatingplayer import CheatingPlayer
 from simulator.players.simulatorplayer import SimulatorPlayer
 
 
@@ -44,23 +45,13 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
         if result.is_victory:
             total_victories = total_victories + 1
         games_remaining = games_remaining - 1
-
+        print_empty_lines(40)
+        print_rates(total_survivals, total_victories, total_score, number_games - games_remaining)
         results.append(result)
 
-    time_after = time.time()
-    elapsed_seconds = time_after - time_before
-    elapsed_seconds_rounded = round(elapsed_seconds, 3)
-    elapsed_milliseconds = elapsed_seconds * 1000
-    average_time_milliseconds_rounded = round(elapsed_milliseconds / number_games, 1)
-
-    print(
-        f"Finished simulating {str(number_games)} games in {str(elapsed_seconds_rounded)} seconds "
-        f"(Average:{str(average_time_milliseconds_rounded)} ms per game)"
-    )
-
-    print("Survival Rate: " + str(total_survivals / number_games * 100) + "%")
-    print("Victory Rate: " + str(total_victories / number_games * 100) + "%")
-    print("Average Score: " + str(total_score / number_games))
+    print_empty_lines(40)
+    print_time_elapsed(number_games, time_before)
+    print_rates(total_survivals, total_victories, total_score, number_games)
 
     possible_scores = list(range(0, 26))
     scores = {score: 0 for score in possible_scores}
@@ -72,16 +63,50 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
     plotext.show()
 
 
+def print_empty_lines(number_lines: int):
+    for i in range(0, number_lines):
+        print("")
+
+
+def print_time_elapsed(number_games: int, time_before: float):
+    time_after = time.time()
+    elapsed_seconds = time_after - time_before
+    elapsed_seconds_rounded = round(elapsed_seconds, 3)
+    elapsed_milliseconds = elapsed_seconds * 1000
+    average_time_milliseconds_rounded = round(elapsed_milliseconds / number_games, 1)
+    print(
+        f"Finished simulating {str(number_games)} games in {str(elapsed_seconds_rounded)} seconds "
+        f"(Average:{str(average_time_milliseconds_rounded)} ms per game)"
+    )
+
+
+def print_rates(total_survivals: int, total_victories: int, total_score: int, number_games: int):
+    survival_rate = str(round(total_survivals / number_games * 100, 3))
+    victory_rate = str(round(total_victories / number_games * 100, 3))
+    average_score = str(round(total_score / number_games, 3))
+    print("Survival Rate: " + survival_rate + "%")
+    print("Victory Rate: " + victory_rate + "%")
+    print("Average Score: " + average_score)
+
+
+machinabi_players = [
+    SimulatorBot("Alice", Machinabi()),
+    SimulatorBot("Bob", Machinabi()),
+    SimulatorBot("Cathy", Machinabi()),
+    SimulatorBot("Donald", Machinabi()),
+]
+cheater_players = [
+    CheatingPlayer(),
+    CheatingPlayer(),
+    CheatingPlayer(),
+    CheatingPlayer(),
+]
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     clear = lambda: os.system("cls")
-    simulation_players = [
-        SimulatorBot("Alice", Machinabi()),
-        SimulatorBot("Bob", Machinabi()),
-        SimulatorBot("Cathy", Machinabi()),
-        SimulatorBot("Donald", Machinabi()),
-    ]
+    simulation_players = cheater_players
     simulation_suits = Variant.NO_VARIANT
 
     print("Input 'Slow' to play one game slowly")
