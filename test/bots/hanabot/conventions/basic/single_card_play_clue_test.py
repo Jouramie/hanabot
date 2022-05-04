@@ -34,9 +34,7 @@ def test_given_one_one_left_to_play_when_find_interpretation_then_only_possible_
     convention = SingleCardPlayClueConvention()
     interpretation = convention.find_interpretation(clue, game_state)
 
-    assert interpretation == Interpretation(
-        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, notes_on_cards={3: {expected_card}}
-    )
+    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: {expected_card}})
 
 
 def test_given_only_multiple_four_playable_when_find_interpretation_then_only_possible_card_is_playable_four():
@@ -66,9 +64,7 @@ def test_given_only_multiple_four_playable_when_find_interpretation_then_only_po
     convention = SingleCardPlayClueConvention()
     interpretation = convention.find_interpretation(clue, game_state)
 
-    assert interpretation == Interpretation(
-        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, notes_on_cards={3: expected_cards}
-    )
+    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})
 
 
 def test_given_suit_clue_when_find_interpretation_then_find_interpretation():
@@ -98,9 +94,7 @@ def test_given_suit_clue_when_find_interpretation_then_find_interpretation():
     convention = SingleCardPlayClueConvention()
     interpretation = convention.find_interpretation(clue, game_state)
 
-    assert interpretation == Interpretation(
-        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, notes_on_cards={3: expected_cards}
-    )
+    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})
 
 
 def test_given_suit_clue_on_someone_else_when_find_interpretation_then_do_not_find_interpretation():
@@ -130,6 +124,4 @@ def test_given_suit_clue_on_someone_else_when_find_interpretation_then_do_not_fi
     convention = SingleCardPlayClueConvention()
     interpretation = convention.find_interpretation(clue, game_state)
 
-    assert interpretation == Interpretation(
-        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, notes_on_cards={3: expected_cards}
-    )
+    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})

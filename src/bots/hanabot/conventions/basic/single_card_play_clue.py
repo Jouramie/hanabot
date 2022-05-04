@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 class SingleCardPlayClueConvention(Convention):
     def __init__(self):
-        super().__init__("Single card play clue")
+        super().__init__("single card play clue")
 
-    def find_play_clue(self, owner_slot_cards: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[ClueDecision] | None:
+    def find_clue(self, card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[ClueDecision] | None:
         # TODO handle duplicate cards
-        owner, slot, player_card = owner_slot_cards
+        owner, slot, player_card = card_to_clue
 
         hand: Hand = current_game_state.player_hands[owner]
 
@@ -48,9 +48,8 @@ class SingleCardPlayClueConvention(Convention):
         playable_cards = {card for card in touched_card.possible_cards if current_game_state.is_playable(card)}
 
         if playable_cards:
-            logger.debug(f"{clue_action} could be a {self.name}.")
             return Interpretation(
-                clue_action, interpretation_type=InterpretationType.PLAY, convention_name=self.name, notes_on_cards={touched_card.draw_id: set(playable_cards)}
+                clue_action, interpretation_type=InterpretationType.PLAY, explanation=self.name, notes_on_cards={touched_card.draw_id: set(playable_cards)}
             )
 
         return None

@@ -35,8 +35,7 @@ class RelativeGameState:
         return card.number_of_copies == 2 and card in self.discard
 
     def is_trash(self, card: Card) -> bool:
-        is_already_played = self.is_already_played(card)
-        if is_already_played:
+        if self.is_already_played(card):
             return True
 
         previous_card = card.previous_card
@@ -83,13 +82,14 @@ class RelativeGameState:
     def find_playable_cards(self) -> Iterable[tuple[RelativePlayerNumber, Slot, HandCard]]:
         for relative_player_id, hand in enumerate(self.other_player_hands, 1):
             for slot, card in enumerate(hand.cards):
-                if self.stacks.is_playable(card.real_card):
+                if self.is_playable(card.real_card):
                     yield relative_player_id, slot, card
 
-    def find_not_clued_critical(self) -> Iterable[Card]:
-        for card in self.my_hand.cards:
-            if self.is_critical(card.real_card) and not card.is_clued:
-                yield card.real_card
+    def find_not_clued_critical_cards(self) -> Iterable[tuple[RelativePlayerNumber, Slot, HandCard]]:
+        for relative_player_id, hand in enumerate(self.other_player_hands, 1):
+            for slot, card in enumerate(hand.cards):
+                if self.is_critical(card.real_card) and not card.is_clued:
+                    yield relative_player_id, slot, card
 
     def find_missing_cards_to_play(self, card: Card) -> list[Card]:
         return [

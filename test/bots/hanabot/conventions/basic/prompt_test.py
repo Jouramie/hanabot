@@ -42,9 +42,7 @@ def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_cl
     convention = Prompt()
     interpretation = convention.find_interpretation(clue, game_state)
 
-    assert interpretation == Interpretation(
-        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, notes_on_cards={5: {expected_card}}
-    )
+    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={5: {expected_card}})
 
 
 def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when_interpret_clue_then_clued_card_is_interpreted_as_next_playable():
@@ -81,9 +79,7 @@ def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when
     convention = Prompt()
     interpretation = convention.find_interpretation(clue, game_state)
 
-    assert interpretation == Interpretation(
-        clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name, notes_on_cards={4: {expected_card}}
-    )
+    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={4: {expected_card}})
 
 
 def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interpreted():
@@ -119,7 +115,7 @@ def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interp
     convention = Prompt()
     interpretation = convention.find_interpretation(clue, game_state)
 
-    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, convention_name=convention.name)
+    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name)
 
 
 def test_given_playable_card_clued_and_next_playable_accessible_when_find_play_clue_then_clue_next_playable():
@@ -152,6 +148,6 @@ def test_given_playable_card_clued_and_next_playable_accessible_when_find_play_c
     )
 
     convention = Prompt()
-    decision = convention.find_play_clue((1, 1, not_fully_known_playable), game_state)
+    decision = convention.find_clue((1, 1, not_fully_known_playable), game_state)
 
     assert decision == [SuitClueDecision(Suit.RED, 2)]

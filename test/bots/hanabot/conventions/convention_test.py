@@ -3,7 +3,7 @@ from bots.hanabot.conventions import Conventions
 
 
 def test_when_no_card_clued_then_chop_is_oldest_card(mocker):
-    conventions = Conventions([])
+    conventions = Conventions()
 
     chop = conventions.find_chop(
         Hand(
@@ -16,7 +16,7 @@ def test_when_no_card_clued_then_chop_is_oldest_card(mocker):
 
 
 def test_when_last_card_clued_then_chop_is_on_not_clued_oldest_card(mocker):
-    conventions = Conventions([])
+    conventions = Conventions()
 
     chop = conventions.find_chop(
         Hand(
@@ -29,7 +29,7 @@ def test_when_last_card_clued_then_chop_is_on_not_clued_oldest_card(mocker):
 
 
 def test_when_first_card_clued_then_chop_is_on_not_clued_oldest_card(mocker):
-    conventions = Conventions([])
+    conventions = Conventions()
 
     chop = conventions.find_chop(
         Hand(

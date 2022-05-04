@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 
@@ -5,6 +6,8 @@ from bots.domain.model.action import Action
 from bots.domain.model.game_state import RelativeGameState, GameHistory
 from bots.domain.model.hand import Slot, DrawId
 from core import Card
+
+logger = logging.getLogger(__name__)
 
 
 class InterpretationType(Enum):
@@ -19,13 +22,16 @@ class Interpretation:
     focus: Slot | None = None
     # TODO is the type really useful?
     interpretation_type: InterpretationType | None = None
-    convention_name: str | None = None
+    explanation: str | None = None
     # TODO there probably is no override possible with fix clue
     notes_on_cards: dict[DrawId, set[Card]] = field(default_factory=dict)
     played_cards: set[DrawId] = field(default_factory=set)
 
+    def __post_init__(self):
+        logger.debug(f"I think {self.notes_on_cards} because {self.of_action} is a {self.explanation}.")
+
     def __repr__(self) -> str:
-        return f"{self.convention_name} {self.notes_on_cards})"
+        return f"{self.explanation} {self.notes_on_cards})"
 
 
 @dataclass

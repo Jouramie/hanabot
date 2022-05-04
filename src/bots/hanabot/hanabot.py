@@ -27,7 +27,7 @@ class Hanabot(DecisionMaking):
         """
         self.blackboard.wipe_for_new_turn(current_game_state, history)
 
-        current_game_state = self.try_interpret_actions()
+        current_g0ame_state = self.try_interpret_actions()
 
         return self.make_decision(current_game_state)
 
@@ -76,10 +76,6 @@ class Hanabot(DecisionMaking):
 
     def make_decision(self, current_game_state: RelativeGameState) -> Decision:
         next_player_hand = current_game_state.other_player_hands[0]
-        next_player_chop = self.conventions.find_card_on_chop(next_player_hand)
-
-        if EMERGENCY_SAVE_CLUE_ENABLED and current_game_state.can_give_clue() and current_game_state.is_critical(next_player_chop.real_card):
-            return self.conventions.find_save(next_player_chop, next_player_hand)
 
         # if possible card if playable or already played, play it (good touch principle)
         for slot, card in enumerate(current_game_state.my_hand):
@@ -92,6 +88,16 @@ class Hanabot(DecisionMaking):
             playable_cards = current_game_state.find_not_known_playable_cards()
             for possible_decision in self.conventions.find_play_clue(playable_cards, current_game_state):
                 return possible_decision
+
+            for relative_player_id, hand in enumerate(current_game_state.other_player_hands, 1):
+                chop_slot = self.conventions.find_chop(hand)
+                if chop_slot is None:
+                    continue
+                chop_card = hand[chop_slot]
+                if not current_game_state.is_critical(chop_card.real_card):
+                    continue
+                for possible_decision in self.conventions.find_save((relative_player_id, chop_slot, chop_card), current_game_state):
+                    return possible_decision
 
         if current_game_state.can_discard():
             chop = self.conventions.find_chop(current_game_state.my_hand)

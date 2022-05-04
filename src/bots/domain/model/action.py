@@ -24,7 +24,7 @@ class SuitClueAction:
     suit: Suit
 
     def __repr__(self):
-        return f"{self.suit.name} on slots {set(self.touched_slots)})"
+        return f"{self.suit.name} on slots {set(self.touched_slots)}"
 
 
 @dataclass(frozen=True)
@@ -35,7 +35,7 @@ class RankClueAction:
     rank: Rank
 
     def __repr__(self):
-        return f"{self.rank.name} on slots {set(self.touched_slots)}."
+        return f"{self.rank.name} on slots {set(self.touched_slots)}"
 
 
 ClueAction = SuitClueAction | RankClueAction
