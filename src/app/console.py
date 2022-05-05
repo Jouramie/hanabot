@@ -3,6 +3,7 @@ import sys
 import time
 from typing import List, Iterable
 
+import console.detection
 import console.utils
 import plotext
 from console.progress import ProgressBar
@@ -64,7 +65,7 @@ def play_game_slow(players: List[SimulatorPlayer], suits: Iterable[Suit], draw_g
     game = controller.new_game(players, suits)
     controller.draw_game()
     while not controller.is_game_over():
-        console.utils.wait_key()
+        input()
         controller.play_turn()
         controller.draw_game()
     print("The game has ended. Press any key to continue.")
@@ -103,7 +104,8 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
         scores[result.played_cards] = scores[result.played_cards] + 1
     plotext.bar(possible_scores, scores)
     plotext.title("Score Distribution")
-    plotext.plotsize(width=80, height=20)
+    console_size = console.detection.get_size()
+    plotext.plotsize(width=80, height=console_size[1] - 5)
     plotext.clc()
     plotext.show()
 
@@ -143,6 +145,7 @@ def start_console_app():
     suits = Variant.NO_VARIANT
 
     with console.screen.Screen() as screen:
+
         with screen.location(0, 0):
             print(game_title)
         with screen.location(10, 0):
@@ -176,4 +179,5 @@ def start_console_app():
                 play_games_fast(players, suits, int(words[1]), draw_game=False, log_game=True)
             else:
                 print("you suck at typing")
-            console.utils.wait_key()
+            with screen.hidden_cursor():
+                console.utils.wait_key()

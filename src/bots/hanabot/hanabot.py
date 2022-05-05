@@ -4,7 +4,7 @@ from bots.domain.decision import DecisionMaking, PlayDecision, DiscardDecision, 
 from bots.domain.model.action import ClueAction, PlayAction, DiscardAction
 from bots.domain.model.game_state import RelativeGameState, GameHistory
 from bots.hanabot.blackboard import Blackboard
-from bots.hanabot.conventions.convention import Conventions
+from bots.hanabot.conventions.convention import ConventionDocument
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ EMERGENCY_SAVE_CLUE_ENABLED = False
 
 
 class Hanabot(DecisionMaking):
-    def __init__(self, conventions: Conventions):
+    def __init__(self, conventions: ConventionDocument):
         self.conventions = conventions
         self.blackboard = Blackboard()
 

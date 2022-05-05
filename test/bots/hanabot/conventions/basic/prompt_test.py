@@ -3,6 +3,7 @@ from bots.domain.model.action import SuitClueAction
 from bots.domain.model.hand import Hand, HandCard
 from bots.domain.model.stack import Stacks
 from bots.hanabot.blackboard import Interpretation, InterpretationType
+from bots.hanabot.conventions import ConventionDocument, SingleCardPlayClue
 from bots.hanabot.conventions.basic.prompt import Prompt
 from core import Suit, Card, Rank
 from test.bots.domain.model.game_state_test import RelativeGameStateBuilder
@@ -147,7 +148,8 @@ def test_given_playable_card_clued_and_next_playable_accessible_when_find_play_c
         .build()
     )
 
-    convention = Prompt()
-    decision = convention.find_clue((1, 1, not_fully_known_playable), game_state)
+    prompt = Prompt()
+    ConventionDocument(play_conventions=[prompt, SingleCardPlayClue()])
+    decision = prompt.find_clue((1, 1, not_fully_known_playable), game_state)
 
     assert decision == [SuitClueDecision(Suit.RED, 2)]
