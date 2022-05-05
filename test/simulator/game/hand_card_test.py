@@ -3,7 +3,7 @@ import pytest
 from core.card import Card
 from simulator.game.clue import ColorClue, RankClue
 from simulator.game.hand_card import HandCard
-from test.simulator.game_setup import get_suits, get_possible_cards, get_ranks
+from test.simulator.game.game_setup import get_suits, get_possible_cards, get_ranks
 
 
 @pytest.mark.parametrize("card", get_possible_cards(get_suits(5)))

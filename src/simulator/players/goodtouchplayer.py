@@ -7,7 +7,7 @@ from core.card import default_distribution
 from core.state.play_area import PlayArea
 from simulator.game.action import Action, PlayAction, RankClueAction, DiscardAction, ColorClueAction
 from simulator.game.clue import ColorClue, Clue, RankClue
-from simulator.game.gamestate import GameState
+from core.state.gamestate import GameState
 from simulator.game.hand_card import HandCard
 from simulator.game.player import Player
 from simulator.players.simulatorplayer import SimulatorPlayer

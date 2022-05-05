@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from simulator.game.gamestate import GameState
+from core.state.gamestate import GameState
 
 
 class GameResult:
