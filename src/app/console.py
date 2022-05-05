@@ -101,7 +101,7 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
     possible_scores = list(range(0, 26))
     scores = {score: 0 for score in possible_scores}
     for result in results:
-        scores[result.played_cards] = scores[result.played_cards] + 1
+        scores[result.score] = scores[result.score] + 1
     plotext.bar(possible_scores, scores)
     plotext.title("Score Distribution")
     console_size = console.detection.get_size()
