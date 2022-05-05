@@ -15,7 +15,6 @@ class Prompt(Convention):
         super().__init__("prompt")
 
     def find_clue(self, playable_card: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[Decision] | None:
-        global clue_convention
         owner, slot, player_card = playable_card
 
         if not player_card.is_clued:

@@ -63,7 +63,7 @@ class Blackboard:
     def write_notes_on_cards(self):
         for interpretation in self.ongoing_interpretations:
             for draw_id, cards in interpretation.notes_on_cards.items():
-                hand_card = next((card for card in self.my_hand if card.draw_id == draw_id), None)
+                hand_card = next((card for hand in self.current_game_state.player_hands for card in hand if card.draw_id == draw_id), None)
                 if hand_card is not None:
                     hand_card.notes_on_cards.intersection_update(cards)
 

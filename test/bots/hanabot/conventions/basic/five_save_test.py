@@ -1,3 +1,5 @@
+import pytest
+
 from bots.domain.model.action import RankClueAction
 from bots.domain.model.hand import Hand, HandCard
 from bots.hanabot.blackboard import Interpretation, InterpretationType
@@ -34,6 +36,7 @@ def test_given_five_on_chop_when_clue_then_is_interpreted_as_save():
     assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.SAVE, explanation=convention.name)
 
 
+@pytest.mark.skip
 def test_given_five_not_on_chop_when_clue_then_do_not_interpret():
     clue = RankClueAction("alice", frozenset({0}), frozenset({3}), Rank.FIVE)
 

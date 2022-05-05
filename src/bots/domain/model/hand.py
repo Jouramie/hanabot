@@ -67,7 +67,8 @@ class HandCard:
 
     @property
     def fully_known_card(self) -> Card | None:
-        return next(iter(self.notes_on_cards), None)
+        if self.is_fully_known:
+            return next(iter(self.notes_on_cards), None)
 
 
 @dataclass(frozen=True)

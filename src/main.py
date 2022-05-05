@@ -53,10 +53,10 @@ players_names = {
 }
 
 hanabot_players = [
-    SimulatorBot("Alice", Hanabot(conventions.basic)),
-    SimulatorBot("Bob", Hanabot(conventions.basic)),
-    SimulatorBot("Cathy", Hanabot(conventions.basic)),
-    SimulatorBot("Donald", Hanabot(conventions.basic)),
+    SimulatorBot("Alice", Hanabot(conventions.level_one)),
+    SimulatorBot("Bob", Hanabot(conventions.level_one)),
+    SimulatorBot("Cathy", Hanabot(conventions.level_one)),
+    SimulatorBot("Donald", Hanabot(conventions.level_one)),
 ]
 machinabi_players = [
     SimulatorBot("Alice", Machinabi()),
