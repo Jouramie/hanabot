@@ -1,11 +1,12 @@
 from dataclasses import dataclass, field
-from functools import cached_property, reduce
+from functools import cached_property
 from typing import List, Iterable
 
 from bots.domain.model.action import Action
 from bots.domain.model.hand import Hand, HandCard, Slot, DrawId
 from bots.domain.model.stack import Stacks
 from core import Card, all_possible_cards
+from core.discard import Discard
 
 RelativePlayerNumber = int
 
@@ -13,7 +14,7 @@ RelativePlayerNumber = int
 @dataclass(frozen=True)
 class RelativeGameState:
     stacks: Stacks
-    discard: tuple[Card, ...]
+    discard: Discard
     player_hands: tuple[Hand, ...]
     last_performed_action: Action | None
     turn_number: int
@@ -40,7 +41,7 @@ class RelativeGameState:
 
         previous_card = card.previous_card
         while previous_card is not None:
-            count = reduce(lambda x, y: x + y, [1 for discarded in self.discard if discarded == previous_card], 0)
+            count = self.discard.count(previous_card)
             if count == previous_card.number_of_copies:
                 return True
             previous_card = previous_card.previous_card
@@ -136,7 +137,7 @@ class RelativeGameState:
             visible_cards[card] = visible_cards.get(card, 0) + 1
 
         for card in self.discard:
-            visible_cards[card] = visible_cards.get(card, 0) + 1
+            visible_cards[card] = visible_cards.get(card, 0) + self.discard.count(card)
 
         for hand in self.other_player_hands:
             for card in hand.cards:
