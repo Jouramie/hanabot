@@ -171,11 +171,11 @@ class Card:
     suit: Suit
     rank: Rank
 
-    def __new__(cls, *args, _cache={}):
+    def __new__(cls, *args, _cache={}):  # noqa
         if _cache.get(args) is not None:
             return _cache[args]
         card = super(Card, cls).__new__(cls)
-        card.__init__(*args)
+        card.__init__(*args)  # noqa
         _cache[args] = card
         return card
 
