@@ -10,7 +10,7 @@ from bots.hanabot.conventions.convention import Convention
 logger = logging.getLogger(__name__)
 
 
-class SingleCardPlayClueConvention(Convention):
+class SingleCardPlayClue(Convention):
     def __init__(self):
         super().__init__("single card play clue")
 
@@ -49,7 +49,10 @@ class SingleCardPlayClueConvention(Convention):
 
         if playable_cards:
             return Interpretation(
-                clue_action, interpretation_type=InterpretationType.PLAY, explanation=self.name, notes_on_cards={touched_card.draw_id: set(playable_cards)}
+                clue_action,
+                interpretation_type=InterpretationType.PLAY,
+                explanation=self.name,
+                notes_on_cards={touched_card.draw_id: set(playable_cards)},
             )
 
         return None

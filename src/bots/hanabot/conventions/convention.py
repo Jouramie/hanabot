@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Iterable
@@ -9,9 +11,13 @@ from bots.domain.model.hand import Hand, HandCard, Slot
 from bots.hanabot.blackboard import Interpretation, Blackboard
 
 
-@dataclass(frozen=True)
+@dataclass
 class Convention(ABC):
     name: str
+    document: ConventionDocument = None
+
+    def set_document(self, document: ConventionDocument):
+        self.document = document
 
     @abstractmethod
     def find_clue(self, card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[Decision] | None:
@@ -23,9 +29,15 @@ class Convention(ABC):
 
 
 @dataclass(frozen=True)
-class Conventions:
+class ConventionDocument:
     play_conventions: list[Convention] = field(default_factory=list)
     save_conventions: list[Convention] = field(default_factory=list)
+
+    def __post_init__(self):
+        for convention in self.play_conventions:
+            convention.set_document(self)
+        for convention in self.save_conventions:
+            convention.set_document(self)
 
     def find_save(self, critical_card: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[Decision]:
         for convention in self.save_conventions:
@@ -45,13 +57,21 @@ class Conventions:
         return player_hand[self.find_chop(player_hand)]
 
     def find_play_clue(
-        self, playable_cards: Iterable[tuple[RelativePlayerNumber, Slot, HandCard]], current_game_state: RelativeGameState
+        self,
+        playable_cards: Iterable[tuple[RelativePlayerNumber, Slot, HandCard]] | tuple[RelativePlayerNumber, Slot, HandCard],
+        current_game_state: RelativeGameState,
     ) -> Iterable[Decision]:
+        if isinstance(playable_cards, tuple):
+            playable_cards = [playable_cards]
+
+        possible_decisions = []
         for playable_card in playable_cards:
             for convention in self.play_conventions:
                 decisions = convention.find_clue(playable_card, current_game_state)
                 if decisions is not None:
-                    yield decisions[0]
+                    possible_decisions.extend(decisions)
+
+        return possible_decisions
 
     def find_new_interpretations(self, action: Action, blackboard: Blackboard) -> list[Interpretation]:
         interpretations = []

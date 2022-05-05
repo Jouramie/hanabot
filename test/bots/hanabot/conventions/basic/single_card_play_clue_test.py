@@ -2,7 +2,7 @@ from bots.domain.model.action import SuitClueAction, RankClueAction
 from bots.domain.model.hand import HandCard, Hand
 from bots.domain.model.stack import Stacks
 from bots.hanabot.blackboard import Interpretation, InterpretationType
-from bots.hanabot.conventions import SingleCardPlayClueConvention
+from bots.hanabot.conventions import SingleCardPlayClue
 from core import Rank, Card, Suit
 from test.bots.domain.model.game_state_test import RelativeGameStateBuilder
 
@@ -31,7 +31,7 @@ def test_given_one_one_left_to_play_when_find_interpretation_then_only_possible_
         .build()
     )
 
-    convention = SingleCardPlayClueConvention()
+    convention = SingleCardPlayClue()
     interpretation = convention.find_interpretation(clue, game_state)
 
     assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: {expected_card}})
@@ -61,7 +61,7 @@ def test_given_only_multiple_four_playable_when_find_interpretation_then_only_po
         .build()
     )
 
-    convention = SingleCardPlayClueConvention()
+    convention = SingleCardPlayClue()
     interpretation = convention.find_interpretation(clue, game_state)
 
     assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})
@@ -91,7 +91,7 @@ def test_given_suit_clue_when_find_interpretation_then_find_interpretation():
         .build()
     )
 
-    convention = SingleCardPlayClueConvention()
+    convention = SingleCardPlayClue()
     interpretation = convention.find_interpretation(clue, game_state)
 
     assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})
@@ -121,7 +121,7 @@ def test_given_suit_clue_on_someone_else_when_find_interpretation_then_do_not_fi
         .build()
     )
 
-    convention = SingleCardPlayClueConvention()
+    convention = SingleCardPlayClue()
     interpretation = convention.find_interpretation(clue, game_state)
 
     assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})

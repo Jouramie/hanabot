@@ -5,12 +5,9 @@ from bots.domain.model.action import Action, ClueAction
 from bots.domain.model.game_state import RelativePlayerNumber, RelativeGameState
 from bots.domain.model.hand import Slot, HandCard
 from bots.hanabot.blackboard import Interpretation, InterpretationType
-from bots.hanabot.conventions.basic.single_card_play_clue import SingleCardPlayClueConvention
 from bots.hanabot.conventions.convention import Convention
 
 logger = logging.getLogger(__name__)
-
-clue_convention = SingleCardPlayClueConvention()
 
 
 class Prompt(Convention):
@@ -32,7 +29,7 @@ class Prompt(Convention):
 
         decisions = []
         for available_next_card in available_next_cards:
-            decision = clue_convention.find_clue(available_next_card, current_game_state)
+            decision = self.document.find_play_clue(available_next_card, current_game_state)
             if decision is None:
                 continue
             logger.debug(f"{player_card} should also get played.")
@@ -55,7 +52,10 @@ class Prompt(Convention):
 
             if playable_cards:
                 return Interpretation(
-                    action, interpretation_type=InterpretationType.PLAY, explanation=self.name, notes_on_cards={touched_card.draw_id: set(playable_cards)}
+                    action,
+                    interpretation_type=InterpretationType.PLAY,
+                    explanation=self.name,
+                    notes_on_cards={touched_card.draw_id: set(playable_cards)},
                 )
         else:
             (touched_draw_id,) = action.touched_draw_ids
