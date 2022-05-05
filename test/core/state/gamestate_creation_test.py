@@ -1,11 +1,12 @@
+from copy import deepcopy
 from typing import List
 
 from core import Deck, Variant, Card, Suit, Rank
 from core.state.discard_pile import DiscardPile
+from core.state.gamestate import GameState
 from core.state.play_area import PlayArea
 from core.state.stack import Stack
 from core.state.status import Status
-from core.state.gamestate import GameState
 from simulator.game.clue import Clue
 from simulator.game.hand_card import HandCard
 from simulator.game.player import Player
@@ -79,7 +80,7 @@ def test_copy_gamestate_should_make_copies():
     status = Status(35)
 
     gamestate = GameState(players, deck, discard_pile, play_area, status)
-    gamestate_copy = GameState.from_gamestate(gamestate)
+    gamestate_copy = deepcopy(gamestate)
 
     gamestate.players.append(Player("fake player"))
     _, card = gamestate.deck.draw()

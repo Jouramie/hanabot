@@ -201,6 +201,13 @@ class Card:
         previous_rank = self.rank.previous
         return Card(self.suit, previous_rank) if previous_rank is not None else None
 
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        memo[id(self)] = self
+        return self
+
 
 class Variant(Enum):
     NO_VARIANT = ((Suit.BLUE, Suit.GREEN, Suit.RED, Suit.YELLOW, Suit.PURPLE),)

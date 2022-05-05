@@ -1,6 +1,7 @@
 from __future__ import annotations
+
 import logging
-import copy
+from copy import deepcopy
 from typing import List
 
 from core import Deck
@@ -20,15 +21,11 @@ class GameState:
     status: Status
 
     def __init__(self, players: List[Player], deck: Deck, discard_pile: DiscardPile, play_area: PlayArea, status: Status):
-        self.players = copy.deepcopy(players)
-        self.deck = copy.deepcopy(deck)
-        self.discard_pile = copy.deepcopy(discard_pile)
-        self.play_area = copy.deepcopy(play_area)
-        self.status = copy.deepcopy(status)
-
-    @staticmethod
-    def from_gamestate(gamestate: GameState) -> GameState:
-        return GameState(gamestate.players, gamestate.deck, gamestate.discard_pile, gamestate.play_area, gamestate.status)
+        self.players = players
+        self.deck = deck
+        self.discard_pile = discard_pile
+        self.play_area = play_area
+        self.status = status
 
     @property
     def player_turn(self) -> int:
@@ -45,3 +42,14 @@ class GameState:
         for player in self.players:
             if player.name == name:
                 return player
+
+    def __deepcopy__(self, memo):
+        copy = GameState(
+            deepcopy(self.players, memo),
+            deepcopy(self.deck, memo),
+            deepcopy(self.discard_pile, memo),
+            deepcopy(self.play_area, memo),
+            deepcopy(self.status, memo),
+        )
+        memo[id(self)] = copy
+        return copy

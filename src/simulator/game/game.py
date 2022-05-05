@@ -1,15 +1,16 @@
 import logging
 import random
+from copy import deepcopy
 from typing import List
 
 from core import Deck
 from core.gamerules import get_hand_size
 from core.state.discard_pile import DiscardPile
+from core.state.gamestate import GameState
 from core.state.play_area import PlayArea
 from core.state.status import Status
 from simulator.game.action import Action, PlayAction, ColorClueAction, RankClueAction, DiscardAction
 from simulator.game.clue import ColorClue, RankClue, Clue
-from core.state.gamestate import GameState
 from simulator.game.hand_card import HandCard
 from simulator.game.history import History
 from simulator.game.player import Player
@@ -78,7 +79,7 @@ class Game:
         player.hand.insert(0, hand_card)
 
     def play_turn(self, action: Action):
-        self.history.add_state(self.status.turn, GameState.from_gamestate(self.current_state))
+        self.history.add_state(self.status.turn, deepcopy(self.current_state))
 
         action.actor = self.current_player
 

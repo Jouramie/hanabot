@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from copy import deepcopy
 from typing import List
 
 from core.card import Card, Suit, Rank, all_possible_cards
@@ -11,13 +14,19 @@ class HandCard:
     suits_in_game: List[Suit]
     possible_cards: List[Card]
 
-    def __init__(self, draw_id: int, card: Card, suits_in_game: List[Suit]):
+    def __init__(
+        self, draw_id: int, card: Card, suits_in_game: List[Suit], is_clued: bool = False, received_clues: List[Clue] = None, possible_cards: List[Card] = None
+    ):
+        if received_clues is None:
+            received_clues = []
+        if possible_cards is None:
+            possible_cards = list(all_possible_cards(suits_in_game))
         self.draw_id = draw_id
         self.real_card = card
         self.suits_in_game = suits_in_game
-        self.is_clued = False
-        self.received_clues = []
-        self.possible_cards = list(all_possible_cards(suits_in_game))
+        self.is_clued = is_clued
+        self.received_clues = received_clues
+        self.possible_cards = possible_cards
 
     def receive_clue(self, clue: Clue) -> bool:
         self.possible_cards = [card for card in self.possible_cards if clue.touches_card(card) == clue.touches_card(self.real_card)]
@@ -37,3 +46,6 @@ class HandCard:
 
     def __repr__(self):
         return self.real_card.short_name
+
+    def copy(self) -> HandCard:
+        return HandCard(self.draw_id, self.real_card, self.suits_in_game, self.is_clued, deepcopy(self.received_clues), self.possible_cards.copy())
