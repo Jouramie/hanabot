@@ -13,7 +13,7 @@ from simulator.game.action import (
     RankClueAction as SimulatorRankClueAction,
 )
 from simulator.game.clue import Clue as SimulatorClue
-from simulator.game.gamestate import GameState as GlobalGameState
+from simulator.game.game import Game
 from simulator.game.history import History as SimulatorHistory
 from simulator.game.player import Player
 from simulator.players.simulatorplayer import SimulatorPlayer
@@ -35,16 +35,16 @@ def assemble_other_player_hands(player: Player) -> Hand:
     )
 
 
-def assemble_player_hands(global_state: GlobalGameState) -> tuple[Hand, ...]:
+def assemble_player_hands(game: Game) -> tuple[Hand, ...]:
     hands = []
 
-    for player in global_state.players:
-        if player == global_state.current_player:
+    for player in game.players:
+        if player == game.current_player:
             hands.append(assemble_my_hand(player))
         else:
             hands.append(assemble_other_player_hands(player))
 
-    return tuple(hands[global_state.player_turn :] + hands[: global_state.player_turn])
+    return tuple(hands[game.player_turn :] + hands[: game.player_turn])
 
 
 def assemble_action(action: SimulatorAction, clues: list[SimulatorClue]) -> Action:
@@ -68,38 +68,38 @@ def assemble_last_performed_action(history: SimulatorHistory) -> Action | None:
     return assemble_action(action, history.clues)
 
 
-def assemble_simulator_decision(decision: Decision, global_state: GlobalGameState) -> SimulatorAction:
+def assemble_simulator_decision(decision: Decision, game: Game) -> SimulatorAction:
     if isinstance(decision, PlayDecision):
         return SimulatorPlayAction(decision.slot)
     if isinstance(decision, DiscardDecision):
         return SimulatorDiscardAction(decision.slot)
     if isinstance(decision, SuitClueDecision):
-        return SimulatorColorClueAction(decision.suit, global_state.get_relative_player(decision.receiver))
+        return SimulatorColorClueAction(decision.suit, game.get_relative_player(decision.receiver))
     if isinstance(decision, RankClueDecision):
-        return SimulatorRankClueAction(decision.rank, global_state.get_relative_player(decision.receiver))
+        return SimulatorRankClueAction(decision.rank, game.get_relative_player(decision.receiver))
 
     raise ValueError(f"Unknown decision: {decision}")
 
 
-def assemble_history(global_game_state: GlobalGameState) -> GameHistory:
+def assemble_history(game: Game) -> GameHistory:
     history = GameHistory()
 
-    for action in global_game_state.history.actions:
+    for action in game.history.actions:
         # FIXME bruh
-        history.add_game_state(RelativeGameState(None, None, None, assemble_action(action, global_game_state.history.clues), None, None, None))
+        history.add_game_state(RelativeGameState(None, None, None, assemble_action(action, game.history.clues), None, None, None))
 
     return history
 
 
-def assemble_relative_gamestate(global_gamestate: GlobalGameState) -> RelativeGameState:
+def assemble_relative_gamestate(game: Game) -> RelativeGameState:
     return RelativeGameState(
-        assemble_stacks(global_gamestate.play_area.stacks),
-        tuple(global_gamestate.discard_pile.cards),
-        assemble_player_hands(global_gamestate),
-        assemble_last_performed_action(global_gamestate.history),
-        global_gamestate.status.turn,
-        global_gamestate.status.clues,
-        global_gamestate.status.strikes,
+        assemble_stacks(game.play_area.stacks),
+        tuple(game.discard_pile.cards),
+        assemble_player_hands(game),
+        assemble_last_performed_action(game.history),
+        game.status.turn,
+        game.status.clues,
+        game.status.strikes,
     )
 
 
@@ -111,11 +111,11 @@ class SimulatorBot(SimulatorPlayer):
     def new_game(self):
         self.decision_making.new_game()
 
-    def play_turn(self, global_game_state: GlobalGameState) -> SimulatorAction:
-        relative_game_state = assemble_relative_gamestate(global_game_state)
+    def play_turn(self, game: Game) -> SimulatorAction:
+        relative_game_state = assemble_relative_gamestate(game)
 
-        history = assemble_history(global_game_state)
+        history = assemble_history(game)
 
         decision = self.decision_making.play_turn(relative_game_state, history)
 
-        return assemble_simulator_decision(decision, global_game_state)
+        return assemble_simulator_decision(decision, game)

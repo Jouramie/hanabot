@@ -4,8 +4,9 @@ from datetime import datetime
 from typing import List, Dict, Iterable
 
 from core import Deck, Suit
+from simulator.game.game import Game
 from simulator.game.gameresult import GameResult
-from simulator.game.gamestate import GameState
+from core.state.gamestate import GameState
 from simulator.game.player import Player
 from simulator.players.simulatorplayer import SimulatorPlayer
 
@@ -17,7 +18,7 @@ MAX_LOGGED_GAMES = 100
 
 
 class Controller:
-    current_game: GameState
+    current_game: Game
     current_players: Dict[str, SimulatorPlayer]
 
     def __init__(self, verbose=True, log_game=True):
@@ -25,8 +26,8 @@ class Controller:
         self.log_game_enabled = log_game
         self.current_game_file = None
 
-    def new_game(self, players: List[SimulatorPlayer], suits: Iterable[Suit]) -> GameState:
-        self.current_game = GameState([player.name for player in players], Deck.generate(suits))
+    def new_game(self, players: List[SimulatorPlayer], suits: Iterable[Suit]) -> Game:
+        self.current_game = Game([player.name for player in players], Deck.generate(suits))
         self._initialize_players(players)
         if self.log_game_enabled:
             if os.path.isfile(CURRENT_GAME_FILE):
@@ -34,8 +35,8 @@ class Controller:
             self.current_game_file = open(CURRENT_GAME_FILE, "w+")
         return self.current_game
 
-    def resume_game(self, players: List[SimulatorPlayer], game_state: GameState) -> GameState:
-        self.current_game = game_state
+    def resume_game(self, players: List[SimulatorPlayer], game: Game) -> Game:
+        self.current_game = game
         self._initialize_players(players)
         return self.current_game
 

@@ -9,6 +9,7 @@ from core.state.play_area import PlayArea
 from core.state.status import Status
 from simulator.game.action import Action, PlayAction, ColorClueAction, RankClueAction, DiscardAction
 from simulator.game.clue import ColorClue, RankClue, Clue
+from core.state.gamestate import GameState
 from simulator.game.hand_card import HandCard
 from simulator.game.history import History
 from simulator.game.player import Player
@@ -16,35 +17,55 @@ from simulator.game.player import Player
 logger = logging.getLogger(__name__)
 
 
-class GameState:
-    players: List[Player]
-    deck: Deck
-    discard_pile: DiscardPile
-    play_area: PlayArea
+class Game:
     history: History
-    status: Status
+    current_state: GameState
 
-    def __init__(self, players: List[str], deck: Deck):
-        self.deck = deck
-        self.discard_pile = DiscardPile()
+    def __init__(self, players_names: List[str], deck: Deck):
         self.history = History()
-        self.play_area = PlayArea(deck.suits)
 
-        self.players = []
-        for playerName in players:
-            self.players.append(Player(playerName))
-        random.shuffle(self.players)
+        deck = deck
+        discard_pile = DiscardPile()
+        play_area = PlayArea(deck.suits)
 
-        number_of_players = len(self.players)
-        for i in range(0, get_hand_size(number_of_players) * number_of_players):
+        players = []
+        for playerName in players_names:
+            players.append(Player(playerName))
+        random.shuffle(players)
+        number_of_players = len(players)
+
+        number_cards_in_hands = get_hand_size(number_of_players) * number_of_players
+
+        status = Status(number_of_players + deck.number_cards() - number_cards_in_hands)
+        self.current_state = GameState(players, deck, discard_pile, play_area, status)
+
+        for i in range(0, number_cards_in_hands):
             player_index = i % number_of_players
             self.player_draw_card(self.players[player_index])
-
-        self.status = Status(number_of_players + self.deck.number_cards())
 
     @property
     def player_turn(self) -> int:
         return self.status.turn % len(self.players)
+
+    @property
+    def players(self) -> List[Player]:
+        return self.current_state.players
+
+    @property
+    def deck(self) -> Deck:
+        return self.current_state.deck
+
+    @property
+    def discard_pile(self) -> DiscardPile:
+        return self.current_state.discard_pile
+
+    @property
+    def play_area(self) -> PlayArea:
+        return self.current_state.play_area
+
+    @property
+    def status(self) -> Status:
+        return self.current_state.status
 
     def get_relative_player(self, relative_player_id: int) -> Player:
         return self.players[(self.player_turn + relative_player_id) % len(self.players)]
@@ -57,11 +78,13 @@ class GameState:
         player.hand.insert(0, hand_card)
 
     def play_turn(self, action: Action):
+        self.history.add_state(self.status.turn, GameState.from_gamestate(self.current_state))
+
         action.actor = self.current_player
 
         action.act_on_state(self)
-
         self.status.next_turn()
+
         action.turn = self.status.turn
 
         self.history.add_action(action)
