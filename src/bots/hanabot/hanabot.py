@@ -48,7 +48,7 @@ class Hanabot(DecisionMaking):
             - Log non-interpretable actions
         2. Write notes on cards
         """
-        for action in self.blackboard.uninterpreted_actions:
+        for action in self.blackboard.uninterpreted_actions.copy():
             self.blackboard.chop = self.conventions.find_chop(self.blackboard.my_hand)
 
             if isinstance(action, PlayAction) or isinstance(action, DiscardAction):

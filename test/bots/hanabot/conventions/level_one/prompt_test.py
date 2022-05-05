@@ -116,7 +116,9 @@ def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interp
     convention = Prompt()
     interpretation = convention.find_interpretation(clue, game_state)
 
-    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name)
+    assert interpretation == Interpretation(
+        clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={5: {Card(Suit.RED, Rank.FOUR)}}
+    )
 
 
 def test_given_playable_card_clued_and_next_playable_accessible_when_find_play_clue_then_clue_next_playable():

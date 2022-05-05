@@ -17,6 +17,8 @@ class SingleCardPlayClue(Convention):
     def find_clue(self, card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[ClueDecision] | None:
         # TODO handle duplicate cards
         owner, slot, player_card = card_to_clue
+        if player_card.is_fully_known or current_game_state.is_already_clued(player_card.real_card):
+            return None
 
         hand: Hand = current_game_state.player_hands[owner]
 
@@ -52,7 +54,7 @@ class SingleCardPlayClue(Convention):
                 clue_action,
                 interpretation_type=InterpretationType.PLAY,
                 explanation=self.name,
-                notes_on_cards={touched_card.draw_id: set(playable_cards)},
+                notes_on_cards={touched_card.draw_id: playable_cards},
             )
 
         return None

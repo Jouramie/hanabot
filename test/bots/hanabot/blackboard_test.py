@@ -2,6 +2,7 @@ from bots.domain.model.game_state import GameHistory
 from bots.domain.model.hand import Hand, HandCard
 from bots.hanabot.blackboard import Blackboard, Interpretation
 from core import Card, Suit, Rank, all_possible_cards
+from test.bots.domain.model.game_state_test import RelativeGameStateBuilder
 
 
 def test_given_used_blackboard_when_wipe_for_new_turn_then_reset_state_for_new_turn(mocker):
@@ -88,8 +89,7 @@ def test_given_ongoing_interpretation_when_write_notes_on_cards_then_concerned_c
     blackboard = Blackboard()
     expected_card = Card(Suit.RED, Rank.FIVE)
     blackboard.ongoing_interpretations = [Interpretation(mocker.Mock(), notes_on_cards={0: {expected_card}})]
-    blackboard.current_game_state = mocker.Mock()
-    blackboard.current_game_state.my_hand = Hand("alfred", (HandCard(frozenset(all_possible_cards()), True, 0),))
+    blackboard.current_game_state = RelativeGameStateBuilder().set_my_hand(Hand("alfred", (HandCard(frozenset(all_possible_cards()), True, 0),))).build()
 
     blackboard.write_notes_on_cards()
 

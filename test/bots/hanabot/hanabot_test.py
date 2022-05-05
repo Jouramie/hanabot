@@ -190,7 +190,7 @@ def test_given_card_already_prompted_when_play_turn_then_do_not_prompt_again():
                     HandCard.unknown_real_card(Card(Suit.YELLOW, Rank.FOUR)),
                     HandCard.unknown_real_card(Card(Suit.PURPLE, Rank.ONE)),
                     HandCard.unknown_real_card(Card(Suit.PURPLE, Rank.ONE)),
-                    HandCard.unknown_real_card(Card(Suit.PURPLE, Rank.TWO)),
+                    HandCard.unknown_real_card(Card(Suit.PURPLE, Rank.TWO), draw_id=44),
                 ),
             ),
         )
@@ -199,6 +199,14 @@ def test_given_card_already_prompted_when_play_turn_then_do_not_prompt_again():
     )
 
     donald = Hanabot(level_one)
-    decision = donald.play_turn(game_state, GameHistory([game_state]))
+    decision = donald.play_turn(
+        game_state,
+        GameHistory(
+            [
+                RelativeGameStateBuilder().set_last_performed_action(SuitClueAction("alice", frozenset({3}), frozenset({42}), Suit.PURPLE)).build(),
+                game_state,
+            ]
+        ),
+    )
 
-    assert decision == DiscardDecision(4)
+    assert decision == DiscardDecision(3)

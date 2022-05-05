@@ -73,6 +73,7 @@ class Prompt(Convention):
                     action,
                     interpretation_type=InterpretationType.PLAY,
                     explanation=self.name,
+                    notes_on_cards={touched_draw_id: {touched_card.real_card}},
                 )
 
             probable_missing_card = current_game_state.my_hand.find_most_probable(not_clued_missing_cards_to_play)
