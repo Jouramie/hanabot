@@ -165,20 +165,18 @@ suit_abbreviation_mapping = frozendict(
     }
 )
 
-_card_cache = {}
-
 
 @dataclass(frozen=True)
 class Card:
     suit: Suit
     rank: Rank
 
-    def __new__(cls, *args):
-        if _card_cache.get(args) is not None:
-            return _card_cache[args]
+    def __new__(cls, *args, _cache={}):
+        if _cache.get(args) is not None:
+            return _cache[args]
         card = super(Card, cls).__new__(cls)
         card.__init__(*args)
-        _card_cache[args] = card
+        _cache[args] = card
         return card
 
     def __copy__(self):
