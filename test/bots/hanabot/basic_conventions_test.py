@@ -6,7 +6,8 @@ from bots.ui.simulator import SimulatorBot
 from core import Deck
 from core.card import Card, Suit, Rank, Variant
 from simulator.controller import Controller
-from simulator.game.gamestate import GameState
+from core.state.gamestate import GameState
+from simulator.game.game import Game
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -44,9 +45,9 @@ def test_given_first_turn_when_play_turn_then_clue_and_play_ones():
     cathy = SimulatorBot("cathy", Hanabot(level_one))
 
     controller = Controller()
-    game_state = GameState(["alice", "bob", "cathy"], deck)
-    controller.resume_game([alice, bob, cathy], game_state)
-    controller.current_game.deck = deck
+    game = Game(["alice", "bob", "cathy"], deck)
+    controller.resume_game([alice, bob, cathy], game)
+    controller.current_game.current_state.deck = deck
 
     controller.play_turn()
     controller.play_turn()

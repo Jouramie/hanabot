@@ -4,14 +4,14 @@ from bots.domain.decision import DiscardDecision, ClueDecision
 from bots.machinabi.machinabi import Machinabi
 from bots.ui.simulator import assemble_simulator_decision
 from core import Variant
-from simulator.game.gamestate import GameState
-from test.bots.machinabi.game_state_generation import assemble_relative_gamestate_and_history, get_game_state_random
+from core.state.gamestate import GameState
+from test.bots.machinabi.game_state_generation import assemble_relative_gamestate_and_history, get_game_random
 
 
 @pytest.mark.skip
 @pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
 def test_clue_should_always_have_one_new_card(number_players):
-    gamestate = get_game_state_random(number_players, Variant.NO_VARIANT)
+    gamestate = get_game_random(number_players, Variant.NO_VARIANT)
 
     players = []
     for i in range(0, number_players):

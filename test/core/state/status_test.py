@@ -100,3 +100,4 @@ def test_decrement_turns_should_end_when_zero():
     assert status.is_over
     status.decrement_turns_remaining()
     assert status.is_over
+
