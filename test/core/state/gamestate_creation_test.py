@@ -32,7 +32,7 @@ def test_create_gamestate_should_save_all_parameters():
     assert_status_is_equivalent(gamestate.status, status)
 
 
-def test_create_gamestate_should_make_copies():
+def test_create_gamestate_should_not_make_copies():
     suits = Variant.NO_VARIANT
     players = []
     for playerName in get_player_names(5):
@@ -52,13 +52,13 @@ def test_create_gamestate_should_make_copies():
     status.strikes = 1
     status.turn = 7
 
-    assert len(gamestate.players) == 5
-    assert len(gamestate.deck) == 50
-    assert len(gamestate.discard_pile.cards) == 0
-    assert gamestate.play_area.stacks[Suit.RED].last_played is None
-    assert gamestate.status.clues == 8
-    assert gamestate.status.strikes == 0
-    assert gamestate.status.turn == 0
+    assert len(gamestate.players) == 6
+    assert len(gamestate.deck) == 49
+    assert len(gamestate.discard_pile.cards) == 1
+    assert gamestate.play_area.stacks[Suit.RED].last_played == Rank.THREE
+    assert gamestate.status.clues == 4
+    assert gamestate.status.strikes == 1
+    assert gamestate.status.turn == 7
 
     assert len(players) == 6
     assert len(deck) == 49

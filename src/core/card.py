@@ -165,11 +165,28 @@ suit_abbreviation_mapping = frozendict(
     }
 )
 
+_card_cache = {}
+
 
 @dataclass(frozen=True)
 class Card:
     suit: Suit
     rank: Rank
+
+    def __new__(cls, *args):
+        if _card_cache.get(args) is not None:
+            return _card_cache[args]
+        card = super(Card, cls).__new__(cls)
+        card.__init__(*args)
+        _card_cache[args] = card
+        return card
+
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        memo[id(self)] = self
+        return self
 
     def matches(self, suit_or_rank: Suit | Rank) -> bool:
         return self.suit is suit_or_rank or self.rank is suit_or_rank
@@ -200,13 +217,6 @@ class Card:
     def previous_card(self) -> Card:
         previous_rank = self.rank.previous
         return Card(self.suit, previous_rank) if previous_rank is not None else None
-
-    def __copy__(self):
-        return self
-
-    def __deepcopy__(self, memo):
-        memo[id(self)] = self
-        return self
 
 
 class Variant(Enum):
