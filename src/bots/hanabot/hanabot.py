@@ -1,6 +1,6 @@
 import logging
 
-from bots.domain.decision import DecisionMaking, PlayDecision, DiscardDecision, Decision, SuitClueDecision
+from bots.domain.decision import DecisionMaking, PlayDecision, DiscardDecision, Decision
 from bots.domain.model.action import ClueAction, PlayAction, DiscardAction
 from bots.domain.model.game_state import RelativeGameState, GameHistory
 from bots.hanabot.blackboard import Blackboard
@@ -103,4 +103,4 @@ class Hanabot(DecisionMaking):
             chop = self.conventions.find_chop(current_game_state.my_hand)
             return DiscardDecision(chop if chop is not None else len(current_game_state.my_hand) - 1)
 
-        return SuitClueDecision(next_player_hand[0].real_card.suit, 1)
+        return self.conventions.find_stall(current_game_state)[0]

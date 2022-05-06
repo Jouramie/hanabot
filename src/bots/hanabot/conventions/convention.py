@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Iterable
 
-from bots.domain.decision import Decision
+from bots.domain.decision import Decision, SuitClueDecision
 from bots.domain.model.action import Action
 from bots.domain.model.game_state import RelativeGameState, RelativePlayerNumber
 from bots.domain.model.hand import Hand, HandCard, Slot
@@ -72,6 +72,13 @@ class ConventionDocument:
                     possible_decisions.extend(decisions)
 
         return possible_decisions
+
+    def find_stall(self, current_game_state: RelativeGameState) -> list[Decision]:
+        for relative_player_id, hand in enumerate(current_game_state.other_player_hands, 1):
+            for card in hand:
+                if card.is_clued:
+                    return [SuitClueDecision(card.real_card.suit, relative_player_id)]
+        return [SuitClueDecision(current_game_state.other_player_hands[0][0].real_card.suit, 1)]
 
     def find_new_interpretations(self, action: Action, blackboard: Blackboard) -> list[Interpretation]:
         interpretations = []

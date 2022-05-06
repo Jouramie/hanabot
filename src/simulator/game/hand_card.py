@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import List
 
 from core.card import Card, Suit, Rank, all_possible_cards
@@ -46,6 +45,3 @@ class HandCard:
 
     def __repr__(self):
         return self.real_card.short_name
-
-    def copy(self) -> HandCard:
-        return HandCard(self.draw_id, self.real_card, self.suits_in_game, self.is_clued, deepcopy(self.received_clues), self.possible_cards.copy())

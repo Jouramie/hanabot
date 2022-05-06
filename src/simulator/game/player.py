@@ -20,6 +20,3 @@ class Player:
 
     def __repr__(self):
         return f"{self.name} {self.hand}"
-
-    def copy(self) -> Player:
-        return Player(self.name, [card.copy() for card in self.hand])
