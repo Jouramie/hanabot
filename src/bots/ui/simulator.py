@@ -8,6 +8,7 @@ from bots.domain.model.stack import Stacks, Stack
 from core import Suit, Card
 from core.discard import Discard
 from core.state.discard_pile import DiscardPile
+from core.state.gamestate import GameState as SimulatorGameState
 from core.state.stack import Stack as SimulatorStack
 from simulator.game.action import (
     Action as SimulatorAction,
@@ -18,7 +19,6 @@ from simulator.game.action import (
 )
 from simulator.game.clue import Clue as SimulatorClue
 from simulator.game.game import Game
-from simulator.game.history import History as SimulatorHistory
 from simulator.game.player import Player
 from simulator.players.simulatorplayer import SimulatorPlayer
 
@@ -39,37 +39,34 @@ def assemble_other_player_hands(player: Player) -> Hand:
     )
 
 
-def assemble_player_hands(game: Game) -> tuple[Hand, ...]:
+def assemble_player_hands(game_state: SimulatorGameState) -> tuple[Hand, ...]:
     hands = []
 
-    for player in game.players:
-        if player == game.current_player:
+    for player in game_state.players:
+        if player == game_state.current_player:
             hands.append(assemble_my_hand(player))
         else:
             hands.append(assemble_other_player_hands(player))
 
-    return tuple(hands[game.player_turn :] + hands[: game.player_turn])
+    return tuple(hands[game_state.player_turn :] + hands[: game_state.player_turn])
 
 
-def assemble_action(action: SimulatorAction, clues: list[SimulatorClue]) -> Action:
+def assemble_action(action: SimulatorAction, clue: SimulatorClue | None) -> Action:
     if isinstance(action, SimulatorPlayAction):
         return PlayAction(action.drawId, action.playedCard)
     if isinstance(action, SimulatorDiscardAction):
         return DiscardAction(action.drawId, action.discardedCard)
     if isinstance(action, SimulatorColorClueAction):
-        clue = next(clue for clue in clues if clue.turn == action.turn)
         return SuitClueAction(action.target_player.name, frozenset(clue.touched_slots), frozenset(clue.touched_draw_ids), action.color)
     if isinstance(action, SimulatorRankClueAction):
-        clue = next(clue for clue in clues if clue.turn == action.turn)
         return RankClueAction(action.target_player.name, frozenset(clue.touched_slots), frozenset(clue.touched_draw_ids), action.rank)
     return None
 
 
-def assemble_last_performed_action(history: SimulatorHistory) -> Action | None:
-    if not history.actions:
+def assemble_last_performed_action(action: SimulatorAction | None, clue: SimulatorClue | None) -> Action | None:
+    if action is None:
         return None
-    action = history.actions[-1]
-    return assemble_action(action, history.clues)
+    return assemble_action(action, clue)
 
 
 def assemble_simulator_decision(decision: Decision, game: Game) -> SimulatorAction:
@@ -85,12 +82,15 @@ def assemble_simulator_decision(decision: Decision, game: Game) -> SimulatorActi
     raise ValueError(f"Unknown decision: {decision}")
 
 
-def assemble_history(game: Game) -> GameHistory:
-    history = GameHistory()
-
-    for action in game.history.actions:
-        # FIXME bruh
-        history.add_game_state(RelativeGameState(None, None, None, assemble_action(action, game.history.clues), None, None, None))
+def add_recent_turns_to_history(history: GameHistory, game: Game) -> GameHistory:
+    last_turn_in_history = history.game_states[-1].turn_number if history.game_states else 0
+    if game.history.gamestates:
+        for action, game_state in zip(game.history.actions[last_turn_in_history:], game.history.gamestates[last_turn_in_history + 1 :] + [game.current_state]):
+            # TODO see if reversing the clue list optimises the performance
+            clue = next((clue for clue in game.history.clues if clue.turn == action.turn), None)
+            history.add_game_state(assemble_relative_game_state(action, clue, game_state))
+    else:
+        history.add_game_state(assemble_relative_game_state(None, None, game.current_state))
 
     return history
 
@@ -103,15 +103,15 @@ def assemble_discard(discard_pile: DiscardPile) -> Discard:
     return Discard(frozendict(discard))
 
 
-def assemble_relative_gamestate(game: Game) -> RelativeGameState:
+def assemble_relative_game_state(action: SimulatorAction | None, clue: SimulatorClue | None, game_state: SimulatorGameState) -> RelativeGameState:
     return RelativeGameState(
-        assemble_stacks(game.play_area.stacks),
-        assemble_discard(game.discard_pile),
-        assemble_player_hands(game),
-        assemble_last_performed_action(game.history),
-        game.status.turn,
-        game.status.clues,
-        game.status.strikes,
+        assemble_stacks(game_state.play_area.stacks),
+        assemble_discard(game_state.discard_pile),
+        assemble_player_hands(game_state),
+        assemble_last_performed_action(action, clue),
+        game_state.status.turn,
+        game_state.status.clues,
+        game_state.status.strikes,
     )
 
 
@@ -119,15 +119,15 @@ class SimulatorBot(SimulatorPlayer):
     def __init__(self, name: str, decision_making: DecisionMaking):
         super().__init__(name)
         self.decision_making = decision_making
+        self.history = None
 
     def new_game(self):
         self.decision_making.new_game()
+        self.history = GameHistory()
 
     def play_turn(self, game: Game) -> SimulatorAction:
-        relative_game_state = assemble_relative_gamestate(game)
+        add_recent_turns_to_history(self.history, game)
 
-        history = assemble_history(game)
-
-        decision = self.decision_making.play_turn(relative_game_state, history)
+        decision = self.decision_making.play_turn(self.history[-1], self.history)
 
         return assemble_simulator_decision(decision, game)

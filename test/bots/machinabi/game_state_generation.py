@@ -2,7 +2,7 @@ from random import shuffle
 from typing import List, Iterable, Tuple
 
 from bots.domain.model.game_state import RelativeGameState, GameHistory
-from bots.ui.simulator import assemble_relative_gamestate, assemble_history
+from bots.ui.simulator import add_recent_turns_to_history
 from core import Deck, Rank, Suit, Card
 from simulator.game.game import Game
 from test.simulator.game.game_setup import get_player_names
@@ -32,4 +32,6 @@ def get_all_threes_and_fours(suits: Iterable[Suit]) -> List[Card]:
 
 
 def assemble_relative_gamestate_and_history(game: Game) -> Tuple[RelativeGameState, GameHistory]:
-    return assemble_relative_gamestate(game), assemble_history(game)
+    history = GameHistory()
+    add_recent_turns_to_history(history, game)
+    return history[-1], history

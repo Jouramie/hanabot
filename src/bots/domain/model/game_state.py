@@ -175,3 +175,6 @@ class GameHistory:
     @property
     def action_history(self) -> list[Action]:
         return [game_state.last_performed_action for game_state in self.game_states]
+
+    def __getitem__(self, item):
+        return self.game_states[item]
