@@ -79,7 +79,7 @@ class Game:
         player.hand.insert(0, hand_card)
 
     def play_turn(self, action: Action):
-        self.history.add_state(self.status.turn, deepcopy(self.current_state))
+        self.history.add_state(deepcopy(self.current_state))
 
         action.actor = self.current_player
 
