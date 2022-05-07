@@ -11,7 +11,7 @@ def test_given_used_blackboard_when_wipe_for_new_turn_then_reset_state_for_new_t
     blackboard.current_game_state.turn_number = 3
     blackboard.history = mocker.Mock()
     blackboard.chop = mocker.Mock()
-    blackboard.uninterpreted_actions = mocker.Mock()
+    blackboard.uninterpreted_turns = mocker.Mock()
     blackboard.ongoing_interpretations = "ongoing_interpretations"
     blackboard.resolved_interpretations = "resolved_interpretations"
 
@@ -33,15 +33,14 @@ def test_given_empty_blackboard_when_wipe_for_new_turn_then_add_uninterpreted_ac
     new_game_state = mocker.Mock()
     new_game_state.turn_number = 2
 
-    new_history = mocker.Mock()
-    action_turn_0 = mocker.Mock()
-    action_turn_1 = mocker.Mock()
-    action_turn_2 = mocker.Mock()
-    new_history.action_history = [action_turn_0, action_turn_1, action_turn_2]
+    turn_0 = mocker.Mock()
+    turn_1 = mocker.Mock()
+    turn_2 = mocker.Mock()
+    new_history = GameHistory([turn_0, turn_1, turn_2])
 
     blackboard.wipe_for_new_turn(new_game_state, new_history)
 
-    assert blackboard.uninterpreted_actions == [action_turn_0, action_turn_1, action_turn_2]
+    assert blackboard.uninterpreted_turns == [turn_0, turn_1, turn_2]
 
 
 def test_given_used_blackboard_when_wipe_for_new_turn_then_add_uninterpreted_actions_from_history(mocker):
@@ -52,32 +51,31 @@ def test_given_used_blackboard_when_wipe_for_new_turn_then_add_uninterpreted_act
     new_game_state = mocker.Mock()
     new_game_state.turn_number = 5
 
-    new_history = mocker.Mock()
-    action_turn_3 = mocker.Mock()
-    action_turn_4 = mocker.Mock()
-    action_turn_5 = mocker.Mock()
-    new_history.action_history = [mocker.Mock(), mocker.Mock(), mocker.Mock(), action_turn_3, action_turn_4, action_turn_5]
+    turn_3 = mocker.Mock()
+    turn_4 = mocker.Mock()
+    turn_5 = mocker.Mock()
+    new_history = GameHistory([mocker.Mock(), mocker.Mock(), mocker.Mock(), turn_3, turn_4, turn_5])
 
     blackboard.wipe_for_new_turn(new_game_state, new_history)
 
-    assert blackboard.uninterpreted_actions == [action_turn_3, action_turn_4, action_turn_5]
+    assert blackboard.uninterpreted_turns == [turn_3, turn_4, turn_5]
 
 
 def test_given_uninterpreted_action_when_write_new_interpretation_then_uninterpreted_action_is_removed(mocker):
     blackboard = Blackboard()
-    uninterpreted_action = mocker.Mock()
-    blackboard.uninterpreted_actions = [uninterpreted_action]
+    uninterpreted_turn = mocker.Mock()
+    blackboard.uninterpreted_turns = [uninterpreted_turn]
 
     interpretation = mocker.Mock()
-    interpretation.of_action = uninterpreted_action
+    interpretation.of_turn = uninterpreted_turn
     blackboard.write_new_interpretation(interpretation)
 
-    assert blackboard.uninterpreted_actions == []
+    assert blackboard.uninterpreted_turns == []
 
 
 def test_given_uninterpreted_action_when_write_new_interpretation_then_ongoing_interpretation_is_added(mocker):
     blackboard = Blackboard()
-    blackboard.uninterpreted_actions = mocker.Mock()
+    blackboard.uninterpreted_turns = mocker.Mock()
 
     interpretation = mocker.Mock()
     blackboard.write_new_interpretation(interpretation)

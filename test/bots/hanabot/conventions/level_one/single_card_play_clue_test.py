@@ -1,4 +1,5 @@
 from bots.domain.model.action import SuitClueAction, RankClueAction
+from bots.domain.model.game_state import Turn
 from bots.domain.model.hand import HandCard, Hand
 from bots.domain.model.stack import Stacks
 from bots.hanabot.blackboard import Interpretation, InterpretationType
@@ -18,9 +19,9 @@ def test_given_one_one_left_to_play_when_find_interpretation_then_only_possible_
             Hand(
                 "alice",
                 (
-                    HandCard.unknown_card(),
-                    HandCard.clued_card(rank=Rank.ONE, draw_id=3),
-                    HandCard.unknown_card(),
+                    HandCard.unknown_card(0),
+                    HandCard.clued_card(draw_id=3, rank=Rank.ONE),
+                    HandCard.unknown_card(0),
                 ),
             )
         )
@@ -30,11 +31,12 @@ def test_given_one_one_left_to_play_when_find_interpretation_then_only_possible_
         )
         .build()
     )
+    turn = Turn(game_state, clue)
 
     convention = SingleCardPlayClue()
-    interpretation = convention.find_interpretation(clue, game_state)
+    interpretation = convention.find_interpretation(turn)
 
-    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: {expected_card}})
+    assert interpretation == Interpretation(turn, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: {expected_card}})
 
 
 def test_given_only_multiple_four_playable_when_find_interpretation_then_only_possible_card_is_playable_four():
@@ -48,9 +50,9 @@ def test_given_only_multiple_four_playable_when_find_interpretation_then_only_po
             Hand(
                 "alice",
                 (
-                    HandCard.unknown_card(),
-                    HandCard.clued_card(rank=Rank.FOUR, draw_id=3),
-                    HandCard.unknown_card(),
+                    HandCard.unknown_card(0),
+                    HandCard.clued_card(draw_id=3, rank=Rank.FOUR),
+                    HandCard.unknown_card(0),
                 ),
             )
         )
@@ -60,11 +62,12 @@ def test_given_only_multiple_four_playable_when_find_interpretation_then_only_po
         )
         .build()
     )
+    turn = Turn(game_state, clue)
 
     convention = SingleCardPlayClue()
-    interpretation = convention.find_interpretation(clue, game_state)
+    interpretation = convention.find_interpretation(turn)
 
-    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})
+    assert interpretation == Interpretation(turn, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})
 
 
 def test_given_suit_clue_when_find_interpretation_then_find_interpretation():
@@ -78,9 +81,9 @@ def test_given_suit_clue_when_find_interpretation_then_find_interpretation():
             Hand(
                 "cathy",
                 (
-                    HandCard.unknown_card(),
-                    HandCard.clued_card(suit=Suit.BLUE, draw_id=3),
-                    HandCard.unknown_card(),
+                    HandCard.unknown_card(0),
+                    HandCard.clued_card(draw_id=3, suit=Suit.BLUE),
+                    HandCard.unknown_card(0),
                 ),
             )
         )
@@ -90,11 +93,12 @@ def test_given_suit_clue_when_find_interpretation_then_find_interpretation():
         )
         .build()
     )
+    turn = Turn(game_state, clue)
 
     convention = SingleCardPlayClue()
-    interpretation = convention.find_interpretation(clue, game_state)
+    interpretation = convention.find_interpretation(turn)
 
-    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})
+    assert interpretation == Interpretation(turn, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})
 
 
 def test_given_suit_clue_on_someone_else_when_find_interpretation_then_do_not_find_interpretation():
@@ -112,16 +116,17 @@ def test_given_suit_clue_on_someone_else_when_find_interpretation_then_do_not_fi
             Hand(
                 "cathy",
                 (
-                    HandCard.unknown_card(),
-                    HandCard.clued_card(suit=Suit.BLUE, draw_id=3),
-                    HandCard.unknown_card(),
+                    HandCard.unknown_card(0),
+                    HandCard.clued_card(draw_id=3, suit=Suit.BLUE),
+                    HandCard.unknown_card(0),
                 ),
             ),
         )
         .build()
     )
+    turn = Turn(game_state, clue)
 
     convention = SingleCardPlayClue()
-    interpretation = convention.find_interpretation(clue, game_state)
+    interpretation = convention.find_interpretation(turn)
 
-    assert interpretation == Interpretation(clue, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})
+    assert interpretation == Interpretation(turn, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})

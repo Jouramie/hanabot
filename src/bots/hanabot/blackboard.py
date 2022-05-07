@@ -2,8 +2,7 @@ import logging
 from dataclasses import dataclass, field
 from enum import Enum, auto
 
-from bots.domain.model.action import Action
-from bots.domain.model.game_state import RelativeGameState, GameHistory
+from bots.domain.model.game_state import RelativeGameState, GameHistory, Turn
 from bots.domain.model.hand import Slot, DrawId
 from core import Card
 
@@ -18,7 +17,7 @@ class InterpretationType(Enum):
 
 @dataclass(frozen=True)
 class Interpretation:
-    of_action: Action
+    of_turn: Turn
     focus: Slot | None = None
     # TODO is the type really useful?
     interpretation_type: InterpretationType | None = None
@@ -28,7 +27,7 @@ class Interpretation:
     played_cards: set[DrawId] = field(default_factory=set)
 
     def __post_init__(self):
-        logger.debug(f"I think {self.notes_on_cards} because {self.of_action} is a {self.explanation}.")
+        logger.debug(f"I think {self.notes_on_cards} because {self.of_turn.action} is a {self.explanation}.")
 
     def __repr__(self) -> str:
         return f"{self.explanation} {self.notes_on_cards})"
@@ -41,23 +40,23 @@ class Blackboard:
 
     chop: Slot | None = None
 
-    uninterpreted_actions: list[Action] = field(default_factory=list)
+    uninterpreted_turns: list[Turn] = field(default_factory=list)
     ongoing_interpretations: list[Interpretation] = field(default_factory=list)
     # TODO is this of any use?
     resolved_interpretations: list[Interpretation] = field(default_factory=list)
 
     def wipe_for_new_turn(self, current_game_state: RelativeGameState, history: GameHistory):
         if self.current_game_state is None:
-            self.uninterpreted_actions = history.action_history
+            self.uninterpreted_turns = history.turns
         else:
-            self.uninterpreted_actions = history.action_history[self.current_game_state.turn_number :]
+            self.uninterpreted_turns = history.turns[self.current_game_state.turn_number :]
         self.chop = None
 
         self.current_game_state = current_game_state
         self.history = history
 
     def write_new_interpretation(self, interpretation: Interpretation):
-        self.uninterpreted_actions.remove(interpretation.of_action)
+        self.uninterpreted_turns.remove(interpretation.of_turn)
         self.ongoing_interpretations.append(interpretation)
 
     def write_notes_on_cards(self):

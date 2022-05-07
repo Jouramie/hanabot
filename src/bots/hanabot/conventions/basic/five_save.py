@@ -1,6 +1,6 @@
 from bots.domain.decision import Decision, RankClueDecision
-from bots.domain.model.action import Action, RankClueAction
-from bots.domain.model.game_state import RelativeGameState, RelativePlayerNumber
+from bots.domain.model.action import RankClueAction
+from bots.domain.model.game_state import RelativeGameState, RelativePlayerNumber, Turn
 from bots.domain.model.hand import Slot, HandCard
 from bots.hanabot.blackboard import Interpretation, InterpretationType
 from bots.hanabot.conventions.convention import Convention
@@ -16,8 +16,19 @@ class FiveSave(Convention):
         if card.real_card.rank == Rank.FIVE:
             return [RankClueDecision(Rank.FIVE, relative_player_id)]
 
-    def find_interpretation(self, action: Action, current_game_state: RelativeGameState) -> Interpretation | None:
-        if isinstance(action, RankClueAction):
-            # TODO validate clue was given on chop
-            if action.rank == Rank.FIVE:
-                return Interpretation(action, interpretation_type=InterpretationType.SAVE, explanation=self.name)
+    def find_interpretation(self, turn: Turn) -> Interpretation | None:
+        if not isinstance(turn.action, RankClueAction):
+            return
+
+        rank_clue = turn.action
+        if rank_clue.rank != Rank.FIVE:
+            return None
+
+        touched_hand = turn.game_state.find_player_hand(rank_clue.recipient)
+        if all(touched_hand.find_card_by_draw_id(touched_draw_id).is_clued for touched_draw_id in rank_clue.touched_draw_ids):
+            return None
+
+        if self.document.find_chop(touched_hand) not in rank_clue.touched_slots:
+            return None
+
+        return Interpretation(turn, interpretation_type=InterpretationType.SAVE, explanation=self.name)

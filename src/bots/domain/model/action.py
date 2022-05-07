@@ -30,6 +30,7 @@ class SuitClueAction:
 @dataclass(frozen=True)
 class RankClueAction:
     recipient: str
+    # TODO it's annoying to maintain two lists for the same info
     touched_slots: frozenset[Slot]
     touched_draw_ids: frozenset[DrawId]
     rank: Rank

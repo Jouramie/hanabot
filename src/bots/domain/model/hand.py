@@ -20,11 +20,11 @@ class HandCard:
     notes_on_cards: set[Card] = field(default_factory=set)
 
     @staticmethod
-    def unknown_card(draw_id: DrawId = 0) -> HandCard:
+    def unknown_card(draw_id: DrawId) -> HandCard:
         return HandCard(frozenset(all_possible_cards()), False, draw_id)
 
     @staticmethod
-    def clued_card(suit: Suit | None = None, rank: Rank | None = None, draw_id: DrawId = 0) -> HandCard:
+    def clued_card(draw_id: DrawId, suit: Suit | None = None, rank: Rank | None = None) -> HandCard:
         if suit is not None and rank is not None:
             return HandCard(frozenset(all_possible_cards(suit, rank)), True, draw_id)
         elif suit is not None:
@@ -33,11 +33,11 @@ class HandCard:
             return HandCard(frozenset(all_possible_cards(ranks=rank)), True, draw_id)
 
     @staticmethod
-    def unknown_real_card(card: Card, draw_id: DrawId = 0) -> HandCard:
+    def unknown_real_card(draw_id: DrawId, card: Card) -> HandCard:
         return HandCard(frozenset(all_possible_cards()), False, draw_id, real_card=card)
 
     @staticmethod
-    def clued_real_card(card: Card, suit_known: bool = False, rank_known: bool = False, draw_id: DrawId = 0) -> HandCard:
+    def clued_real_card(draw_id: DrawId, card: Card, suit_known: bool = False, rank_known: bool = False) -> HandCard:
         if suit_known and rank_known:
             return HandCard(frozenset({card}), True, draw_id, real_card=card)
         elif suit_known:
@@ -46,8 +46,8 @@ class HandCard:
             return HandCard(frozenset(all_possible_cards(ranks=card.rank)), True, draw_id, real_card=card)
 
     @staticmethod
-    def known_real_card(card: Card, draw_id: DrawId = 0) -> HandCard:
-        return HandCard.clued_real_card(card, True, True, draw_id)
+    def known_real_card(draw_id: DrawId, card: Card) -> HandCard:
+        return HandCard.clued_real_card(draw_id, card, True, True)
 
     def __post_init__(self):
         self.notes_on_cards.update(self.possible_cards)
@@ -78,11 +78,11 @@ class Hand(Iterable[HandCard], Sized):
 
     @staticmethod
     def create_unknown_hand(player_name: str, size: int = 5) -> Hand:
-        return Hand(player_name, tuple(HandCard.unknown_card() for i in range(size)))
+        return Hand(player_name, tuple(HandCard.unknown_card(0) for i in range(size)))
 
     @staticmethod
     def create_unknown_real_hand(player_name: str, cards: Iterable[Card]) -> Hand:
-        return Hand(player_name, tuple(HandCard.unknown_real_card(card) for card in cards))
+        return Hand(player_name, tuple(HandCard.unknown_real_card(0, card) for card in cards))
 
     def __iter__(self) -> Iterator[HandCard]:
         return iter(self.cards)

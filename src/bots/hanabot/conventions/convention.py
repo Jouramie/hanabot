@@ -5,10 +5,9 @@ from dataclasses import dataclass, field
 from typing import Iterable
 
 from bots.domain.decision import Decision, SuitClueDecision
-from bots.domain.model.action import Action
-from bots.domain.model.game_state import RelativeGameState, RelativePlayerNumber
+from bots.domain.model.game_state import RelativeGameState, RelativePlayerNumber, Turn
 from bots.domain.model.hand import Hand, HandCard, Slot
-from bots.hanabot.blackboard import Interpretation, Blackboard
+from bots.hanabot.blackboard import Interpretation
 
 
 @dataclass
@@ -16,15 +15,12 @@ class Convention(ABC):
     name: str
     document: ConventionDocument = None
 
-    def set_document(self, document: ConventionDocument):
-        self.document = document
-
     @abstractmethod
     def find_clue(self, card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[Decision] | None:
         pass
 
     @abstractmethod
-    def find_interpretation(self, action: Action, current_game_state: RelativeGameState) -> Interpretation | None:
+    def find_interpretation(self, turn: Turn) -> Interpretation | None:
         pass
 
 
@@ -35,9 +31,9 @@ class ConventionDocument:
 
     def __post_init__(self):
         for convention in self.play_conventions:
-            convention.set_document(self)
+            convention.document = self
         for convention in self.save_conventions:
-            convention.set_document(self)
+            convention.document = self
 
     def find_save(self, critical_card: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[Decision]:
         for convention in self.save_conventions:
@@ -80,11 +76,11 @@ class ConventionDocument:
                     return [SuitClueDecision(card.real_card.suit, relative_player_id)]
         return [SuitClueDecision(current_game_state.other_player_hands[0][0].real_card.suit, 1)]
 
-    def find_new_interpretations(self, action: Action, blackboard: Blackboard) -> list[Interpretation]:
+    def find_new_interpretations(self, turn: Turn) -> list[Interpretation]:
         interpretations = []
-        for convention in self.play_conventions + self.save_conventions:
+        for convention in self.save_conventions + self.play_conventions:
             # TODO should probably pass the game state at the time the clue was given
-            interpretation = convention.find_interpretation(action, blackboard.current_game_state)
+            interpretation = convention.find_interpretation(turn)
             if interpretation is not None:
                 interpretations.append(interpretation)
 

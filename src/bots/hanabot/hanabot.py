@@ -48,27 +48,27 @@ class Hanabot(DecisionMaking):
             - Log non-interpretable actions
         2. Write notes on cards
         """
-        for action in self.blackboard.uninterpreted_actions.copy():
+        for turn in self.blackboard.uninterpreted_turns.copy():
             self.blackboard.chop = self.conventions.find_chop(self.blackboard.my_hand)
 
-            if isinstance(action, PlayAction) or isinstance(action, DiscardAction):
+            if isinstance(turn.action, PlayAction) or isinstance(turn.action, DiscardAction):
                 for interpretation in self.blackboard.ongoing_interpretations.copy():
-                    if action.draw_id not in interpretation.notes_on_cards:
+                    if turn.action.draw_id not in interpretation.notes_on_cards:
                         continue
 
-                    interpretation.played_cards.add(action.draw_id)
+                    interpretation.played_cards.add(turn.action.draw_id)
                     if interpretation.played_cards != interpretation.notes_on_cards.keys():
                         continue
 
-                    logger.debug(f"{action} resolved interpretation {interpretation}.")
+                    logger.debug(f"{turn.action} resolved interpretation {interpretation}.")
                     self.blackboard.move_interpretation_to_resolved(interpretation)
 
-            elif isinstance(action, ClueAction):
-                interpretation = self.conventions.find_new_interpretations(action, self.blackboard)
+            elif isinstance(turn.action, ClueAction):
+                interpretation = self.conventions.find_new_interpretations(turn)
                 if interpretation:
                     self.blackboard.write_new_interpretation(interpretation[0])
                 else:
-                    logger.debug(f"WTF is this Charles {action}")
+                    logger.debug(f"WTF is this Charles {turn.action}")
 
         self.blackboard.write_notes_on_cards()
 

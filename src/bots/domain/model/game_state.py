@@ -16,15 +16,9 @@ class RelativeGameState:
     stacks: Stacks
     discard: Discard
     player_hands: tuple[Hand, ...]
-    last_performed_action: Action | None
     turn_number: int
     clue_count: int
     bomb_count: int
-
-    _visible_cards = None
-
-    def is_first_turn(self):
-        return self.last_performed_action is None
 
     def is_critical(self, card: Card) -> bool:
         if self.is_trash(card):
@@ -166,15 +160,25 @@ class RelativeGameState:
 
 
 @dataclass(frozen=True)
-class GameHistory:
-    game_states: List[RelativeGameState] = field(default_factory=list)
+class Turn:
+    game_state: RelativeGameState
+    action: Action
 
-    def add_game_state(self, game_state: RelativeGameState) -> None:
-        self.game_states.append(game_state)
+
+@dataclass(frozen=True)
+class GameHistory:
+    turns: List[Turn] = field(default_factory=list)
+
+    def add_game_state(self, turn: Turn) -> None:
+        self.turns.append(turn)
 
     @property
     def action_history(self) -> list[Action]:
-        return [game_state.last_performed_action for game_state in self.game_states]
+        return [turn.action for turn in self.turns]
 
     def __getitem__(self, item):
-        return self.game_states[item]
+        return self.turns[item]
+
+    @property
+    def latest_turn_number(self) -> int:
+        return len(self.turns) - 1
