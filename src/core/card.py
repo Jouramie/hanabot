@@ -175,7 +175,6 @@ class Card:
 
     @staticmethod
     def create(suit: Suit, rank: Rank) -> Card:
-        # return Card.get_card(suit, rank)
         return Card(suit, rank)
 
     def __new__(cls, *args, _cache={}):  # noqa
@@ -210,6 +209,9 @@ class Card:
     def __repr__(self) -> str:
         return self.short_name
 
+    def __hash__(self) -> int:
+        return Card.get_card_hash(self)
+
     def is_playable_over(self, card: Card) -> bool:
         return self.previous_card == card
 
@@ -222,15 +224,6 @@ class Card:
     def previous_card(self) -> Card:
         previous_rank = self.rank.previous
         return self.create(self.suit, previous_rank) if previous_rank is not None else None
-
-    @staticmethod
-    def get_card(suit: Suit, rank: Rank) -> Card:
-        card_hash = Card.get_suit_and_rank_hash(suit, rank)
-        if card_hash in _cards:
-            return _cards[card_hash]
-        card = Card(suit, rank)
-        _cards[card_hash] = card
-        return card
 
     @staticmethod
     def get_suit_and_rank_hash(suit: Suit, rank: Rank) -> int:
