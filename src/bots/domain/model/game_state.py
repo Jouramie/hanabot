@@ -172,10 +172,6 @@ class GameHistory:
     def add_game_state(self, turn: Turn) -> None:
         self.turns.append(turn)
 
-    @property
-    def action_history(self) -> list[Action]:
-        return [turn.action for turn in self.turns]
-
     def __getitem__(self, item):
         return self.turns[item]
 
