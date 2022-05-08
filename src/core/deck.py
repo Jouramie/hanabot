@@ -19,20 +19,20 @@ class Deck:
     def generate(suits: Iterable[Suit] = Variant.NO_VARIANT) -> Deck:
         cards = []
         for suit in suits:
-            cards.append(Card(suit, Rank.ONE))
-            cards.append(Card(suit, Rank.ONE))
-            cards.append(Card(suit, Rank.ONE))
+            cards.append(Card.create(suit, Rank.ONE))
+            cards.append(Card.create(suit, Rank.ONE))
+            cards.append(Card.create(suit, Rank.ONE))
 
-            cards.append(Card(suit, Rank.TWO))
-            cards.append(Card(suit, Rank.TWO))
+            cards.append(Card.create(suit, Rank.TWO))
+            cards.append(Card.create(suit, Rank.TWO))
 
-            cards.append(Card(suit, Rank.THREE))
-            cards.append(Card(suit, Rank.THREE))
+            cards.append(Card.create(suit, Rank.THREE))
+            cards.append(Card.create(suit, Rank.THREE))
 
-            cards.append(Card(suit, Rank.FOUR))
-            cards.append(Card(suit, Rank.FOUR))
+            cards.append(Card.create(suit, Rank.FOUR))
+            cards.append(Card.create(suit, Rank.FOUR))
 
-            cards.append(Card(suit, Rank.FIVE))
+            cards.append(Card.create(suit, Rank.FIVE))
 
         shuffle(cards)
         return Deck(cards, suits=suits)

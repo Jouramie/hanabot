@@ -51,6 +51,7 @@ machinabi_players = [
     SimulatorBot("Bob", Machinabi()),
     SimulatorBot("Cathy", Machinabi()),
     SimulatorBot("Donald", Machinabi()),
+    SimulatorBot("Edith", Machinabi()),
 ]
 cheater_players = [
     CheatingPlayer(),

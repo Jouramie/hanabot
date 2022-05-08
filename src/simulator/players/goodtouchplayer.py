@@ -24,7 +24,7 @@ class PossibleCard:
         self.possibilities = []
         for suit in suits:
             for rank in default_distribution.keys():
-                self.possibilities.append(Card(suit, rank))
+                self.possibilities.append(Card.create(suit, rank))
 
     def remove_possibilities(self, cards: Iterable[Card] | Card):
         if isinstance(cards, Card):
@@ -48,7 +48,7 @@ class GoodTouchPlayer(SimulatorPlayer):
         played_cards = []
         for stack in game.play_area.stacks.values():
             for rank in stack.get_ranks_already_played():
-                played_cards.append(Card(stack.suit, rank))
+                played_cards.append(Card.create(stack.suit, rank))
 
         return played_cards
 
@@ -198,7 +198,7 @@ class GoodTouchPlayer(SimulatorPlayer):
         for suit, stack in game.play_area.stacks.items():
             played_ranks = stack.get_ranks_already_played()
             for rank in played_ranks:
-                card = Card(suit, rank)
+                card = Card.create(suit, rank)
                 if card not in card_numbers:
                     card_numbers[card] = 0
                 card_numbers[card] += 1

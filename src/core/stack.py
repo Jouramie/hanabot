@@ -36,7 +36,7 @@ class Stack:
     def played_cards(self) -> Set[Card]:
         if self.rank is None:
             return set()
-        return {Card(self.suit, Rank.value_of(rank)) for rank in range(1, self.rank.number_value + 1)}
+        return {Card.create(self.suit, Rank.value_of(rank)) for rank in range(1, self.rank.number_value + 1)}
 
     def get_ranks_already_played(self) -> list[Rank]:
         return list(card.rank for card in self.played_cards)

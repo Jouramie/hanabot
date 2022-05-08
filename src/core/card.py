@@ -165,11 +165,18 @@ suit_abbreviation_mapping = frozendict(
     }
 )
 
+_cards = {}
+
 
 @dataclass(frozen=True)
 class Card:
     suit: Suit
     rank: Rank
+
+    @staticmethod
+    def create(suit: Suit, rank: Rank) -> Card:
+        # return Card.get_card(suit, rank)
+        return Card(suit, rank)
 
     def __new__(cls, *args, _cache={}):  # noqa
         if _cache.get(args) is not None:
@@ -209,12 +216,32 @@ class Card:
     @property
     def next_card(self) -> Card:
         next_rank = self.rank.next
-        return Card(self.suit, next_rank) if next_rank is not None else None
+        return self.create(self.suit, next_rank) if next_rank is not None else None
 
     @property
     def previous_card(self) -> Card:
         previous_rank = self.rank.previous
-        return Card(self.suit, previous_rank) if previous_rank is not None else None
+        return self.create(self.suit, previous_rank) if previous_rank is not None else None
+
+    @staticmethod
+    def get_card(suit: Suit, rank: Rank) -> Card:
+        card_hash = Card.get_suit_and_rank_hash(suit, rank)
+        if card_hash in _cards:
+            return _cards[card_hash]
+        card = Card(suit, rank)
+        _cards[card_hash] = card
+        return card
+
+    @staticmethod
+    def get_suit_and_rank_hash(suit: Suit, rank: Rank) -> int:
+        suit_hash = hash(suit)
+        rank_hash = hash(rank)
+        full_hash = hash((suit_hash * 33) + rank_hash)
+        return full_hash
+
+    @staticmethod
+    def get_card_hash(card: Card) -> int:
+        return Card.get_suit_and_rank_hash(card.suit, card.rank)
 
 
 class Variant(Enum):
@@ -255,7 +282,7 @@ def all_possible_cards(
         suits = (suits,)
     if isinstance(ranks, Rank):
         ranks = (ranks,)
-    return {Card(suit, rank) for suit in suits for rank in ranks}
+    return {Card.create(suit, rank) for suit in suits for rank in ranks}
 
 
 def amount_of_cards(variant: Iterable[Suit]) -> int:
