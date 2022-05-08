@@ -41,7 +41,7 @@ def test_new_game_should_have_empty_clue_history():
 
 def test_new_game_should_have_empty_discard_pile():
     game = Game(get_player_names(5), Deck.generate())
-    assert len(game.discard_pile.cards) == 0
+    assert len(game.discard_pile) == 0
 
 
 def test_new_game_should_be_first_players_turn():

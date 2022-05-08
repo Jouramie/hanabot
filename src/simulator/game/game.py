@@ -4,8 +4,8 @@ from copy import deepcopy
 from typing import List
 
 from core import Deck
+from core.discard import Discard
 from core.gamerules import get_hand_size
-from core.state.discard_pile import DiscardPile
 from core.state.gamestate import GameState
 from core.state.play_area import PlayArea
 from core.state.status import Status
@@ -26,7 +26,7 @@ class Game:
         self.history = History()
 
         deck = deck
-        discard_pile = DiscardPile()
+        discard_pile = Discard()
         play_area = PlayArea(deck.suits)
 
         players = []
@@ -57,7 +57,7 @@ class Game:
         return self.current_state.deck
 
     @property
-    def discard_pile(self) -> DiscardPile:
+    def discard_pile(self) -> Discard:
         return self.current_state.discard_pile
 
     @property
@@ -105,7 +105,7 @@ class Game:
             action.success = True
         else:
             self.status.add_strike()
-            self.discard_pile.discard(card_to_play.real_card)
+            self.current_state = self.current_state.discard(card_to_play.real_card)
             action.success = False
         self.player_draw_card(player)
         action.playedCard = card_to_play
@@ -163,7 +163,7 @@ class Game:
             raise ValueError("You cannot discard this slot!")
 
         card_to_discard = player.hand.pop(action.cardSlot)
-        self.discard_pile.discard(card_to_discard.real_card)
+        self.current_state = self.current_state.discard(card_to_discard.real_card)
         self.status.generate_clue()
         self.player_draw_card(player)
         action.discardedCard = card_to_discard.real_card

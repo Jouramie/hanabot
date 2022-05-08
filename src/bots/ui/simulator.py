@@ -1,13 +1,9 @@
-from frozendict import frozendict
-
 from bots.domain.decision import DecisionMaking, Decision, PlayDecision, DiscardDecision, SuitClueDecision, RankClueDecision
 from bots.domain.model.action import Action, PlayAction, DiscardAction, SuitClueAction, RankClueAction
 from bots.domain.model.game_state import RelativeGameState, GameHistory, Turn
 from bots.domain.model.hand import Hand, HandCard
 from bots.domain.model.stack import Stacks, Stack
-from core import Suit, Card
-from core.discard import Discard
-from core.state.discard_pile import DiscardPile
+from core import Suit
 from core.state.gamestate import GameState as SimulatorGameState
 from core.state.stack import Stack as SimulatorStack
 from simulator.game.action import (
@@ -90,18 +86,10 @@ def add_recent_turns_to_history(history: GameHistory, game: Game) -> GameHistory
     return history
 
 
-def assemble_discard(discard_pile: DiscardPile) -> Discard:
-    discard: dict[Card, int] = {}
-    for card in discard_pile.cards:
-        discard[card] = discard.get(card, 0) + 1
-
-    return Discard(frozendict(discard))
-
-
 def assemble_relative_game_state(game_state: SimulatorGameState) -> RelativeGameState:
     return RelativeGameState(
         assemble_stacks(game_state.play_area.stacks),
-        assemble_discard(game_state.discard_pile),
+        game_state.discard_pile,
         assemble_player_hands(game_state),
         game_state.status.turn,
         game_state.status.clues,

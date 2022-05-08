@@ -1,8 +1,8 @@
 from copy import deepcopy
 from typing import List
 
-from core import Deck, Variant, Card, Suit, Rank
-from core.state.discard_pile import DiscardPile
+from core import Deck, Variant, Card, Suit
+from core.discard import Discard
 from core.state.gamestate import GameState
 from core.state.play_area import PlayArea
 from core.state.stack import Stack
@@ -19,7 +19,7 @@ def test_create_gamestate_should_save_all_parameters():
     for playerName in get_player_names(5):
         players.append(Player(playerName))
     deck = Deck.generate(suits)
-    discard_pile = DiscardPile()
+    discard_pile = Discard()
     play_area = PlayArea(suits)
     status = Status(35)
 
@@ -27,7 +27,7 @@ def test_create_gamestate_should_save_all_parameters():
 
     assert_players_are_equivalent(gamestate.players, players)
     assert_deck_is_equivalent(gamestate.deck, deck)
-    assert_discard_pile_is_equivalent(gamestate.discard_pile, discard_pile)
+    assert gamestate.discard_pile == discard_pile
     assert_play_area_is_equivalent(gamestate.play_area, play_area)
     assert_status_is_equivalent(gamestate.status, status)
 
@@ -38,35 +38,17 @@ def test_create_gamestate_should_not_make_copies():
     for playerName in get_player_names(5):
         players.append(Player(playerName))
     deck = Deck.generate(suits)
-    discard_pile = DiscardPile()
+    discard_pile = Discard()
     play_area = PlayArea(suits)
     status = Status(35)
 
     gamestate = GameState(players, deck, discard_pile, play_area, status)
 
-    players.append(Player("fake player"))
-    _, card = deck.draw()
-    discard_pile.discard(card)
-    play_area.stacks[Suit.RED].last_played = Rank.THREE
-    status.clues = 4
-    status.strikes = 1
-    status.turn = 7
-
-    assert len(gamestate.players) == 6
-    assert len(gamestate.deck) == 49
-    assert len(gamestate.discard_pile.cards) == 1
-    assert gamestate.play_area.stacks[Suit.RED].last_played == Rank.THREE
-    assert gamestate.status.clues == 4
-    assert gamestate.status.strikes == 1
-    assert gamestate.status.turn == 7
-
-    assert len(players) == 6
-    assert len(deck) == 49
-    assert len(discard_pile.cards) == 1
-    assert play_area.stacks[Suit.RED].last_played == Rank.THREE
-    assert status.clues == 4
-    assert status.strikes == 1
-    assert status.turn == 7
+    assert gamestate.players is players
+    assert gamestate.deck is deck
+    assert gamestate.discard_pile is discard_pile
+    assert gamestate.play_area is play_area
+    assert gamestate.status is status
 
 
 def test_copy_gamestate_should_make_copies():
@@ -75,36 +57,17 @@ def test_copy_gamestate_should_make_copies():
     for playerName in get_player_names(5):
         players.append(Player(playerName))
     deck = Deck.generate(suits)
-    discard_pile = DiscardPile()
+    discard_pile = Discard()
     play_area = PlayArea(suits)
     status = Status(35)
 
     gamestate = GameState(players, deck, discard_pile, play_area, status)
     gamestate_copy = deepcopy(gamestate)
 
-    gamestate.players.append(Player("fake player"))
-    _, card = gamestate.deck.draw()
-    gamestate.discard_pile.discard(card)
-    gamestate.play_area.stacks[Suit.RED].last_played = Rank.THREE
-    gamestate.status.clues = 4
-    gamestate.status.strikes = 1
-    gamestate.status.turn = 7
-
-    assert len(gamestate_copy.players) == 5
-    assert len(gamestate_copy.deck) == 50
-    assert len(gamestate_copy.discard_pile.cards) == 0
-    assert gamestate_copy.play_area.stacks[Suit.RED].last_played is None
-    assert gamestate_copy.status.clues == 8
-    assert gamestate_copy.status.strikes == 0
-    assert gamestate_copy.status.turn == 0
-
-    assert len(gamestate.players) == 6
-    assert len(gamestate.deck) == 49
-    assert len(gamestate.discard_pile.cards) == 1
-    assert gamestate.play_area.stacks[Suit.RED].last_played == Rank.THREE
-    assert gamestate.status.clues == 4
-    assert gamestate.status.strikes == 1
-    assert gamestate.status.turn == 7
+    assert gamestate.players is not gamestate_copy.players
+    assert gamestate.deck is not gamestate_copy.deck
+    assert gamestate.play_area is not gamestate_copy.play_area
+    assert gamestate.status is not gamestate_copy.status
 
 
 def assert_players_are_equivalent(players1: List[Player], players2: List[Player]):
@@ -170,10 +133,6 @@ def assert_possible_cards_are_equivalent(cards1: List[Card], cards2: List[Card])
 
 def assert_deck_is_equivalent(deck1: Deck, deck2: Deck):
     assert deck1 == deck2
-
-
-def assert_discard_pile_is_equivalent(discard1: DiscardPile, discard2: DiscardPile):
-    assert_cards_are_equivalent(discard1.cards, discard2.cards)
 
 
 def assert_play_area_is_equivalent(play1: PlayArea, play2: PlayArea):

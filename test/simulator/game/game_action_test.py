@@ -386,12 +386,12 @@ def test_discard_should_add_card_to_discard_pile():
 
     slot2_before = player.hand[2].real_card
 
-    assert game.discard_pile.cards.count(slot2_before) == 0
+    assert game.current_state.count_discarded(slot2_before) == 0
 
     action = DiscardAction(2)
     game.play_turn(action)
 
-    assert game.discard_pile.cards.count(slot2_before) == 1
+    assert game.current_state.count_discarded(slot2_before) == 1
 
 
 def test_play_fail_should_add_card_to_discard_pile():
@@ -400,12 +400,12 @@ def test_play_fail_should_add_card_to_discard_pile():
 
     slot3_before = player.hand[3].real_card
 
-    assert game.discard_pile.cards.count(slot3_before) == 0
+    assert game.current_state.count_discarded(slot3_before) == 0
 
     action = PlayAction(3)
     game.play_turn(action)
 
-    assert game.discard_pile.cards.count(slot3_before) == 1
+    assert game.current_state.count_discarded(slot3_before) == 1
 
 
 def test_play_fail_should_add_strike():
