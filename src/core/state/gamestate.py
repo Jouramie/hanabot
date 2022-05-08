@@ -54,7 +54,7 @@ class GameState:
         if not is_played:
             return self, False
 
-        return GameState(self.players, self.deck, self.discard_pile.discard(card), new_stacks, self.status), True
+        return GameState(self.players, self.deck, self.discard_pile, new_stacks, self.status), True
 
     @property
     def score(self) -> int:
