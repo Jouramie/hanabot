@@ -4,10 +4,10 @@ from bots.domain.decision import SuitClueDecision, RankClueDecision, DiscardDeci
 from bots.domain.model.action import SuitClueAction, RankClueAction
 from bots.domain.model.game_state import GameHistory, Turn
 from bots.domain.model.hand import HandCard, Hand
-from bots.domain.model.stack import Stacks
 from bots.hanabot.conventions import level_one
 from bots.hanabot.hanabot import Hanabot
 from core import Card, Rank, Suit
+from core.stack import Stacks
 from test.bots.domain.model.game_state_test import RelativeGameStateBuilder
 
 

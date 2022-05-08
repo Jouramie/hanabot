@@ -6,7 +6,6 @@ from bots.ui.simulator import SimulatorBot
 from core import Deck
 from core.card import Card, Suit, Rank, Variant
 from simulator.controller import Controller
-from core.state.gamestate import GameState
 from simulator.game.game import Game
 
 logging.basicConfig(level=logging.DEBUG)
@@ -54,4 +53,4 @@ def test_given_first_turn_when_play_turn_then_clue_and_play_ones():
     controller.play_turn()
     controller.play_turn()
 
-    assert controller.current_game.play_area.stacks[Suit.RED].last_played == Rank.TWO
+    assert Card(Suit.RED, Rank.TWO) in controller.current_game.current_state.play_area.played_cards

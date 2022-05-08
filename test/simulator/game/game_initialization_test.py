@@ -41,7 +41,7 @@ def test_new_game_should_have_empty_clue_history():
 
 def test_new_game_should_have_empty_discard_pile():
     game = Game(get_player_names(5), Deck.generate())
-    assert len(game.discard_pile) == 0
+    assert len(game.current_state.discard_pile) == 0
 
 
 def test_new_game_should_be_first_players_turn():
@@ -87,9 +87,8 @@ def test_new_game_should_have_empty_play_area(number_suits):
     suits = Variant.get_suits(number_suits)
     deck = Deck.generate(suits)
     game = Game(get_player_names(5), deck)
-    assert len(game.play_area.stacks) == len(deck.suits)
-    for suit in suits:
-        assert game.play_area.stacks[suit].last_played is None
+    assert len(game.current_state.play_area) == len(deck.suits)
+    assert not game.current_state.play_area.played_cards
 
 
 def players_are_different(players1: List[Player], players2: List[Player]):

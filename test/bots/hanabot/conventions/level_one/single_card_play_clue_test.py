@@ -1,10 +1,10 @@
 from bots.domain.model.action import SuitClueAction, RankClueAction
 from bots.domain.model.game_state import Turn
 from bots.domain.model.hand import HandCard, Hand
-from bots.domain.model.stack import Stacks
 from bots.hanabot.blackboard import Interpretation, InterpretationType
 from bots.hanabot.conventions import SingleCardPlayClue
 from core import Rank, Card, Suit
+from core.stack import Stacks
 from test.bots.domain.model.game_state_test import RelativeGameStateBuilder
 
 

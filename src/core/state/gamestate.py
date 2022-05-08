@@ -6,7 +6,7 @@ from typing import List
 
 from core import Deck
 from core.discard import Discard
-from core.state.play_area import PlayArea
+from core.stack import Stacks
 from core.state.status import Status
 from simulator.game.player import Player
 
@@ -17,10 +17,10 @@ class GameState:
     players: List[Player]
     deck: Deck
     discard_pile: Discard
-    play_area: PlayArea
+    play_area: Stacks
     status: Status
 
-    def __init__(self, players: List[Player], deck: Deck, discard_pile: Discard, play_area: PlayArea, status: Status):
+    def __init__(self, players: List[Player], deck: Deck, discard_pile: Discard, play_area: Stacks, status: Status):
         self.players = players
         self.deck = deck
         self.discard_pile = discard_pile
@@ -49,12 +49,23 @@ class GameState:
     def count_discarded(self, card) -> int:
         return self.discard_pile.count(card)
 
+    def play(self, card) -> tuple[GameState, bool]:
+        new_stacks, is_played = self.play_area.play(card)
+        if not is_played:
+            return self, False
+
+        return GameState(self.players, self.deck, self.discard_pile.discard(card), new_stacks, self.status), True
+
+    @property
+    def score(self) -> int:
+        return self.play_area.stacks_score
+
     def __deepcopy__(self, memo):
         copy = GameState(
             deepcopy(self.players, memo),
             deepcopy(self.deck, memo),
             self.discard_pile,
-            deepcopy(self.play_area, memo),
+            self.play_area,
             deepcopy(self.status, memo),
         )
         memo[id(self)] = copy

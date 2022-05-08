@@ -2,10 +2,7 @@ from bots.domain.decision import DecisionMaking, Decision, PlayDecision, Discard
 from bots.domain.model.action import Action, PlayAction, DiscardAction, SuitClueAction, RankClueAction
 from bots.domain.model.game_state import RelativeGameState, GameHistory, Turn
 from bots.domain.model.hand import Hand, HandCard
-from bots.domain.model.stack import Stacks, Stack
-from core import Suit
 from core.state.gamestate import GameState as SimulatorGameState
-from core.state.stack import Stack as SimulatorStack
 from simulator.game.action import (
     Action as SimulatorAction,
     PlayAction as SimulatorPlayAction,
@@ -17,10 +14,6 @@ from simulator.game.clue import Clue as SimulatorClue
 from simulator.game.game import Game
 from simulator.game.player import Player
 from simulator.players.simulatorplayer import SimulatorPlayer
-
-
-def assemble_stacks(stacks: dict[Suit, SimulatorStack]) -> Stacks:
-    return Stacks({suit: Stack(stack.suit, stack.last_played) for suit, stack in stacks.items()})
 
 
 def assemble_my_hand(me: Player) -> Hand:
@@ -88,7 +81,7 @@ def add_recent_turns_to_history(history: GameHistory, game: Game) -> GameHistory
 
 def assemble_relative_game_state(game_state: SimulatorGameState) -> RelativeGameState:
     return RelativeGameState(
-        assemble_stacks(game_state.play_area.stacks),
+        game_state.play_area,
         game_state.discard_pile,
         assemble_player_hands(game_state),
         game_state.status.turn,

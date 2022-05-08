@@ -16,8 +16,8 @@ class GameResult:
         if not game_state.status.is_over:
             raise ValueError("Cannot generate result for an unfinished game")
         is_survival = game_state.status.strikes < 3
-        played_cards = sum(stack.stack_score() for stack in game_state.play_area.stacks.values())
-        max_score = len(game_state.play_area.stacks) * 5
+        played_cards = game_state.score
+        max_score = len(game_state.play_area) * 5
         score = played_cards if is_survival else 0
         is_victory = score == max_score
         return GameResult(is_victory, is_survival, score, max_score, played_cards)

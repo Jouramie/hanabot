@@ -6,9 +6,9 @@ from frozendict import frozendict
 
 from bots.domain.model.game_state import RelativeGameState
 from bots.domain.model.hand import Hand, HandCard
-from bots.domain.model.stack import Stacks, Stack
 from core import Card, Suit, Rank, Variant
 from core.discard import Discard
+from core.stack import Stacks, Stack
 
 ALICE = "Alice"
 BOB = "Bob"

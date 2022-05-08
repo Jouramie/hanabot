@@ -1,21 +1,33 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, Set
+from typing import Iterable, Set, Sized
 
 from frozendict import frozendict
 
 from core import Rank, Suit, Card, Variant
+from core.gamerules import get_suit_short_name
 
 
 @dataclass(frozen=True)
 class Stack:
-    # TODO is this really needed?
     suit: Suit
     rank: Rank | None = None
 
+    def __str__(self):
+        stack_number = 0
+        if self.rank is not None:
+            stack_number = self.rank.number_value
+        return get_suit_short_name(self.suit) + str(stack_number)
+
     def is_playable(self, rank: Rank) -> bool:
         return rank.is_playable_over(self.rank)
+
+    def can_play(self, card: Card) -> bool:
+        if self.suit != card.suit:
+            raise ValueError(f"Stack is not {card.suit}")
+
+        return self.is_playable(card.rank)
 
     def is_already_played(self, rank: Rank) -> bool:
         return self.rank is not None and self.rank >= rank
@@ -26,14 +38,29 @@ class Stack:
             return set()
         return {Card(self.suit, Rank.value_of(rank)) for rank in range(1, self.rank.number_value + 1)}
 
+    def get_ranks_already_played(self) -> list[Rank]:
+        return list(card.rank for card in self.played_cards)
+
+    @property
+    def stack_score(self) -> int:
+        if self.rank is None:
+            return 0
+        return self.rank.number_value
+
+    def play(self, card: Card) -> tuple[Stack, bool]:
+        if not self.can_play(card):
+            return self, False
+
+        return Stack(self.suit, card.rank), True
+
 
 @dataclass(frozen=True)
-class Stacks:
+class Stacks(Sized):
     stack_by_suit: frozendict[Suit, Stack]
 
     @staticmethod
     def create_empty_stacks(suits: Iterable[Suit]) -> Stacks:
-        return Stacks({suit: Stack(suit) for suit in suits})
+        return Stacks(frozendict({suit: Stack(suit) for suit in suits}))
 
     @staticmethod
     def create_from_cards(cards: Iterable[Card]) -> Stacks:
@@ -42,6 +69,9 @@ class Stacks:
     @staticmethod
     def create_from_dict(played_ranks: dict[Suit, Rank], suits: Iterable[Suit] = Variant.NO_VARIANT) -> Stacks:
         return Stacks({suit: Stack(suit, played_ranks.get(suit, None)) for suit in suits})
+
+    def __len__(self) -> int:
+        return len(self.stack_by_suit)
 
     def are_all_playable_or_already_played(self, possible_cards: Iterable[Card]) -> bool:
         return all(self.is_playable(card) or self.is_already_played(card) for card in possible_cards)
@@ -53,6 +83,9 @@ class Stacks:
 
         return stack.is_playable(card.rank)
 
+    def can_play(self, card: Card) -> bool:
+        return self.is_playable(card)
+
     def is_already_played(self, card: Card) -> bool:
         stack = self.stack_by_suit.get(card.suit)
         if stack is None:
@@ -63,3 +96,18 @@ class Stacks:
     @property
     def played_cards(self) -> Set[Card]:
         return {card for stack in self.stack_by_suit.values() for card in stack.played_cards}
+
+    @property
+    def stacks_score(self) -> int:
+        return sum(stack.stack_score for stack in self.stack_by_suit.values())
+
+    def play(self, card: Card) -> tuple[Stacks, bool]:
+        stack = self.stack_by_suit.get(card.suit)
+        if stack is None:
+            raise ValueError(f"No stack for suit {card.suit}")
+
+        new_stacks, is_played = stack.play(card)
+        if not is_played:
+            return self, False
+
+        return Stacks(self.stack_by_suit.set(card.suit, new_stacks)), True

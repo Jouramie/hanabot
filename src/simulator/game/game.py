@@ -6,8 +6,8 @@ from typing import List
 from core import Deck
 from core.discard import Discard
 from core.gamerules import get_hand_size
+from core.stack import Stacks
 from core.state.gamestate import GameState
-from core.state.play_area import PlayArea
 from core.state.status import Status
 from simulator.game.action import Action, PlayAction, ColorClueAction, RankClueAction, DiscardAction
 from simulator.game.clue import ColorClue, RankClue, Clue
@@ -27,7 +27,7 @@ class Game:
 
         deck = deck
         discard_pile = Discard()
-        play_area = PlayArea(deck.suits)
+        play_area = Stacks.create_empty_stacks(deck.suits)
 
         players = []
         for playerName in players_names:
@@ -55,14 +55,6 @@ class Game:
     @property
     def deck(self) -> Deck:
         return self.current_state.deck
-
-    @property
-    def discard_pile(self) -> Discard:
-        return self.current_state.discard_pile
-
-    @property
-    def play_area(self) -> PlayArea:
-        return self.current_state.play_area
 
     @property
     def status(self) -> Status:
@@ -99,14 +91,13 @@ class Game:
             raise ValueError("You cannot play this slot!")
 
         card_to_play = player.hand.pop(action.cardSlot)
-        stack_to_play_on = self.play_area.stacks[card_to_play.real_card.suit]
-        if stack_to_play_on.can_play(card_to_play.real_card):
-            stack_to_play_on.play(card_to_play.real_card)
-            action.success = True
-        else:
+
+        self.current_state, action.success = self.current_state.play(card_to_play.real_card)
+
+        if not action.success:
             self.status.add_strike()
             self.current_state = self.current_state.discard(card_to_play.real_card)
-            action.success = False
+
         self.player_draw_card(player)
         action.playedCard = card_to_play
         action.drawId = card_to_play.draw_id

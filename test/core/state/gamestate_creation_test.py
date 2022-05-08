@@ -3,8 +3,8 @@ from typing import List
 
 from core import Deck, Variant, Card, Suit
 from core.discard import Discard
+from core.stack import Stacks
 from core.state.gamestate import GameState
-from core.state.play_area import PlayArea
 from core.state.stack import Stack
 from core.state.status import Status
 from simulator.game.clue import Clue
@@ -20,7 +20,7 @@ def test_create_gamestate_should_save_all_parameters():
         players.append(Player(playerName))
     deck = Deck.generate(suits)
     discard_pile = Discard()
-    play_area = PlayArea(suits)
+    play_area = Stacks.create_empty_stacks(suits)
     status = Status(35)
 
     gamestate = GameState(players, deck, discard_pile, play_area, status)
@@ -28,7 +28,7 @@ def test_create_gamestate_should_save_all_parameters():
     assert_players_are_equivalent(gamestate.players, players)
     assert_deck_is_equivalent(gamestate.deck, deck)
     assert gamestate.discard_pile == discard_pile
-    assert_play_area_is_equivalent(gamestate.play_area, play_area)
+    assert gamestate.play_area == play_area
     assert_status_is_equivalent(gamestate.status, status)
 
 
@@ -39,7 +39,7 @@ def test_create_gamestate_should_not_make_copies():
         players.append(Player(playerName))
     deck = Deck.generate(suits)
     discard_pile = Discard()
-    play_area = PlayArea(suits)
+    play_area = Stacks.create_empty_stacks(suits)
     status = Status(35)
 
     gamestate = GameState(players, deck, discard_pile, play_area, status)
@@ -58,7 +58,7 @@ def test_copy_gamestate_should_make_copies():
         players.append(Player(playerName))
     deck = Deck.generate(suits)
     discard_pile = Discard()
-    play_area = PlayArea(suits)
+    play_area = Stacks.create_empty_stacks(suits)
     status = Status(35)
 
     gamestate = GameState(players, deck, discard_pile, play_area, status)
@@ -66,7 +66,6 @@ def test_copy_gamestate_should_make_copies():
 
     assert gamestate.players is not gamestate_copy.players
     assert gamestate.deck is not gamestate_copy.deck
-    assert gamestate.play_area is not gamestate_copy.play_area
     assert gamestate.status is not gamestate_copy.status
 
 
@@ -133,14 +132,6 @@ def assert_possible_cards_are_equivalent(cards1: List[Card], cards2: List[Card])
 
 def assert_deck_is_equivalent(deck1: Deck, deck2: Deck):
     assert deck1 == deck2
-
-
-def assert_play_area_is_equivalent(play1: PlayArea, play2: PlayArea):
-    assert len(play1.stacks) == len(play2.stacks)
-    for suit in play1.stacks:
-        stack1 = play1.stacks[suit]
-        stack2 = play2.stacks[suit]
-        assert_stack_is_equivalent(stack1, stack2)
 
 
 def assert_stack_is_equivalent(stack1: Stack, stack2: Stack):

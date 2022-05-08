@@ -4,9 +4,9 @@ from typing import List, Iterable
 
 from bots.domain.model.action import Action
 from bots.domain.model.hand import Hand, HandCard, Slot, DrawId
-from bots.domain.model.stack import Stacks
 from core import Card, all_possible_cards
 from core.discard import Discard
+from core.stack import Stacks
 
 RelativePlayerNumber = int
 

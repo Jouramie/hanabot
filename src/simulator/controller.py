@@ -4,9 +4,9 @@ from datetime import datetime
 from typing import List, Dict, Iterable
 
 from core import Deck, Suit
+from core.state.gamestate import GameState
 from simulator.game.game import Game
 from simulator.game.gameresult import GameResult
-from core.state.gamestate import GameState
 from simulator.game.player import Player
 from simulator.players.simulatorplayer import SimulatorPlayer
 
@@ -51,7 +51,7 @@ class Controller:
         player_to_play = self.current_players[player_to_play_name]
         action = player_to_play.play_turn(self.current_game)
         self.current_game.play_turn(action)
-        return self.current_game
+        return self.current_game.current_state
 
     def try_play_until_game_is_over(self):
         result = None
@@ -62,7 +62,7 @@ class Controller:
             logger.exception(e)
             self.current_game.status.is_over = True
             self.current_game.status.strikes = 3
-            result = GameResult.from_game_state(self.current_game)
+            result = GameResult.from_game_state(self.current_game.current_state)
             return result
         finally:
             self.draw_and_log(repr(result))
@@ -79,7 +79,7 @@ class Controller:
         return self.current_game.status.is_over
 
     def get_game_result(self) -> GameResult:
-        return GameResult.from_game_state(self.current_game)
+        return GameResult.from_game_state(self.current_game.current_state)
 
     def draw_game(self):
         self.draw_last_action()
@@ -96,16 +96,14 @@ class Controller:
         clues = str(self.current_game.status.clues)
         strikes = str(self.current_game.status.strikes)
         deck = str(self.current_game.deck.number_cards())
-        score = 0
-        for stack in self.current_game.play_area.stacks.values():
-            score = score + stack.stack_score()
+        score = self.current_game.current_state.score
         score = str(score)
         turns = str(self.current_game.status.turns_remaining)
         self.draw_and_log("Clues: " + clues + " | Strikes: " + strikes + " | Score: " + score + " | Turns: " + turns + " | Deck: " + deck)
 
     def draw_stacks(self):
         stack_string = "Stacks: | "
-        for suit, stack in self.current_game.play_area.stacks.items():
+        for suit, stack in self.current_game.current_state.play_area.stack_by_suit.items():
             stack_string += str(stack) + " | "
         self.draw_and_log(stack_string)
 
