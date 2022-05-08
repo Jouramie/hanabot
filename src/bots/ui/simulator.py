@@ -81,8 +81,8 @@ def assemble_simulator_decision(decision: Decision, game: Game) -> SimulatorActi
 
 def add_recent_turns_to_history(history: GameHistory, game: Game) -> GameHistory:
     if game.history.gamestates:
-        last_turn_in_history = history.turns[-1].game_state.turn_number if history.turns else 0
-        for action, game_state in zip(game.history.actions[last_turn_in_history:], game.history.gamestates[last_turn_in_history:]):
+        turn_to_add_in_history = history.latest_turn_number + 1 if history.turns else 0
+        for action, game_state in zip(game.history.actions[turn_to_add_in_history:], game.history.gamestates[turn_to_add_in_history:]):
             # TODO see if reversing the clue list optimises the performance
             clue = next((clue for clue in game.history.clues if clue.turn == action.turn), None)
             history.add_game_state(Turn(assemble_relative_game_state(game_state), assemble_action(action, clue)))

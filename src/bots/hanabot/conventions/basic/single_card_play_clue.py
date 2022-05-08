@@ -51,7 +51,7 @@ class SingleCardPlayClue(Convention):
         if touched_card is None:
             return None
 
-        playable_cards = {card for card in touched_card.possible_cards if turn.game_state.is_playable(card)}
+        playable_cards = {card for card in touched_card.possible_cards if clue_action.matches(card) and turn.game_state.is_playable(card)}
 
         if playable_cards:
             return Interpretation(

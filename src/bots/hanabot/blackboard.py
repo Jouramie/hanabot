@@ -26,9 +26,6 @@ class Interpretation:
     notes_on_cards: dict[DrawId, set[Card]] = field(default_factory=dict)
     played_cards: set[DrawId] = field(default_factory=set)
 
-    def __post_init__(self):
-        logger.debug(f"I think {self.notes_on_cards} because {self.of_turn.action} is a {self.explanation}.")
-
     def __repr__(self) -> str:
         return f"{self.explanation} {self.notes_on_cards})"
 

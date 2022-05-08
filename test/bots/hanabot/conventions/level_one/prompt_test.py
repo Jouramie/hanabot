@@ -22,7 +22,7 @@ def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_cl
                 "cathy",
                 (
                     HandCard.unknown_card(0),
-                    HandCard.clued_card(draw_id=5, suit=Suit.RED),
+                    HandCard.unknown_card(5),
                     HandCard.unknown_card(0),
                 ),
             )
@@ -70,7 +70,7 @@ def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when
                 "cathy",
                 (
                     HandCard.unknown_card(0),
-                    HandCard.clued_real_card(draw_id=5, card=Card(Suit.RED, Rank.FOUR), suit_known=True),
+                    HandCard.unknown_real_card(5, Card(Suit.RED, Rank.FOUR)),
                     HandCard.unknown_card(0),
                 ),
             ),
@@ -108,7 +108,7 @@ def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interp
                 "cathy",
                 (
                     HandCard.unknown_card(0),
-                    HandCard.clued_real_card(draw_id=5, card=Card(Suit.RED, Rank.FOUR), suit_known=True),
+                    HandCard.unknown_real_card(5, Card(Suit.RED, Rank.FOUR)),
                     HandCard.unknown_card(0),
                 ),
             ),

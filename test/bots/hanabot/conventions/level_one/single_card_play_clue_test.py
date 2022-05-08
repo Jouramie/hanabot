@@ -20,7 +20,7 @@ def test_given_one_one_left_to_play_when_find_interpretation_then_only_possible_
                 "alice",
                 (
                     HandCard.unknown_card(0),
-                    HandCard.clued_card(draw_id=3, rank=Rank.ONE),
+                    HandCard.unknown_card(3),
                     HandCard.unknown_card(0),
                 ),
             )
@@ -51,7 +51,7 @@ def test_given_only_multiple_four_playable_when_find_interpretation_then_only_po
                 "alice",
                 (
                     HandCard.unknown_card(0),
-                    HandCard.clued_card(draw_id=3, rank=Rank.FOUR),
+                    HandCard.unknown_card(3),
                     HandCard.unknown_card(0),
                 ),
             )
@@ -82,7 +82,7 @@ def test_given_suit_clue_when_find_interpretation_then_find_interpretation():
                 "cathy",
                 (
                     HandCard.unknown_card(0),
-                    HandCard.clued_card(draw_id=3, suit=Suit.BLUE),
+                    HandCard.unknown_card(3),
                     HandCard.unknown_card(0),
                 ),
             )
@@ -117,7 +117,7 @@ def test_given_suit_clue_on_someone_else_when_find_interpretation_then_do_not_fi
                 "cathy",
                 (
                     HandCard.unknown_card(0),
-                    HandCard.clued_card(draw_id=3, suit=Suit.BLUE),
+                    HandCard.unknown_card(3),
                     HandCard.unknown_card(0),
                 ),
             ),

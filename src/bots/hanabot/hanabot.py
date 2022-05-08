@@ -64,9 +64,13 @@ class Hanabot(DecisionMaking):
                     self.blackboard.move_interpretation_to_resolved(interpretation)
 
             elif isinstance(turn.action, ClueAction):
-                interpretation = self.conventions.find_new_interpretations(turn)
-                if interpretation:
-                    self.blackboard.write_new_interpretation(interpretation[0])
+                interpretations = self.conventions.find_new_interpretations(turn)
+                if interpretations:
+                    chosen_interpretation = interpretations[0]
+                    logger.debug(
+                        f"I think {chosen_interpretation.notes_on_cards} because {chosen_interpretation.of_turn.action} is a {chosen_interpretation.explanation}."
+                    )
+                    self.blackboard.write_new_interpretation(chosen_interpretation)
                 else:
                     logger.debug(f"WTF is this Charles {turn.action}")
 
