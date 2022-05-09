@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import List, Iterable
 
 from core.card import Card, Suit, Rank, all_possible_cards
@@ -11,7 +10,7 @@ from util.profiling import timeit
 class HandCard:
     draw_id: int
     real_card: Card
-    received_clues: List[Clue]
+    received_clues: tuple[Clue]
     suits_in_game: Iterable[Suit]
     possible_cards: frozenset[Card]
 
@@ -21,7 +20,7 @@ class HandCard:
         card: Card,
         suits_in_game: Iterable[Suit],
         is_clued: bool = False,
-        received_clues: List[Clue] = None,
+        received_clues: tuple[Clue] = None,
         possible_cards: frozenset[Card] = None,
     ):
         if received_clues is None:
@@ -38,7 +37,7 @@ class HandCard:
     def receive_clue(self, clue: Clue) -> bool:
         is_touched = clue.touches_card(self.real_card)
         self.possible_cards = frozenset({card for card in self.possible_cards if clue.touches_card(card) == is_touched})
-        self.received_clues.append(clue)
+        self.received_clues += (clue,)
         self.is_clued |= is_touched
         return is_touched
 
@@ -61,6 +60,6 @@ class HandCard:
             self.real_card,
             self.suits_in_game,
             self.is_clued,
-            timeit(name="Simulator.HandCard.clues_deepcopy", method=deepcopy)(self.received_clues, memo),
+            self.received_clues,
             self.possible_cards,
         )
