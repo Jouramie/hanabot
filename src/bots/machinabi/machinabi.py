@@ -2,9 +2,11 @@ import logging
 from typing import Dict, Tuple
 
 from bots.domain.decision import DecisionMaking, DiscardDecision, Decision, ClueDecision, SuitClueDecision, RankClueDecision
+from bots.domain.model.action import ClueAction, RankClueAction
 from bots.domain.model.game_state import RelativeGameState, GameHistory
-from bots.domain.model.hand import Hand, DrawId
-from core import Card
+from bots.domain.model.hand import Hand, DrawId, Slot
+from bots.machinabi.analysed_clue import AnalysedClue
+from core import Card, Rank
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,35 @@ class Machinabi(DecisionMaking):
         if current_game_state.clue_count < 8:
             return self.discard_chop(current_game_state)
         pass
+
+    def analyze_given_clue(self, gamestate: RelativeGameState, clue: ClueAction) -> AnalysedClue:
+        recipient_hand = gamestate.find_player_hand(clue.recipient)
+        recipient_chop = self.get_player_chop_slot(recipient_hand)
+        clue_focus = self.find_clue_focus(recipient_hand, clue, recipient_chop)
+        if clue_focus == recipient_chop:
+            is_save = self.chop_clue_is_save_clue(gamestate, clue)
+            if is_save:
+                return AnalysedClue.save_clue()
+
+        return AnalysedClue.play_clue()
+
+    def chop_clue_is_save_clue(self, gamestate: RelativeGameState, clue: ClueAction) -> bool:
+        if isinstance(clue, RankClueAction):
+            if clue.rank == Rank.FIVE or clue.rank == Rank.TWO:
+                return True
+
+        return False
+
+    def find_clue_focus(self, hand_before: Hand, clue: ClueAction, chop_slot: Slot) -> Slot:
+        if chop_slot in clue.touched_slots:
+            return chop_slot
+
+        newest_newly_touched_card_slot = 6
+        for slot in clue.touched_slots:
+            if slot < newest_newly_touched_card_slot and not hand_before[slot].is_clued:
+                newest_newly_touched_card_slot = slot
+
+        return newest_newly_touched_card_slot
 
     def find_best_clue(self) -> Tuple[ClueDecision, float]:
         best_clue = None
