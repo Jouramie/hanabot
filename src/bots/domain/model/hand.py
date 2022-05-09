@@ -21,29 +21,29 @@ class HandCard:
 
     @staticmethod
     def unknown_card(draw_id: DrawId) -> HandCard:
-        return HandCard(frozenset(all_possible_cards()), False, draw_id)
+        return HandCard(all_possible_cards(), False, draw_id)
 
     @staticmethod
     def clued_card(draw_id: DrawId, suit: Suit | None = None, rank: Rank | None = None) -> HandCard:
         if suit is not None and rank is not None:
-            return HandCard(frozenset(all_possible_cards(suit, rank)), True, draw_id)
+            return HandCard(all_possible_cards(suit, rank), True, draw_id)
         elif suit is not None:
-            return HandCard(frozenset(all_possible_cards(suits=suit)), True, draw_id)
+            return HandCard(all_possible_cards(suits=suit), True, draw_id)
         elif rank is not None:
-            return HandCard(frozenset(all_possible_cards(ranks=rank)), True, draw_id)
+            return HandCard(all_possible_cards(ranks=rank), True, draw_id)
 
     @staticmethod
     def unknown_real_card(draw_id: DrawId, card: Card) -> HandCard:
-        return HandCard(frozenset(all_possible_cards()), False, draw_id, real_card=card)
+        return HandCard(all_possible_cards(), False, draw_id, real_card=card)
 
     @staticmethod
     def clued_real_card(draw_id: DrawId, card: Card, suit_known: bool = False, rank_known: bool = False) -> HandCard:
         if suit_known and rank_known:
             return HandCard(frozenset({card}), True, draw_id, real_card=card)
         elif suit_known:
-            return HandCard(frozenset(all_possible_cards(suits=card.suit)), True, draw_id, real_card=card)
+            return HandCard(all_possible_cards(suits=card.suit), True, draw_id, real_card=card)
         elif rank_known:
-            return HandCard(frozenset(all_possible_cards(ranks=card.rank)), True, draw_id, real_card=card)
+            return HandCard(all_possible_cards(ranks=card.rank), True, draw_id, real_card=card)
 
     @staticmethod
     def known_real_card(draw_id: DrawId, card: Card) -> HandCard:

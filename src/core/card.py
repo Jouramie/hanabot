@@ -270,12 +270,19 @@ class Variant(Enum):
 def all_possible_cards(
     suits: Iterable[Suit] | Suit = Variant.NO_VARIANT,
     ranks: Iterable[Rank] | Rank = (Rank.ONE, Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE),
-) -> set[Card]:
+    _cache: dict[tuple[Iterable[Suit], Iterable[Rank]], frozenset[Card]] = {},  # noqa
+) -> frozenset[Card]:
+    if (suits, ranks) in _cache:
+        return _cache[suits, ranks]
+
     if isinstance(suits, Suit):
         suits = (suits,)
     if isinstance(ranks, Rank):
         ranks = (ranks,)
-    return {Card.create(suit, rank) for suit in suits for rank in ranks}
+
+    possible_cards = frozenset({Card.create(suit, rank) for suit in suits for rank in ranks})
+    _cache[suits, ranks] = possible_cards
+    return possible_cards
 
 
 def amount_of_cards(variant: Iterable[Suit]) -> int:

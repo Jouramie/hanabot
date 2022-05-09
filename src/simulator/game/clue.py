@@ -1,4 +1,5 @@
 from core.card import Rank, Suit, Card
+from util.profiling import timeit
 
 
 class Clue:
@@ -21,6 +22,10 @@ class Clue:
 
     def touches_card(self, card: Card):
         pass
+
+    @timeit(name="Simulator.Clue.deepcopy")
+    def __deepcopy__(self, memo):
+        return Clue(self.turn, self.giver_name, self.receiver_name, self.touched_slots.copy(), self.touched_draw_ids.copy())
 
 
 class ColorClue(Clue):

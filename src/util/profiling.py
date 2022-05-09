@@ -4,7 +4,7 @@ import time
 performances = {}
 
 
-def timeit(name: str = None, print_each_call: bool = False):
+def timeit(name: str = None, print_each_call: bool = False, method=None):
     def timeit_decorator(method):
         def timed(*args, **kw):
             nonlocal name
@@ -23,5 +23,8 @@ def timeit(name: str = None, print_each_call: bool = False):
             return result
 
         return timed
+
+    if method is not None:
+        return timeit_decorator(method)
 
     return timeit_decorator

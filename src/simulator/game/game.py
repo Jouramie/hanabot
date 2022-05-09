@@ -68,7 +68,7 @@ class Game:
         if len(self.deck) == 0:
             return
         draw_id, card = self.deck.draw()
-        hand_card = HandCard(draw_id, card, list(self.deck.suits))
+        hand_card = HandCard(draw_id, card, self.deck.suits)
         player.hand.insert(0, hand_card)
 
     @timeit(name="Simulator.play_turn")
