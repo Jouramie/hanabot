@@ -11,25 +11,6 @@ from bots.ui.simulator import SimulatorBot
 from context.hanabot_context import HanabotContext
 from simulator.players.cheatingplayer import CheatingPlayer
 
-game_title = """   
-   Let's play       
-
-  ██╗  ██╗ █████╗ ███╗   ██╗ █████╗ ██████╗ ██╗    ██╗
-  ██║  ██║██╔══██╗████╗  ██║██╔══██╗██╔══██╗██║    ██║
-  ███████║███████║██╔██╗ ██║███████║██████╔╝██║    ██║
-  ██╔══██║██╔══██║██║╚██╗██║██╔══██║██╔══██╗██║    ╚═╝
-  ██║  ██║██║  ██║██║ ╚████║██║  ██║██████╔╝██║    ██╗
-  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═════╝ ╚═╝    ╚═╝
-"""
-player_selection_text = """Select your players:
-  h  - Hanabot
-  m  - Machinabi
-  c  - Cheater bots"""
-speed_selection_text = """:
-Input 'Slow' to play one game slowly
-Input 'Fast X' to play X games quickly
-"""
-
 
 def bootstrap_reading_bot():
     global hanabot_context

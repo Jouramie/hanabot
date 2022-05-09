@@ -87,7 +87,7 @@ def test_given_ongoing_interpretation_when_write_notes_on_cards_then_concerned_c
     blackboard = Blackboard()
     expected_card = Card(Suit.RED, Rank.FIVE)
     blackboard.ongoing_interpretations = [Interpretation(mocker.Mock(), notes_on_cards={0: {expected_card}})]
-    blackboard.current_game_state = RelativeGameStateBuilder().set_my_hand(Hand("alfred", (HandCard(frozenset(all_possible_cards()), True, 0),))).build()
+    blackboard.current_game_state = RelativeGameStateBuilder().set_my_hand(Hand("alfred", (HandCard(all_possible_cards(), True, 0),))).build()
 
     blackboard.write_notes_on_cards()
 
