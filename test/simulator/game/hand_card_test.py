@@ -104,8 +104,7 @@ def test_hand_card_negative_color_clued_should_possibly_be_all_cards_except_clue
     if clue_suit == card.suit:
         clue_suit = suits[1]
 
-    suits_other_than_clue_suit = suits.copy()
-    suits_other_than_clue_suit.remove(clue_suit)
+    suits_other_than_clue_suit = tuple(suit for suit in suits if suit is not clue_suit)
 
     all_cards_of_other_suits = get_possible_cards(suits_other_than_clue_suit)
     hand_card = HandCard(0, card, suits)
@@ -124,8 +123,7 @@ def test_hand_card_negative_color_clued_should_possibly_be_not_own_suit(card: Ca
     if clue_suit == card.suit:
         clue_suit = suits[1]
 
-    suits_other_than_clue_suit = suits.copy()
-    suits_other_than_clue_suit.remove(clue_suit)
+    suits_other_than_clue_suit = tuple(suit for suit in suits if suit is not clue_suit)
 
     hand_card = HandCard(0, card, suits)
     clue = ColorClue(clue_suit, "player1", "player0", 1)
@@ -197,9 +195,6 @@ def test_hand_card_negative_rank_clued_should_possibly_be_all_cards_except_clue_
     if clue_rank == card.rank:
         clue_rank = ranks[1]
 
-    ranks_other_than_clue_rank = ranks.copy()
-    ranks_other_than_clue_rank.remove(clue_rank)
-
     all_cards_of_other_ranks = [pcard for pcard in get_possible_cards(suits) if pcard.rank != clue_rank]
     hand_card = HandCard(0, card, suits)
     clue = RankClue(clue_rank, "player1", "player0", 1)
@@ -218,8 +213,7 @@ def test_hand_card_negative_rank_clued_should_possibly_be_not_own_rank(card: Car
     if clue_rank == card.rank:
         clue_rank = ranks[1]
 
-    ranks_other_than_clue_rank = ranks.copy()
-    ranks_other_than_clue_rank.remove(clue_rank)
+    ranks_other_than_clue_rank = tuple(rank for rank in ranks if rank is not clue_rank)
 
     hand_card = HandCard(0, card, suits)
     clue = RankClue(clue_rank, "player1", "player0", 1)

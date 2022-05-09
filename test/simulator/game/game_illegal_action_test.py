@@ -34,7 +34,7 @@ def test_give_empty_color_clue():
     chosen_suit = Suit.RED
     chosen_player = -1
     for i in range(1, len(game.players)):
-        suits = get_suits(5)
+        suits = list(get_suits(5))
         for card in game.players[i].hand:
             if suits.count(card.real_card.suit) > 0:
                 suits.remove(card.real_card.suit)
@@ -54,7 +54,7 @@ def test_give_empty_rank_clue():
     chosen_rank = Rank.ONE
     chosen_player = -1
     for i in range(1, len(game.players)):
-        ranks = get_ranks()
+        ranks = list(get_ranks())
         for card in game.players[i].hand:
             if ranks.count(card.real_card.rank) > 0:
                 ranks.remove(card.real_card.rank)
