@@ -117,6 +117,12 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
     y_step = round(highest_number_in_a_score / (plot_height / 8))
     y_max = highest_number_in_a_score + (y_step * 2)
     plotext.yticks([games for games in range(0, y_max, y_step)])
+
+    for i in possible_scores:
+        if scores[i] < 1:
+            continue
+        plotext.text(scores[i], x=i, y=scores[i] + max(0.5, (highest_number_in_a_score / plot_height) * 1.5), alignment='center', color='blue')
+
     plotext.xlim(0, max_score)
     plotext.ylim(0, y_max)
     plotext.xlabel("Score")
