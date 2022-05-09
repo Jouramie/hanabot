@@ -73,6 +73,7 @@ def play_game_slow(players: List[SimulatorPlayer], suits: Iterable[Suit], draw_g
 
 
 def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], number_games: int, draw_game: bool = True, log_game: bool = False):
+    max_score = len(suits) * 5
     controller = Controller(draw_game, log_game)
     total_score = 0
     total_survivals = 0
@@ -100,13 +101,26 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
     print_rates(total_survivals, total_victories, total_score, number_games)
 
     possible_scores = list(range(0, 26))
+    highest_number_in_a_score = 0
     scores = {score: 0 for score in possible_scores}
     for result in results:
         scores[result.score] = scores[result.score] + 1
+        if scores[result.score] > highest_number_in_a_score:
+            highest_number_in_a_score = scores[result.score]
     plotext.bar(possible_scores, scores)
     plotext.title("Score Distribution")
     console_size = console.detection.get_size()
-    plotext.plotsize(width=80, height=console_size[1] - 5)
+    plot_width = console_size[0] - 10
+    plot_height = console_size[1] - 5
+    plotext.plotsize(width=plot_width, height=plot_height)
+    plotext.xticks([score for score in range(0, max_score + 1, 5)])
+    y_step = round(highest_number_in_a_score / (plot_height / 8))
+    y_max = highest_number_in_a_score + (y_step * 2)
+    plotext.yticks([games for games in range(0, y_max, y_step)])
+    plotext.xlim(0, max_score)
+    plotext.ylim(0, y_max)
+    plotext.xlabel("Score")
+    plotext.ylabel("Number of games")
     plotext.clc()
     plotext.show()
 
