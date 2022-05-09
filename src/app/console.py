@@ -138,8 +138,8 @@ def print_rates(total_survivals: int, total_victories: int, total_score: int, nu
     average_score = str(round(total_score / number_games, 3))
 
     print(f"Survival Rate: {survival_rate}%")
-    print(f"Victory Rate: " + victory_rate + "%")
-    print(f"Average Score: " + average_score)
+    print(f"Victory Rate: {victory_rate}%")
+    print(f"Average Score: {average_score}")
 
 
 def start_console_app():
