@@ -1,4 +1,5 @@
 import time
+from pprint import pprint
 
 import pytest
 
@@ -7,6 +8,7 @@ from bots.hanabot.hanabot import Hanabot
 from bots.ui.simulator import SimulatorBot
 from core import Variant
 from simulator.controller import Controller
+from util import profiling
 
 hanabot_players = [
     SimulatorBot("Alice", Hanabot(conventions.level_one)),
@@ -34,5 +36,6 @@ def test_hanabot_performance(number_games):
     elapsed_seconds_rounded = round(elapsed_seconds, 3)
     elapsed_milliseconds = elapsed_seconds * 1000
     average_milliseconds = elapsed_milliseconds / number_games
-    print("Played " + str(number_games) + " games in " + str(elapsed_milliseconds) + "ms (" + str(
-        average_milliseconds) + "ms per game)")
+    print("\nPlayed " + str(number_games) + " games in " + str(elapsed_milliseconds) + "ms (" + str(average_milliseconds) + "ms per game)")
+    pprint(profiling.performances)
+    profiling.performances = {}

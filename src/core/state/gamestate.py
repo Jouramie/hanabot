@@ -9,6 +9,7 @@ from core.discard import Discard
 from core.stack import Stacks
 from core.state.status import Status
 from simulator.game.player import Player
+from util.profiling import timeit
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +61,7 @@ class GameState:
     def score(self) -> int:
         return self.play_area.stacks_score
 
+    @timeit(name="Simulator.GameState.deepcopy")
     def __deepcopy__(self, memo):
         copy = GameState(
             deepcopy(self.players, memo),
