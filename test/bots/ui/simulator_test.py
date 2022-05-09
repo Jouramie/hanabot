@@ -83,7 +83,7 @@ def test_given_cached_hand_when_assemble_alice_hand_then_used_cached(mocker):
     game.history.gamestates = [gamestate]
     action = DiscardAction(0)
     action.actor = mocker.MagicMock()
-    action.actor.name = "alice"
+    action.actor.name = "bob"
     action.drawId = 0
     action.discardedCard = mocker.MagicMock()
     game.history.actions = [action]

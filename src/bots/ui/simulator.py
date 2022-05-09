@@ -94,9 +94,9 @@ def add_recent_turns_to_history(history: GameHistory, game: Game, from_perspecti
             history.add_game_state(Turn(assemble_relative_game_state(game_state, from_perspective, hand_cache), assemble_action(action, clue)))
 
             if clue is not None:
-                hand_cache.pop(clue.receiver_name)
+                hand_cache.pop(clue.receiver_name, None)
             else:
-                hand_cache.pop(action.actor.name)
+                hand_cache.pop(action.actor.name, None)
 
     return history
 
