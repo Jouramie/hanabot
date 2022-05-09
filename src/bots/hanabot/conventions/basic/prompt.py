@@ -39,34 +39,28 @@ class Prompt(Convention):
     def find_interpretation(self, turn: Turn) -> Interpretation | None:
         # FIXME should accept clues touching more than one card
         if not isinstance(turn.action, ClueAction) or len(turn.action.touched_slots) != 1:
-            return None
+            return
 
-        clue_action = turn.action
-        if clue_action.recipient == turn.game_state.my_hand.owner_name:
-            (touched_draw_id,) = clue_action.touched_draw_ids
-            touched_card = turn.game_state.my_hand.find_card_by_draw_id(touched_draw_id)
-            if touched_card is None:
-                return None
+        clue = turn.action
+        focus_card = self.find_focus_card(clue, turn.game_state.find_player_hand(clue.recipient))
+        if focus_card is None:
+            return
 
-            playable_cards = {card for card in touched_card.possible_cards if turn.game_state.is_playable_over_clued_playable(card)}
+        if clue.recipient == turn.game_state.my_hand.owner_name:
+            playable_cards = {card for card in focus_card.possible_cards if turn.game_state.is_playable_over_clued_playable(card)}
 
             if playable_cards:
                 return Interpretation(
                     turn,
                     interpretation_type=InterpretationType.PLAY,
                     explanation=self.name,
-                    notes_on_cards={touched_card.draw_id: set(playable_cards)},
+                    notes_on_cards={focus_card.draw_id: set(playable_cards)},
                 )
         else:
-            (touched_draw_id,) = clue_action.touched_draw_ids
-            touched_card = turn.game_state.find_player_hand(clue_action.recipient).find_card_by_draw_id(touched_draw_id)
-            if touched_card is None:
-                return None
+            if turn.game_state.is_playable(focus_card.real_card):
+                return
 
-            if turn.game_state.is_playable(touched_card.real_card):
-                return None
-
-            missing_cards_to_play = turn.game_state.find_missing_cards_to_play(touched_card.real_card)
+            missing_cards_to_play = turn.game_state.find_missing_cards_to_play(focus_card.real_card)
             not_clued_missing_cards_to_play = [card for card in missing_cards_to_play if not turn.game_state.is_already_clued(card)]
 
             if not not_clued_missing_cards_to_play:
@@ -74,7 +68,7 @@ class Prompt(Convention):
                     turn,
                     interpretation_type=InterpretationType.PLAY,
                     explanation=self.name,
-                    notes_on_cards={touched_draw_id: {touched_card.real_card}},
+                    notes_on_cards={focus_card.draw_id: {focus_card.real_card}},
                 )
 
             probable_missing_card = turn.game_state.my_hand.find_most_probable(not_clued_missing_cards_to_play)

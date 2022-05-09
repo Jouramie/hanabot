@@ -46,7 +46,7 @@ def test_given_clued_one_when_play_turn_then_clue_next():
             )
             .build()
         ),
-        SuitClueAction("bob", frozenset({0}), frozenset({13}), Suit.RED),
+        SuitClueAction("bob", frozenset({0}), Suit.RED),
     )
     current_game_state = (
         RelativeGameStateBuilder()
@@ -97,7 +97,7 @@ def test_given_clued_one_when_play_turn_then_clue_another_one():
             cathy_hand,
         )
         .build(),
-        SuitClueAction("bob", frozenset({0}), frozenset({13}), Suit.RED),
+        SuitClueAction("bob", frozenset({0}), Suit.RED),
     )
 
     current_game_state = (
@@ -149,7 +149,7 @@ def test_given_all_playable_already_clued_when_play_turn_then_discard():
             cathy_hand,
         )
         .build(),
-        SuitClueAction("bob", frozenset({0}), frozenset({13}), Suit.RED),
+        SuitClueAction("bob", frozenset({0}), Suit.RED),
     )
     current_game_state = (
         RelativeGameStateBuilder()
@@ -214,7 +214,7 @@ def test_given_card_already_prompted_when_play_turn_then_do_not_prompt_again():
             bob_hand,
         )
         .build(),
-        SuitClueAction("donald", frozenset({3}), frozenset({0}), Suit.PURPLE),
+        SuitClueAction("donald", frozenset({3}), Suit.PURPLE),
     )
     second_turn = Turn(
         RelativeGameStateBuilder()
@@ -226,7 +226,7 @@ def test_given_card_already_prompted_when_play_turn_then_do_not_prompt_again():
             bob_hand,
         )
         .build(),
-        SuitClueAction("alice", frozenset({0}), frozenset({13}), Suit.PURPLE),
+        SuitClueAction("alice", frozenset({0}), Suit.PURPLE),
     )
     current_game_state = (
         RelativeGameStateBuilder()
@@ -289,7 +289,7 @@ def test_given_clue_on_saved_five_when_play_turn_then_play_five():
             cathy_hand,
         )
         .build(),
-        RankClueAction("alice", frozenset({4}), frozenset({0}), Rank.FIVE),
+        RankClueAction("alice", frozenset({4}), Rank.FIVE),
     )
     current_game_state = (
         RelativeGameStateBuilder()
@@ -343,7 +343,7 @@ def test_given_clue_on_five_on_chop_when_play_turn_then_play_five():
             cathy_hand,
         )
         .build(),
-        RankClueAction("alice", frozenset({4}), frozenset({0}), Rank.FIVE),
+        RankClueAction("alice", frozenset({4}), Rank.FIVE),
     )
     current_game_state = (
         RelativeGameStateBuilder()

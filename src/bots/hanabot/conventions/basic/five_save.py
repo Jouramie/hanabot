@@ -26,7 +26,7 @@ class FiveSave(Convention):
 
         touched_hand = turn.game_state.find_player_hand(rank_clue.recipient)
         chop = self.document.find_chop(touched_hand)
-        focus = self.document.find_focus(rank_clue.touched_slots, touched_hand)
+        focus = self.document.find_focus(rank_clue, touched_hand)
         if focus is not chop:
             return None
 

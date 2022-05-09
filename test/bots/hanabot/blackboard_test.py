@@ -10,7 +10,6 @@ def test_given_used_blackboard_when_wipe_for_new_turn_then_reset_state_for_new_t
     blackboard.current_game_state = mocker.Mock()
     blackboard.current_game_state.turn_number = 3
     blackboard.history = mocker.Mock()
-    blackboard.chop = mocker.Mock()
     blackboard.uninterpreted_turns = mocker.Mock()
     blackboard.ongoing_interpretations = "ongoing_interpretations"
     blackboard.resolved_interpretations = "resolved_interpretations"
@@ -22,7 +21,6 @@ def test_given_used_blackboard_when_wipe_for_new_turn_then_reset_state_for_new_t
 
     assert blackboard.current_game_state is new_game_state
     assert blackboard.history is new_history
-    assert blackboard.chop is None
     assert blackboard.ongoing_interpretations == "ongoing_interpretations"
     assert blackboard.resolved_interpretations == "resolved_interpretations"
 

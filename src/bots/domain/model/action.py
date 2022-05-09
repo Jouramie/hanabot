@@ -20,7 +20,6 @@ class DiscardAction:
 class SuitClueAction:
     recipient: str
     touched_slots: frozenset[Slot]
-    touched_draw_ids: frozenset[DrawId]
     suit: Suit
 
     def __repr__(self):
@@ -33,9 +32,7 @@ class SuitClueAction:
 @dataclass(frozen=True)
 class RankClueAction:
     recipient: str
-    # TODO it's annoying to maintain two lists for the same info
     touched_slots: frozenset[Slot]
-    touched_draw_ids: frozenset[DrawId]
     rank: Rank
 
     def __repr__(self):

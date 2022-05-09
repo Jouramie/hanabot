@@ -35,8 +35,6 @@ class Blackboard:
     current_game_state: RelativeGameState | None = None
     history: GameHistory | None = None
 
-    chop: Slot | None = None
-
     uninterpreted_turns: list[Turn] = field(default_factory=list)
     ongoing_interpretations: list[Interpretation] = field(default_factory=list)
     # TODO is this of any use?
@@ -47,7 +45,6 @@ class Blackboard:
             self.uninterpreted_turns = history.turns
         else:
             self.uninterpreted_turns = history.turns[self.current_game_state.turn_number :]
-        self.chop = None
 
         self.current_game_state = current_game_state
         self.history = history
@@ -66,10 +63,6 @@ class Blackboard:
     def move_interpretation_to_resolved(self, interpretation: Interpretation):
         self.ongoing_interpretations.remove(interpretation)
         self.resolved_interpretations.append(interpretation)
-
-    @property
-    def is_hand_locked(self):
-        return self.chop is None
 
     @property
     def my_hand(self):

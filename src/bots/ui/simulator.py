@@ -67,9 +67,9 @@ def assemble_action(action: SimulatorAction | None, clue: SimulatorClue | None) 
     if isinstance(action, SimulatorDiscardAction):
         return DiscardAction(action.drawId, action.discardedCard)
     if isinstance(action, SimulatorColorClueAction):
-        return SuitClueAction(action.target_player.name, frozenset(clue.touched_slots), frozenset(clue.touched_draw_ids), action.color)
+        return SuitClueAction(action.target_player.name, frozenset(clue.touched_slots), action.color)
     if isinstance(action, SimulatorRankClueAction):
-        return RankClueAction(action.target_player.name, frozenset(clue.touched_slots), frozenset(clue.touched_draw_ids), action.rank)
+        return RankClueAction(action.target_player.name, frozenset(clue.touched_slots), action.rank)
     raise ValueError(f"Unknown action: {action}")
 
 

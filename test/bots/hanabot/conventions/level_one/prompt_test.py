@@ -3,7 +3,7 @@ from bots.domain.model.action import SuitClueAction
 from bots.domain.model.game_state import Turn
 from bots.domain.model.hand import Hand, HandCard
 from bots.hanabot.blackboard import Interpretation, InterpretationType
-from bots.hanabot.conventions import ConventionDocument, SingleCardPlayClue
+from bots.hanabot.conventions import ConventionDocument, PlayClue
 from bots.hanabot.conventions.basic.prompt import Prompt
 from core import Suit, Card, Rank
 from core.stack import Stacks
@@ -11,7 +11,7 @@ from test.bots.domain.model.game_state_test import RelativeGameStateBuilder
 
 
 def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_clue_then_clued_card_is_interpreted_as_next_playable():
-    clue = SuitClueAction("cathy", frozenset({1}), frozenset({5}), Suit.RED)
+    clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
     expected_card = Card(Suit.RED, Rank.FOUR)
 
     game_state = (
@@ -49,7 +49,7 @@ def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_cl
 
 
 def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when_interpret_clue_then_clued_card_is_interpreted_as_next_playable():
-    clue = SuitClueAction("cathy", frozenset({1}), frozenset({5}), Suit.RED)
+    clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
     expected_card = Card(Suit.RED, Rank.THREE)
 
     game_state = (
@@ -60,7 +60,7 @@ def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when
                 "bob",
                 (
                     HandCard.unknown_card(0),
-                    HandCard.clued_card(draw_id=4, suit=Suit.RED),
+                    HandCard.clued_card(4, suit=Suit.RED),
                     HandCard.unknown_card(0),
                 ),
             )
@@ -87,7 +87,7 @@ def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when
 
 
 def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interpreted():
-    clue = SuitClueAction("cathy", frozenset({1}), frozenset({5}), Suit.RED)
+    clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
 
     game_state = (
         RelativeGameStateBuilder()
@@ -155,7 +155,7 @@ def test_given_playable_card_clued_and_next_playable_accessible_when_find_play_c
     )
 
     prompt = Prompt()
-    ConventionDocument(play_conventions=[prompt, SingleCardPlayClue()])
+    ConventionDocument(play_conventions=[prompt, PlayClue()])
     decision = prompt.find_clue((1, 1, not_fully_known_playable), game_state)
 
     assert decision == [SuitClueDecision(Suit.RED, 2)]

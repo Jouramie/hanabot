@@ -5,23 +5,10 @@ from dataclasses import dataclass, field
 from typing import Iterable
 
 from bots.domain.decision import Decision, SuitClueDecision
+from bots.domain.model.action import ClueAction
 from bots.domain.model.game_state import RelativeGameState, RelativePlayerNumber, Turn
 from bots.domain.model.hand import Hand, HandCard, Slot
 from bots.hanabot.blackboard import Interpretation
-
-
-@dataclass
-class Convention(ABC):
-    name: str
-    document: ConventionDocument = None
-
-    @abstractmethod
-    def find_clue(self, card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[Decision] | None:
-        pass
-
-    @abstractmethod
-    def find_interpretation(self, turn: Turn) -> Interpretation | None:
-        pass
 
 
 @dataclass(frozen=True)
@@ -45,11 +32,16 @@ class ConventionDocument:
     def find_chop(self, hand: Hand) -> int | None:
         return next((slot for slot, card in list(enumerate(hand))[::-1] if not card.is_clued), None)
 
-    def find_focus(self, slots: Iterable[Slot], hand: Hand) -> Slot | None:
+    def find_focus(self, clue: ClueAction, hand: Hand) -> Slot | None:
         chop = self.find_chop(hand)
-        if chop in slots:
+        if chop in clue.touched_slots:
             return chop
-        return min((slot for slot in slots if not hand[slot].is_clued), default=None)
+
+        focus: int | None = min((slot for slot in clue.touched_slots if not hand[slot].is_clued), default=None)
+
+        if focus is not None:
+            return focus
+        return min(clue.touched_slots)
 
     def find_card_on_chop(self, player_hand: Hand) -> HandCard | None:
         chop = self.find_chop(player_hand)
@@ -91,3 +83,23 @@ class ConventionDocument:
                 interpretations.append(interpretation)
 
         return interpretations
+
+
+@dataclass
+class Convention(ABC):
+    name: str
+    document: ConventionDocument = field(default_factory=ConventionDocument)
+
+    @abstractmethod
+    def find_clue(self, card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[Decision] | None:
+        pass
+
+    @abstractmethod
+    def find_interpretation(self, turn: Turn) -> Interpretation | None:
+        pass
+
+    def find_focus_card(self, clue: ClueAction, hand: Hand) -> HandCard | None:
+        focus = self.document.find_focus(clue, hand)
+        if focus is None:
+            return None
+        return hand[focus]

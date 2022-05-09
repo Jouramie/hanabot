@@ -5,7 +5,6 @@ from bots.domain.model.action import ClueAction, PlayAction, DiscardAction
 from bots.domain.model.game_state import RelativeGameState, GameHistory
 from bots.hanabot.blackboard import Blackboard
 from bots.hanabot.conventions.convention import ConventionDocument
-from util.profiling import timeit
 
 logger = logging.getLogger(__name__)
 
@@ -20,20 +19,18 @@ class Hanabot(DecisionMaking):
     def new_game(self):
         self.blackboard = Blackboard()
 
-    @timeit(name="Hanabot.play_turn")
     def play_turn(self, current_game_state: RelativeGameState, history: GameHistory) -> Decision:
         """
         1. wipe
         2. interpret actions
         3. make decision
         """
-        timeit(self.blackboard.wipe_for_new_turn, name="Hanabot.wipe_blackboard")(current_game_state, history)
+        self.blackboard.wipe_for_new_turn(current_game_state, history)
 
-        current_g0ame_state = self.interpret_actions()
+        current_game_state = self.interpret_actions()
 
         return self.make_decision(current_game_state)
 
-    @timeit(name="Hanabot.interpret_actions")
     def interpret_actions(self) -> RelativeGameState:
         """
         1. For each action
@@ -45,8 +42,6 @@ class Hanabot(DecisionMaking):
         2. Write notes on cards
         """
         for turn in self.blackboard.uninterpreted_turns.copy():
-            self.blackboard.chop = self.conventions.find_chop(self.blackboard.my_hand)
-
             if isinstance(turn.action, PlayAction) or isinstance(turn.action, DiscardAction):
                 for interpretation in self.blackboard.ongoing_interpretations.copy():
                     if turn.action.draw_id not in interpretation.notes_on_cards:
@@ -74,7 +69,6 @@ class Hanabot(DecisionMaking):
 
         return self.blackboard.current_game_state
 
-    @timeit(name="Hanabot.make_decision")
     def make_decision(self, current_game_state: RelativeGameState) -> Decision:
         next_player_hand = current_game_state.other_player_hands[0]
 

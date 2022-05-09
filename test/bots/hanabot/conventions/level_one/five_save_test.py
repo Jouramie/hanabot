@@ -8,7 +8,7 @@ from test.bots.domain.model.game_state_test import RelativeGameStateBuilder
 
 
 def test_given_five_on_chop_when_clue_then_is_interpreted_as_save():
-    clue = RankClueAction("alice", frozenset({2}), frozenset({3}), Rank.FIVE)
+    clue = RankClueAction("alice", frozenset({2}), Rank.FIVE)
 
     game_state = (
         RelativeGameStateBuilder()
@@ -38,7 +38,7 @@ def test_given_five_on_chop_when_clue_then_is_interpreted_as_save():
 
 
 def test_given_five_not_on_chop_when_clue_then_do_not_interpret():
-    clue = RankClueAction("alice", frozenset({1}), frozenset({3}), Rank.FIVE)
+    clue = RankClueAction("alice", frozenset({1}), Rank.FIVE)
 
     game_state = (
         RelativeGameStateBuilder()
