@@ -1,11 +1,13 @@
 from core.card import Card, Suit, Rank
 from simulator.game.player import Player
+from util.profiling import timeit
 
 
 class Action:
     turn: int
     actor: Player
 
+    @timeit(name="Simulator.Action.act_on_state")
     def act_on_state(self, gamestate):
         pass
 

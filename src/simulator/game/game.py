@@ -14,6 +14,7 @@ from simulator.game.clue import ColorClue, RankClue, Clue
 from simulator.game.hand_card import HandCard
 from simulator.game.history import History
 from simulator.game.player import Player
+from util.profiling import timeit
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +71,7 @@ class Game:
         hand_card = HandCard(draw_id, card, list(self.deck.suits))
         player.hand.insert(0, hand_card)
 
+    @timeit(name="Simulator.play_turn")
     def play_turn(self, action: Action):
         self.history.add_state(deepcopy(self.current_state))
 

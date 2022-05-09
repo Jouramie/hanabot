@@ -14,6 +14,7 @@ from simulator.game.clue import Clue as SimulatorClue
 from simulator.game.game import Game
 from simulator.game.player import Player
 from simulator.players.simulatorplayer import SimulatorPlayer
+from util.profiling import timeit
 
 
 def assemble_my_hand(me: Player, hand_cache: dict[str, Hand]) -> Hand:
@@ -124,6 +125,7 @@ class SimulatorBot(SimulatorPlayer):
         self.history = GameHistory()
         self.hand_cache = {}
 
+    @timeit(name="Bot.play_turn")
     def play_turn(self, game: Game) -> SimulatorAction:
         current_player = game.current_player.name
         add_recent_turns_to_history(self.history, game, current_player, self.hand_cache)
