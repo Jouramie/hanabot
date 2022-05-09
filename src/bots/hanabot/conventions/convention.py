@@ -49,7 +49,7 @@ class ConventionDocument:
         chop = self.find_chop(hand)
         if chop in slots:
             return chop
-        return min(slot for slot in slots if not hand[slot].is_clued)
+        return min((slot for slot in slots if not hand[slot].is_clued), default=None)
 
     def find_card_on_chop(self, player_hand: Hand) -> HandCard | None:
         chop = self.find_chop(player_hand)

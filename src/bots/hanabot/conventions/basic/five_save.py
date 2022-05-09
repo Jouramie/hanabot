@@ -25,10 +25,9 @@ class FiveSave(Convention):
             return None
 
         touched_hand = turn.game_state.find_player_hand(rank_clue.recipient)
-        if all(touched_hand.find_card_by_draw_id(touched_draw_id).is_clued for touched_draw_id in rank_clue.touched_draw_ids):
-            return None
-
-        if self.document.find_chop(touched_hand) not in rank_clue.touched_slots:
+        chop = self.document.find_chop(touched_hand)
+        focus = self.document.find_focus(rank_clue.touched_slots, touched_hand)
+        if focus is not chop:
             return None
 
         return Interpretation(turn, interpretation_type=InterpretationType.SAVE, explanation=self.name)

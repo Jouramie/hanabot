@@ -29,18 +29,11 @@ class Hanabot(DecisionMaking):
         """
         timeit(self.blackboard.wipe_for_new_turn, name="Hanabot.wipe_blackboard")(current_game_state, history)
 
-        current_g0ame_state = self.try_interpret_actions()
+        current_g0ame_state = self.interpret_actions()
 
         return self.make_decision(current_game_state)
 
     @timeit(name="Hanabot.interpret_actions")
-    def try_interpret_actions(self) -> RelativeGameState:
-        try:
-            return self.interpret_actions()
-        except Exception as e:
-            logger.exception(e)
-            return self.blackboard.current_game_state
-
     def interpret_actions(self) -> RelativeGameState:
         """
         1. For each action
