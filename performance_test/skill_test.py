@@ -25,7 +25,7 @@ hanabot_players = [
     SimulatorBot("Frank", Hanabot(conventions.level_one)),
 ]
 
-number_games = 100
+number_games = 1000
 
 
 @pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])

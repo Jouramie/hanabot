@@ -1,94 +1,161 @@
 import logging
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List, Set
 
 from bots.domain.decision import DecisionMaking, DiscardDecision, Decision, ClueDecision, SuitClueDecision, RankClueDecision
-from bots.domain.model.action import ClueAction, RankClueAction
-from bots.domain.model.game_state import RelativeGameState, GameHistory
+from bots.domain.model.action import ClueAction, RankClueAction, PlayAction
+from bots.domain.model.game_state import RelativeGameState, GameHistory, Turn
 from bots.domain.model.hand import Hand, DrawId, Slot
 from bots.machinabi.analysed_clue import AnalysedClue
+from bots.machinabi.potential_clue import PotentialClue
 from core import Card, Rank
 
 logger = logging.getLogger(__name__)
 
 
 class Machinabi(DecisionMaking):
-    possible_clues: Dict[ClueDecision, float]
+    potential_clues: List[PotentialClue]
     known_cards: Dict[DrawId, Card]
+    analyzed_clues: List[AnalysedClue]
+    last_analysed_turn: int
+    cards_touched: Set[Card]
+    cards_to_be_played: Set[Card]
+    cards_maybe_touched: Set[Card]
 
     def __init__(self):
-        pass
+        self.new_game()
 
     def new_game(self):
-        pass
+        self.analyzed_clues = []
+        self.last_analysed_turn = -1
+        self.cards_touched = set()
+        self.cards_to_be_played = set()
+        self.cards_maybe_touched = set()
 
     def play_turn(self, current_game_state: RelativeGameState, history: GameHistory) -> Decision:
+        self.analyze_turns_since_my_last_turn(history)
+
         if current_game_state.clue_count > 0:
-            self.evaluate_all_clues(current_game_state)
-            best_clue, best_clue_value = self.find_best_clue()
-            if best_clue_value >= 1:
-                return best_clue
+            self.generate_all_potential_clues(current_game_state)
+            self.remove_all_bad_potential_clues(current_game_state)
 
         if current_game_state.clue_count < 8:
             return self.discard_chop(current_game_state)
-        pass
+
+    def remove_all_bad_potential_clues(self, current_game_state: RelativeGameState):
+        self.remove_all_bad_touch_potential_clues(current_game_state)
+        self.remove_all_pointless_focus_potential_clues(current_game_state)
+
+    def remove_all_bad_touch_potential_clues(self, current_game_state: RelativeGameState):
+        for potential_clue in self.potential_clues:
+            recipient_hand = current_game_state.player_hands[potential_clue.clue.receiver]
+            cards_touched = self.get_all_new_cards_touched_by_potential_clue(recipient_hand, potential_clue.clue)
+            for card_touched in cards_touched:
+                if card_touched in self.cards_touched:
+                    self.potential_clues.remove(potential_clue)
+
+    def remove_all_pointless_focus_potential_clues(self, current_game_state: RelativeGameState):
+        for potential_clue in self.potential_clues:
+            recipient_hand = current_game_state.player_hands[potential_clue.clue.receiver]
+            recipient_chop = self.get_player_chop_slot(recipient_hand)
+            clue_focus = self.find_potential_clue_focus(recipient_hand, potential_clue.clue, recipient_chop)
+            focused_card = recipient_hand[clue_focus]
+            if not self.is_ready_to_play(current_game_state, focused_card.real_card)\
+                    and not self.is_critical(focused_card.real_card):
+                self.potential_clues.remove(potential_clue)
+
+    def get_all_new_cards_touched_by_potential_clue(self, recipient_hand: Hand, clue: ClueDecision) -> set[Card]:
+        cards_touched_by_clue = set()
+        for card in recipient_hand:
+            if card.is_clued:
+                continue
+            if isinstance(clue, SuitClueDecision) and clue.suit == card.real_card.suit:
+                cards_touched_by_clue.add(card.real_card)
+            if isinstance(clue, RankClueDecision) and clue.rank == card.real_card.rank:
+                cards_touched_by_clue.add(card.real_card)
+        return cards_touched_by_clue
+
+    def get_all_slots_touched_by_potential_clue(self, recipient_hand: Hand, clue: ClueDecision) -> set[int]:
+        slots_touched_by_clue = set()
+        for slot in range(0, len(recipient_hand)):
+            if isinstance(clue, SuitClueDecision) and clue.suit == recipient_hand[slot].real_card.suit:
+                slots_touched_by_clue.add(slot)
+            if isinstance(clue, RankClueDecision) and clue.rank == recipient_hand[slot].real_card.rank:
+                slots_touched_by_clue.add(slot)
+        return slots_touched_by_clue
+
+    def analyze_turns_since_my_last_turn(self, history: GameHistory):
+        for i in range(self.last_analysed_turn + 1, len(history.turns)):
+            turn = history.turns[i]
+            self.analyze_turn(turn)
+        self.last_analysed_turn = len(history.turns) + 1
+
+    def analyze_turn(self, turn: Turn):
+        if isinstance(turn.action, PlayAction):
+            return
+        if isinstance(turn.action, DiscardDecision):
+            return
+        if isinstance(turn.action, ClueAction):
+            self.analyzed_clues.append(self.analyze_given_clue(turn.game_state, turn.action))
 
     def analyze_given_clue(self, gamestate: RelativeGameState, clue: ClueAction) -> AnalysedClue:
         recipient_hand = gamestate.find_player_hand(clue.recipient)
         recipient_chop = self.get_player_chop_slot(recipient_hand)
-        clue_focus = self.find_clue_focus(recipient_hand, clue, recipient_chop)
+        clue_focus = self.find_clue_focus(recipient_hand, clue.touched_slots, recipient_chop)
         if clue_focus == recipient_chop:
             is_save = self.chop_clue_is_save_clue(gamestate, clue)
             if is_save:
-                return AnalysedClue.save_clue()
+                return self.analyze_save_clue(recipient_hand, clue)
 
+        return self.analyze_play_clue(recipient_hand, clue, clue_focus)
+
+    def analyze_save_clue(self, recipient_hand: Hand, clue: ClueAction) -> AnalysedClue:
+        for slot in clue.touched_slots:
+            self.cards_touched.add(recipient_hand[slot].real_card)
+
+        return AnalysedClue.save_clue()
+
+    def analyze_play_clue(self, recipient_hand: Hand, clue: ClueAction, focus_slot: int) -> AnalysedClue:
+        for slot in clue.touched_slots:
+            self.cards_touched.add(recipient_hand[slot].real_card)
+        self.cards_to_be_played.add(recipient_hand[focus_slot].real_card)
         return AnalysedClue.play_clue()
 
     def chop_clue_is_save_clue(self, gamestate: RelativeGameState, clue: ClueAction) -> bool:
         if isinstance(clue, RankClueAction):
-            if clue.rank == Rank.FIVE or clue.rank == Rank.TWO:
+            if clue.rank == Rank.FIVE:
                 return True
 
         return False
 
-    def find_clue_focus(self, hand_before: Hand, clue: ClueAction, chop_slot: Slot) -> Slot:
-        if chop_slot in clue.touched_slots:
+    def find_potential_clue_focus(self, hand_before: Hand, clue: ClueDecision, chop_slot: Slot) -> Slot:
+        touched_slots = self.get_all_slots_touched_by_potential_clue(hand_before, clue)
+        return self.find_clue_focus(hand_before, touched_slots, chop_slot)
+
+    def find_clue_focus(self, hand_before: Hand, touched_slots: Set[int], chop_slot: Slot) -> Slot:
+        if chop_slot in touched_slots:
             return chop_slot
 
         newest_newly_touched_card_slot = 6
-        for slot in clue.touched_slots:
+        for slot in touched_slots:
             if slot < newest_newly_touched_card_slot and not hand_before[slot].is_clued:
                 newest_newly_touched_card_slot = slot
 
         return newest_newly_touched_card_slot
 
-    def find_best_clue(self) -> Tuple[ClueDecision, float]:
-        best_clue = None
-        best_clue_value = -999999
-        for clue, clue_value in self.possible_clues.items():
-            if clue_value > best_clue_value:
-                best_clue_value = clue_value
-                best_clue = clue
-
-        return best_clue, best_clue_value
-
-    def evaluate_all_clues(self, current_game_state: RelativeGameState):
-        self.possible_clues = {}
+    def generate_all_potential_clues(self, current_game_state: RelativeGameState):
+        potential_decisions = []
         for relative_position, player in enumerate(current_game_state.other_player_hands):
             for card in player.cards:
-                is_critical = current_game_state.is_critical(card.real_card)
-                is_playable = current_game_state.is_playable(card.real_card)
-                if is_critical or is_playable:
-                    rank_clue = RankClueDecision(card.real_card.rank, relative_position + 1)
-                    suit_clue = SuitClueDecision(card.real_card.suit, relative_position + 1)
-                    if rank_clue not in self.possible_clues:
-                        self.possible_clues[rank_clue] = self.evaluate_clue_value(current_game_state, rank_clue)
-                    if suit_clue not in self.possible_clues:
-                        self.possible_clues[suit_clue] = self.evaluate_clue_value(current_game_state, suit_clue)
+                rank_clue = RankClueDecision(card.real_card.rank, relative_position + 1)
+                suit_clue = SuitClueDecision(card.real_card.suit, relative_position + 1)
+                if rank_clue not in potential_decisions:
+                    potential_decisions.append(rank_clue)
+                if suit_clue not in potential_decisions:
+                    potential_decisions.append(rank_clue)
 
-        return self.possible_clues
-
-    def evaluate_clue_value(self, current_game_state: RelativeGameState, clue: ClueDecision) -> float:
-        return 1
+        self.potential_clues = []
+        for potential_decision in potential_decisions:
+            self.potential_clues.append(PotentialClue(potential_decision))
 
     def discard_chop(self, current_game_state: RelativeGameState) -> Decision:
         chop_slot = self.get_my_chop_slot(current_game_state)
@@ -111,6 +178,24 @@ class Machinabi(DecisionMaking):
                 return slot
 
         return -1
+
+    def is_critical(self, card: Card) -> bool:
+        return card.rank == Rank.FIVE
+
+    def is_ready_to_play(self, gamestate: RelativeGameState, card: Card) -> bool:
+        if gamestate.stacks.is_already_played(card):
+            return False
+
+        for rank in [Rank.ONE, Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE]:
+            rank_card = Card(card.suit, rank)
+            if gamestate.stacks.is_already_played(rank_card) or rank_card in self.cards_touched or rank_card in self.cards_to_be_played:
+                continue
+            if rank == card.rank:
+                return True
+            break
+
+        return False
+
 
     def stall_clue(self, current_game_state: RelativeGameState):
         pass

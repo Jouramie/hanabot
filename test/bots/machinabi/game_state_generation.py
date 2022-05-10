@@ -8,12 +8,12 @@ from simulator.game.game import Game
 from test.simulator.game.game_setup import get_player_names
 
 
-def get_game_random(number_players: int, suits: Iterable[Suit]):
+def get_game_random(number_players: int, suits: Iterable[Suit]) -> Game:
     game = Game(get_player_names(number_players), Deck.generate(suits))
     return game
 
 
-def get_game_nothing_to_do(number_players: int, suits: Iterable[Suit]):
+def get_game_nothing_to_do(number_players: int, suits: Iterable[Suit]) -> Game:
     game = Game(get_player_names(number_players), Deck.starting_with(get_all_threes_and_fours(suits)))
     game.status.clues = 4
     return game
@@ -34,5 +34,5 @@ def get_all_threes_and_fours(suits: Iterable[Suit]) -> List[Card]:
 def assemble_relative_gamestate_and_history(game: Game) -> Tuple[RelativeGameState, GameHistory]:
     history = GameHistory()
     add_recent_turns_to_history(history, game, game.players[0].name, {})
-    current_game_state = assemble_relative_game_state(game.current_state, game.current_player, {})
+    current_game_state = assemble_relative_game_state(game.current_state, game.current_player.name, {})
     return current_game_state, history

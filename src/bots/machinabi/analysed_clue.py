@@ -7,6 +7,8 @@ from enum import Enum, auto
 class ClueType(Enum):
     SAVE = auto()
     PLAY = auto()
+    STALL = auto()
+    FIX = auto()
 
 
 @dataclass(frozen=False)
