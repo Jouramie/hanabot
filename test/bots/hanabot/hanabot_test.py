@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from bots.domain.decision import SuitClueDecision, RankClueDecision, DiscardDecision, PlayDecision
+from bots.domain.decision import SuitClueDecision, DiscardDecision, PlayDecision
 from bots.domain.model.action import SuitClueAction, RankClueAction
 from bots.domain.model.game_state import GameHistory, Turn
 from bots.domain.model.hand import HandCard, Hand
@@ -113,7 +113,7 @@ def test_given_clued_one_when_play_turn_then_clue_another_one():
     alice = Hanabot(level_one)
     decision = alice.play_turn(current_game_state, GameHistory([previous_turn]))
 
-    assert decision == RankClueDecision(Rank.ONE, 2)
+    assert decision == SuitClueDecision(Suit.YELLOW, 2)
 
 
 def test_given_all_playable_already_clued_when_play_turn_then_discard():

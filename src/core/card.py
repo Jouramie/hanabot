@@ -212,6 +212,10 @@ class Card:
     def __hash__(self) -> int:
         return Card.get_card_hash(self)
 
+    def __iter__(self):
+        yield self.suit
+        yield self.rank
+
     def is_playable_over(self, card: Card) -> bool:
         return self.previous_card == card
 

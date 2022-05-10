@@ -43,7 +43,7 @@ def test_given_first_turn_when_play_turn_then_clue_and_play_ones():
     bob = SimulatorBot("bob", Hanabot(level_one))
     cathy = SimulatorBot("cathy", Hanabot(level_one))
 
-    controller = Controller()
+    controller = Controller(log_game=False, save_results=False)
     game = Game(["alice", "bob", "cathy"], deck)
     controller.resume_game([alice, bob, cathy], game)
     controller.current_game.current_state.deck = deck
@@ -53,4 +53,4 @@ def test_given_first_turn_when_play_turn_then_clue_and_play_ones():
     controller.play_turn()
     controller.play_turn()
 
-    assert Card(Suit.RED, Rank.TWO) in controller.current_game.current_state.play_area.played_cards
+    assert len(controller.current_game.current_state.play_area.played_cards) == 2

@@ -93,10 +93,10 @@ class Hand(Iterable[HandCard], Sized):
     def __getitem__(self, item) -> HandCard:
         return self.cards[item]
 
-    def get_real(self, suit_or_rank: Suit | Rank) -> Iterable[HandCard]:
-        for card in self:
+    def get_real(self, suit_or_rank: Suit | Rank) -> Iterable[tuple[Slot, HandCard]]:
+        for slot, card in enumerate(self):
             if card.is_real(suit_or_rank):
-                yield card
+                yield slot, card
 
     def __repr__(self):
         return f"{self.owner_name} {self.cards})"

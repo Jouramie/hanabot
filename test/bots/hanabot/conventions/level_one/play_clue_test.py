@@ -1,3 +1,4 @@
+from bots.domain.decision import SuitClueDecision
 from bots.domain.model.action import SuitClueAction, RankClueAction
 from bots.domain.model.game_state import Turn
 from bots.domain.model.hand import HandCard, Hand
@@ -130,3 +131,31 @@ def test_given_suit_clue_on_someone_else_when_find_interpretation_then_do_not_fi
     interpretation = convention.find_interpretation(turn)
 
     assert interpretation == Interpretation(turn, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})
+
+
+def test_given_card_already_clued_when_find_clue_then_clue_while_touching_clued_card():
+    targeted_card = HandCard.unknown_real_card(5, Card(Suit.YELLOW, Rank.ONE))
+    game_state = (
+        RelativeGameStateBuilder()
+        .set_stacks(Stacks.create_from_dict({Suit.BLUE: Rank.ONE}))
+        .set_my_hand(
+            Hand.create_unknown_hand("alice", 3),
+        )
+        .set_other_player_hands(
+            Hand.create_unknown_hand("bob", 3),
+            Hand(
+                "cathy",
+                (
+                    HandCard.unknown_real_card(1, Card(Suit.BLUE, Rank.ONE)),
+                    HandCard.clued_real_card(3, Card(Suit.YELLOW, Rank.TWO), rank_known=True),
+                    targeted_card,
+                ),
+            ),
+        )
+        .build()
+    )
+
+    convention = PlayClue()
+    decision = convention.find_clue((2, 2, targeted_card), game_state)
+
+    assert decision == [SuitClueDecision(Suit.YELLOW, 2)]

@@ -145,7 +145,7 @@ def test_given_playable_card_clued_and_next_playable_accessible_when_find_play_c
             Hand(
                 "cathy",
                 (
-                    HandCard.unknown_real_card(0, Card(Suit.BLUE, Rank.THREE)),
+                    HandCard.unknown_real_card(0, Card(Suit.BLUE, Rank.FOUR)),
                     HandCard.unknown_real_card(draw_id=5, card=Card(Suit.RED, Rank.FOUR)),
                     HandCard.unknown_real_card(0, Card(Suit.BLUE, Rank.THREE)),
                 ),

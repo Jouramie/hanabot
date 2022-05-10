@@ -28,6 +28,9 @@ class SuitClueAction:
     def matches(self, card: Card) -> bool:
         return card.matches(self.suit)
 
+    def __iter__(self):
+        return iter(self.touched_slots)
+
 
 @dataclass(frozen=True)
 class RankClueAction:
@@ -40,6 +43,9 @@ class RankClueAction:
 
     def matches(self, card: Card) -> bool:
         return card.matches(self.rank)
+
+    def __iter__(self):
+        return iter(self.touched_slots)
 
 
 ClueAction = SuitClueAction | RankClueAction
