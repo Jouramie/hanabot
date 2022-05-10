@@ -72,6 +72,37 @@ def play_game_slow(players: List[SimulatorPlayer], suits: Iterable[Suit], draw_g
     print("The game has ended. Press any key to continue.")
 
 
+def print_time_elapsed(number_games: int, time_before: float):
+    time_after = time.time()
+    elapsed_seconds = time_after - time_before
+    elapsed_seconds_rounded = round(elapsed_seconds, 3)
+    elapsed_milliseconds = elapsed_seconds * 1000
+    average_time_milliseconds_rounded = round(elapsed_milliseconds / number_games, 1)
+    print(
+        console.utils.clear_lines(3),
+        f"Finished simulating {str(number_games)} games in {str(elapsed_seconds_rounded)} seconds "
+        f"(Average:{str(average_time_milliseconds_rounded)} ms per game)",
+    )
+
+
+def print_progress(total_survivals, total_victories, total_score, number_games, games_remaining):
+    print(console.utils.clear_lines(3))
+    bar = ProgressBar()
+    print(bar(int((number_games - games_remaining) / number_games * 100)))
+    print_rates(total_survivals, total_victories, total_score, number_games - games_remaining)
+    pass
+
+
+def print_rates(total_survivals: int, total_victories: int, total_score: int, number_games: int):
+    survival_rate = str(round(total_survivals / number_games * 100, 3))
+    victory_rate = str(round(total_victories / number_games * 100, 3))
+    average_score = str(round(total_score / number_games, 3))
+
+    print(f"Survival Rate: {survival_rate}%")
+    print(f"Victory Rate: {victory_rate}%")
+    print(f"Average Score: {average_score}")
+
+
 def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], number_games: int, draw_game: bool = True, log_game: bool = False):
     max_score = len(suits) * 5
     controller = Controller(draw_game, log_game)
@@ -121,7 +152,7 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
     for i in possible_scores:
         if scores[i] < 1:
             continue
-        plotext.text(scores[i], x=i, y=scores[i] + max(0.5, (highest_number_in_a_score / plot_height) * 1.5), alignment='center', color='blue')
+        plotext.text(scores[i], x=i, y=scores[i] + max(0.5, (highest_number_in_a_score / plot_height) * 1.5), alignment="center", color="blue")
 
     plotext.xlim(0, max_score)
     plotext.ylim(0, y_max)
@@ -129,37 +160,6 @@ def play_games_fast(players: List[SimulatorPlayer], suits: Iterable[Suit], numbe
     plotext.ylabel("Number of games")
     plotext.clc()
     plotext.show()
-
-
-def print_time_elapsed(number_games: int, time_before: float):
-    time_after = time.time()
-    elapsed_seconds = time_after - time_before
-    elapsed_seconds_rounded = round(elapsed_seconds, 3)
-    elapsed_milliseconds = elapsed_seconds * 1000
-    average_time_milliseconds_rounded = round(elapsed_milliseconds / number_games, 1)
-    print(
-        console.utils.clear_lines(3),
-        f"Finished simulating {str(number_games)} games in {str(elapsed_seconds_rounded)} seconds "
-        f"(Average:{str(average_time_milliseconds_rounded)} ms per game)",
-    )
-
-
-def print_progress(total_survivals, total_victories, total_score, number_games, games_remaining):
-    print(console.utils.clear_lines(3))
-    bar = ProgressBar()
-    print(bar(int((number_games - games_remaining) / number_games * 100)))
-    print_rates(total_survivals, total_victories, total_score, number_games - games_remaining)
-    pass
-
-
-def print_rates(total_survivals: int, total_victories: int, total_score: int, number_games: int):
-    survival_rate = str(round(total_survivals / number_games * 100, 3))
-    victory_rate = str(round(total_victories / number_games * 100, 3))
-    average_score = str(round(total_score / number_games, 3))
-
-    print(f"Survival Rate: {survival_rate}%")
-    print(f"Victory Rate: {victory_rate}%")
-    print(f"Average Score: {average_score}")
 
 
 def start_console_app():

@@ -38,9 +38,9 @@ class ConventionDocument:
             return chop
 
         focus: int | None = min((slot for slot in clue.touched_slots if not hand[slot].is_clued), default=None)
-
         if focus is not None:
             return focus
+
         return min(clue.touched_slots)
 
     def find_card_on_chop(self, player_hand: Hand) -> HandCard | None:

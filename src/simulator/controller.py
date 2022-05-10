@@ -1,3 +1,4 @@
+import csv
 import logging
 import os
 from datetime import datetime
@@ -12,8 +13,10 @@ from simulator.players.simulatorplayer import SimulatorPlayer
 
 logger = logging.getLogger(__name__)
 
-CURRENT_GAME_FILE = "logs/current_game.txt"
-PAST_GAMES_FOLDER = "logs/past_games"
+LOGS_FOLDER = "logs"
+CURRENT_GAME_FILE = f"{LOGS_FOLDER}/current_game.txt"
+PAST_GAMES_FOLDER = f"{LOGS_FOLDER}/past_games"
+SAVE_RESULTS_FILE = f"{LOGS_FOLDER}/results_{{}}.csv"
 MAX_LOGGED_GAMES = 100
 
 
@@ -21,15 +24,24 @@ class Controller:
     current_game: Game
     current_players: Dict[str, SimulatorPlayer]
 
-    def __init__(self, verbose=True, log_game=True):
+    def __init__(self, verbose=True, log_game=True, save_results=True):
         self.draw_game_enabled = verbose
         self.log_game_enabled = log_game
+        self.save_results_enabled = save_results
         self.current_game_file = None
+        self.save_game_file_name = SAVE_RESULTS_FILE.format(datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+        if save_results:
+            files_in_logs = os.listdir(LOGS_FOLDER)
+            result_files = [f for f in files_in_logs if f.startswith("results_")]
+            for file in result_files:
+                os.remove(f"{LOGS_FOLDER}/{file}")
 
     def new_game(self, players: List[SimulatorPlayer], suits: Iterable[Suit]) -> Game:
         self.current_game = Game([player.name for player in players], Deck.generate(suits))
         self._initialize_players(players)
         if self.log_game_enabled:
+            if not os.path.isdir(LOGS_FOLDER):
+                os.mkdir(LOGS_FOLDER)
             if os.path.isfile(CURRENT_GAME_FILE):
                 os.remove(CURRENT_GAME_FILE)
             self.current_game_file = open(CURRENT_GAME_FILE, "w+")
@@ -68,6 +80,8 @@ class Controller:
             self.draw_and_log(repr(result))
             if self.current_game_file is not None:
                 self.close_game_log(result.score)
+            if self.save_results_enabled:
+                self.save_results(result)
 
     def play_until_game_is_over(self) -> GameResult:
         while not self.is_game_over():
@@ -139,3 +153,22 @@ class Controller:
         saved_games = os.listdir(PAST_GAMES_FOLDER)
         if len(saved_games) > MAX_LOGGED_GAMES:
             os.remove(f"{PAST_GAMES_FOLDER}/{sorted(saved_games)[0]}")
+
+    def save_results(self, result: GameResult):
+        if not os.path.isdir(LOGS_FOLDER):
+            os.mkdir(LOGS_FOLDER)
+        with open(self.save_game_file_name, "a+", newline="") as file:
+            csv_writer = csv.writer(file)
+            if os.path.getsize(self.save_game_file_name) == 0:
+                csv_writer.writerow(["timestamp", "score", "turns", "clues_left", "strikes", "amount_of_players", "variant"])
+            csv_writer.writerow(
+                [
+                    datetime.now().isoformat(),
+                    result.score,
+                    len(self.current_game.history.gamestates),
+                    self.current_game.status.clues,
+                    self.current_game.status.strikes,
+                    len(self.current_game.players),
+                    self.current_game.deck.suits,
+                ]
+            )
