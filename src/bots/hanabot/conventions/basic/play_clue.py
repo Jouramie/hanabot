@@ -1,6 +1,6 @@
 import logging
 
-from bots.domain.decision import RankClueDecision, SuitClueDecision, ClueDecision
+from bots.domain.decision import SuitClueDecision, ClueDecision, RankClueDecision
 from bots.domain.model.action import ClueAction
 from bots.domain.model.game_state import RelativeGameState, RelativePlayerNumber, Turn
 from bots.domain.model.hand import HandCard, Hand, Slot
@@ -15,28 +15,50 @@ class PlayClue(Convention):
         super().__init__("play clue")
 
     def find_clue(self, card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[ClueDecision] | None:
-        # TODO handle duplicate cards
         owner, slot, player_card = card_to_clue
         if player_card.is_fully_known or current_game_state.is_already_clued(player_card.real_card):
             return None
 
         hand: Hand = current_game_state.player_hands[owner]
+        valid_decisions = []
 
-        suit = player_card.real_card.suit
-        real_cards_with_suit = list(hand.get_real(suit))
-        if len(real_cards_with_suit) == 1:
+        suit, rank = player_card.real_card
+        touched_slots_cards = list(hand.get_real(suit))
+        if self.is_valid_clue_for(touched_slots_cards, card_to_clue, current_game_state):
             decision = SuitClueDecision(suit, owner)
             logger.debug(f"{decision}.")
-            return [decision]
+            valid_decisions.append(decision)
 
-        rank = player_card.real_card.rank
-        real_cards_with_rank = list(hand.get_real(rank))
-        if len(real_cards_with_rank) == 1:
+        touched_slots_cards = list(hand.get_real(rank))
+        if self.is_valid_clue_for(touched_slots_cards, card_to_clue, current_game_state):
             decision = RankClueDecision(rank, owner)
             logger.debug(f"{decision}.")
-            return [decision]
+            valid_decisions.append(decision)
 
-        return None
+        return valid_decisions if valid_decisions else None
+
+    def is_valid_clue_for(
+        self, touched_slots_cards: list[tuple[Slot, HandCard]], card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState
+    ) -> bool:
+        owner, slot, player_card = card_to_clue
+        hand: Hand = current_game_state.player_hands[owner]
+        touched_slots, touched_cards = zip(*touched_slots_cards)
+
+        focus = self.document.find_focus(touched_slots, hand)
+        if focus is not slot:
+            return False
+
+        if len(touched_cards) != len(set(card.real_card for card in touched_cards)):
+            return False
+
+        not_clued_touched_cards = [card for card in touched_cards if not card.is_clued]
+        if any(not current_game_state.is_eventually_playable(card.real_card) for card in not_clued_touched_cards):
+            return False
+
+        if any(current_game_state.is_already_clued(card.real_card) for card in not_clued_touched_cards):
+            return False
+
+        return True
 
     def find_interpretation(self, turn: Turn) -> Interpretation | None:
         if not isinstance(turn.action, ClueAction):

@@ -32,16 +32,16 @@ class ConventionDocument:
     def find_chop(self, hand: Hand) -> int | None:
         return next((slot for slot, card in list(enumerate(hand))[::-1] if not card.is_clued), None)
 
-    def find_focus(self, clue: ClueAction, hand: Hand) -> Slot | None:
+    def find_focus(self, clue: Iterable[Slot], hand: Hand) -> Slot | None:
         chop = self.find_chop(hand)
-        if chop in clue.touched_slots:
+        if chop in clue:
             return chop
 
-        focus: int | None = min((slot for slot in clue.touched_slots if not hand[slot].is_clued), default=None)
+        focus: int | None = min((slot for slot in clue if not hand[slot].is_clued), default=None)
         if focus is not None:
             return focus
 
-        return min(clue.touched_slots)
+        return min(clue)
 
     def find_card_on_chop(self, player_hand: Hand) -> HandCard | None:
         chop = self.find_chop(player_hand)

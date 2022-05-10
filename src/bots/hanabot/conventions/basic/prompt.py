@@ -37,7 +37,6 @@ class Prompt(Convention):
         return decisions if len(decisions) > 0 else None
 
     def find_interpretation(self, turn: Turn) -> Interpretation | None:
-        # FIXME should accept clues touching more than one card
         if not isinstance(turn.action, ClueAction) or len(turn.action.touched_slots) != 1:
             return
 

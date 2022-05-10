@@ -41,6 +41,18 @@ class RelativeGameState:
             previous_card = previous_card.previous_card
         return False
 
+    def is_eventually_playable(self, card: Card) -> bool:
+        return not self.is_trash(card)
+
+    def are_all_eventually_playable(self, cards: Iterable[Card]) -> bool:
+        return all(self.is_eventually_playable(card) for card in cards)
+
+    def is_already_clued(self, card: Card) -> bool:
+        return card in self.clued_cards
+
+    def are_any_already_clued(self, cards: Iterable[Card]) -> bool:
+        return any(self.is_already_clued(card) for card in cards)
+
     def is_possibly_playable(self, card: HandCard) -> bool:
         filtered_possible_cards = set()
         visible_cards = self.visible_cards
