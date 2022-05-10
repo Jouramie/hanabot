@@ -21,9 +21,9 @@ def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_cl
             Hand(
                 "cathy",
                 (
-                    HandCard.unknown_card(0),
-                    HandCard.unknown_card(5),
-                    HandCard.unknown_card(0),
+                    HandCard.create_relative_card(0),
+                    HandCard.create_relative_card(5),
+                    HandCard.create_relative_card(0),
                 ),
             )
         )
@@ -32,9 +32,9 @@ def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_cl
             Hand(
                 "bob",
                 (
-                    HandCard.unknown_card(0),
-                    HandCard.clued_real_card(0, Card(Suit.RED, Rank.THREE), suit_known=True),
-                    HandCard.unknown_card(0),
+                    HandCard.create_relative_card(0),
+                    HandCard.create_real_card(0, Card(Suit.RED, Rank.THREE), suit_known=True),
+                    HandCard.create_relative_card(0),
                 ),
             ),
         )
@@ -59,9 +59,9 @@ def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when
             Hand(
                 "bob",
                 (
-                    HandCard.unknown_card(0),
-                    HandCard.clued_card(4, suit=Suit.RED),
-                    HandCard.unknown_card(0),
+                    HandCard.create_relative_card(0),
+                    HandCard.create_relative_card(4, suit=Suit.RED),
+                    HandCard.create_relative_card(0),
                 ),
             )
         )
@@ -69,9 +69,9 @@ def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when
             Hand(
                 "cathy",
                 (
-                    HandCard.unknown_card(0),
-                    HandCard.unknown_real_card(5, Card(Suit.RED, Rank.FOUR)),
-                    HandCard.unknown_card(0),
+                    HandCard.create_relative_card(0),
+                    HandCard.create_real_card(5, Card(Suit.RED, Rank.FOUR)),
+                    HandCard.create_relative_card(0),
                 ),
             ),
             Hand.create_unknown_hand("alice", 3),
@@ -99,17 +99,17 @@ def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interp
             Hand(
                 "bob",
                 (
-                    HandCard.unknown_card(0),
-                    HandCard.clued_real_card(draw_id=4, card=Card(Suit.RED, Rank.THREE), suit_known=True),
-                    HandCard.unknown_card(0),
+                    HandCard.create_relative_card(0),
+                    HandCard.create_real_card(draw_id=4, card=Card(Suit.RED, Rank.THREE), suit_known=True),
+                    HandCard.create_relative_card(0),
                 ),
             ),
             Hand(
                 "cathy",
                 (
-                    HandCard.unknown_card(0),
-                    HandCard.unknown_real_card(5, Card(Suit.RED, Rank.FOUR)),
-                    HandCard.unknown_card(0),
+                    HandCard.create_relative_card(0),
+                    HandCard.create_real_card(5, Card(Suit.RED, Rank.FOUR)),
+                    HandCard.create_relative_card(0),
                 ),
             ),
         )
@@ -126,7 +126,7 @@ def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interp
 
 
 def test_given_playable_card_clued_and_next_playable_accessible_when_find_play_clue_then_clue_next_playable():
-    not_fully_known_playable = HandCard.clued_real_card(draw_id=4, card=Card(Suit.RED, Rank.THREE), suit_known=True)
+    not_fully_known_playable = HandCard.create_real_card(draw_id=4, card=Card(Suit.RED, Rank.THREE), suit_known=True)
     game_state = (
         RelativeGameStateBuilder()
         .set_stacks(Stacks.create_from_dict({Suit.RED: Rank.TWO}))
@@ -137,17 +137,17 @@ def test_given_playable_card_clued_and_next_playable_accessible_when_find_play_c
             Hand(
                 "bob",
                 (
-                    HandCard.unknown_real_card(0, Card(Suit.YELLOW, Rank.THREE)),
+                    HandCard.create_real_card(0, Card(Suit.YELLOW, Rank.THREE)),
                     not_fully_known_playable,
-                    HandCard.unknown_real_card(0, Card(Suit.YELLOW, Rank.THREE)),
+                    HandCard.create_real_card(0, Card(Suit.YELLOW, Rank.THREE)),
                 ),
             ),
             Hand(
                 "cathy",
                 (
-                    HandCard.unknown_real_card(0, Card(Suit.BLUE, Rank.FOUR)),
-                    HandCard.unknown_real_card(draw_id=5, card=Card(Suit.RED, Rank.FOUR)),
-                    HandCard.unknown_real_card(0, Card(Suit.BLUE, Rank.THREE)),
+                    HandCard.create_real_card(0, Card(Suit.BLUE, Rank.FOUR)),
+                    HandCard.create_real_card(draw_id=5, card=Card(Suit.RED, Rank.FOUR)),
+                    HandCard.create_real_card(0, Card(Suit.BLUE, Rank.THREE)),
                 ),
             ),
         )

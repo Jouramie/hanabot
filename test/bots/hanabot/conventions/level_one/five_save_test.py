@@ -16,9 +16,9 @@ def test_given_five_on_chop_when_clue_then_is_interpreted_as_save():
             Hand(
                 "alice",
                 (
-                    HandCard.unknown_card(0),
-                    HandCard.unknown_card(0),
-                    HandCard.unknown_card(3),
+                    HandCard.create_relative_card(0),
+                    HandCard.create_relative_card(0),
+                    HandCard.create_relative_card(3),
                 ),
             )
         )
@@ -46,9 +46,9 @@ def test_given_five_not_on_chop_when_clue_then_do_not_interpret():
             Hand(
                 "alice",
                 (
-                    HandCard.unknown_card(0),
-                    HandCard.unknown_card(3),
-                    HandCard.unknown_card(0),
+                    HandCard.create_relative_card(0),
+                    HandCard.create_relative_card(3),
+                    HandCard.create_relative_card(0),
                 ),
             )
         )

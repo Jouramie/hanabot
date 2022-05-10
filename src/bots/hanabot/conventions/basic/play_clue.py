@@ -15,14 +15,18 @@ class PlayClue(Convention):
         super().__init__("play clue")
 
     def find_clue(self, card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[ClueDecision] | None:
-        owner, slot, player_card = card_to_clue
-        if player_card.is_fully_known or current_game_state.is_already_clued(player_card.real_card):
+        owner, slot, hand_card = card_to_clue
+        if (
+            hand_card.is_fully_known
+            or current_game_state.is_already_clued(hand_card.real_card)
+            or current_game_state.my_hand.any_clued_could_be(hand_card.real_card)
+        ):
             return None
 
         hand: Hand = current_game_state.player_hands[owner]
         valid_decisions = []
 
-        suit, rank = player_card.real_card
+        suit, rank = hand_card.real_card
         touched_slots_cards = list(hand.get_real(suit))
         if self.is_valid_clue_for(touched_slots_cards, card_to_clue, current_game_state):
             decision = SuitClueDecision(suit, owner)
@@ -56,6 +60,9 @@ class PlayClue(Convention):
             return False
 
         if any(current_game_state.is_already_clued(card.real_card) for card in not_clued_touched_cards):
+            return False
+
+        if any(current_game_state.my_hand.any_clued_could_be(card.real_card) for card in not_clued_touched_cards):
             return False
 
         return True

@@ -20,9 +20,9 @@ def test_given_one_one_left_to_play_when_find_interpretation_then_only_possible_
             Hand(
                 "alice",
                 (
-                    HandCard.unknown_card(1),
-                    HandCard.unknown_card(3),
-                    HandCard.unknown_card(5),
+                    HandCard.create_relative_card(1),
+                    HandCard.create_relative_card(3),
+                    HandCard.create_relative_card(5),
                 ),
             )
         )
@@ -51,9 +51,9 @@ def test_given_only_multiple_four_playable_when_find_interpretation_then_only_po
             Hand(
                 "alice",
                 (
-                    HandCard.unknown_card(1),
-                    HandCard.unknown_card(3),
-                    HandCard.unknown_card(5),
+                    HandCard.create_relative_card(1),
+                    HandCard.create_relative_card(3),
+                    HandCard.create_relative_card(5),
                 ),
             )
         )
@@ -82,9 +82,9 @@ def test_given_suit_clue_when_find_interpretation_then_find_interpretation():
             Hand(
                 "cathy",
                 (
-                    HandCard.unknown_card(1),
-                    HandCard.unknown_card(3),
-                    HandCard.unknown_card(5),
+                    HandCard.create_relative_card(1),
+                    HandCard.create_relative_card(3),
+                    HandCard.create_relative_card(5),
                 ),
             )
         )
@@ -117,9 +117,9 @@ def test_given_suit_clue_on_someone_else_when_find_interpretation_then_do_not_fi
             Hand(
                 "cathy",
                 (
-                    HandCard.unknown_card(1),
-                    HandCard.unknown_card(3),
-                    HandCard.unknown_card(5),
+                    HandCard.create_relative_card(1),
+                    HandCard.create_relative_card(3),
+                    HandCard.create_relative_card(5),
                 ),
             ),
         )
@@ -133,8 +133,8 @@ def test_given_suit_clue_on_someone_else_when_find_interpretation_then_do_not_fi
     assert interpretation == Interpretation(turn, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={3: expected_cards})
 
 
-def test_given_card_already_clued_when_find_clue_then_clue_while_touching_clued_card():
-    targeted_card = HandCard.unknown_real_card(5, Card(Suit.YELLOW, Rank.ONE))
+def test_given_card_already_clued_when_find_clue_then_clue_while_touching_create_relative_card():
+    targeted_card = HandCard.create_real_card(5, Card(Suit.YELLOW, Rank.ONE))
     game_state = (
         RelativeGameStateBuilder()
         .set_stacks(Stacks.create_from_dict({Suit.BLUE: Rank.ONE}))
@@ -146,8 +146,8 @@ def test_given_card_already_clued_when_find_clue_then_clue_while_touching_clued_
             Hand(
                 "cathy",
                 (
-                    HandCard.unknown_real_card(1, Card(Suit.BLUE, Rank.ONE)),
-                    HandCard.clued_real_card(3, Card(Suit.YELLOW, Rank.TWO), rank_known=True),
+                    HandCard.create_real_card(1, Card(Suit.BLUE, Rank.ONE)),
+                    HandCard.create_real_card(3, Card(Suit.YELLOW, Rank.TWO), rank_known=True),
                     targeted_card,
                 ),
             ),
@@ -159,3 +159,58 @@ def test_given_card_already_clued_when_find_clue_then_clue_while_touching_clued_
     decision = convention.find_clue((2, 2, targeted_card), game_state)
 
     assert decision == [SuitClueDecision(Suit.YELLOW, 2)]
+
+
+def test_given_card_possibly_clued_in_my_hand_when_find_clue_then_do_not_clue():
+    targeted_card = HandCard.create_real_card(1, Card(Suit.BLUE, Rank.ONE))
+    game_state = (
+        RelativeGameStateBuilder()
+        .set_my_hand(
+            Hand("alice", (HandCard.create_relative_card(2, suit=Suit.BLUE),)),
+        )
+        .set_other_player_hands(
+            Hand.create_unknown_hand("bob", 3),
+            Hand(
+                "cathy",
+                (
+                    targeted_card,
+                    HandCard.create_real_card(3, Card(Suit.YELLOW, Rank.TWO)),
+                    HandCard.create_real_card(5, Card(Suit.BLUE, Rank.FOUR)),
+                ),
+            ),
+        )
+        .build()
+    )
+
+    convention = PlayClue()
+    decision = convention.find_clue((2, 0, targeted_card), game_state)
+
+    assert decision is None
+
+
+def test_given_card_possibly_clued_collateral_in_my_hand_when_find_clue_then_do_not_clue():
+    targeted_card = HandCard.create_real_card(5, Card(Suit.BLUE, Rank.TWO))
+    game_state = (
+        RelativeGameStateBuilder()
+        .set_stacks(Stacks.create_from_dict({Suit.BLUE: Rank.ONE}))
+        .set_my_hand(
+            Hand("alice", (HandCard.create_relative_card(2, suit=Suit.YELLOW),)),
+        )
+        .set_other_player_hands(
+            Hand.create_unknown_hand("bob", 3),
+            Hand(
+                "cathy",
+                (
+                    HandCard.create_real_card(1, Card(Suit.BLUE, Rank.ONE)),
+                    HandCard.create_real_card(3, Card(Suit.YELLOW, Rank.TWO)),
+                    targeted_card,
+                ),
+            ),
+        )
+        .build()
+    )
+
+    convention = PlayClue()
+    decision = convention.find_clue((2, 2, targeted_card), game_state)
+
+    assert decision is None
