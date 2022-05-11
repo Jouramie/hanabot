@@ -103,15 +103,6 @@ class Hand(Iterable[HandCard], Sized):
             if card.draw_id in interpretation:
                 card.notes_on_cards.intersection_update(interpretation[card.draw_id])
 
-    def find_most_probable(self, cards: list[Card]) -> list[HandCard]:
-        most_probable = []
-        for card in cards:
-            for hand_card in self:
-                if hand_card.is_clued and hand_card not in most_probable and (hand_card.is_known(card.suit) or hand_card.is_known(card.rank)):
-                    most_probable.append(hand_card)
-
-        return most_probable
-
     def find_card_by_draw_id(self, draw_id: DrawId) -> HandCard | None:
         for card in self:
             if card.draw_id == draw_id:

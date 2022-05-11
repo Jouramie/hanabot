@@ -92,7 +92,7 @@ def test_given_stack_at_five_when_played_cards_then_all_suit_played():
 
     played_cards = stack.played_cards
 
-    assert played_cards == {Card(A_SUIT, Rank.FIVE), Card(A_SUIT, Rank.FOUR), Card(A_SUIT, Rank.THREE), Card(A_SUIT, Rank.TWO), Card(A_SUIT, Rank.ONE)}
+    assert played_cards == [Card(A_SUIT, Rank.ONE), Card(A_SUIT, Rank.TWO), Card(A_SUIT, Rank.THREE), Card(A_SUIT, Rank.FOUR), Card(A_SUIT, Rank.FIVE)]
 
 
 def test_given_empty_stacks_when_is_one_playable_then_is_playable():

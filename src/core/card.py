@@ -177,6 +177,32 @@ class Card:
     def create(suit: Suit, rank: Rank) -> Card:
         return Card(suit, rank)
 
+    @staticmethod
+    def inclusive_range(*args: Card) -> Iterable[Card]:
+        if len(args) == 2:
+            _, stop = args
+        elif len(args) == 1:
+            stop = args[0]
+        else:
+            raise ValueError("Invalid number of arguments")
+
+        for card in Card.range(*args):
+            yield card
+        yield stop
+
+    @staticmethod
+    def range(*args: Card) -> Iterable[Card]:
+        if len(args) == 2:
+            i, stop = args
+        elif len(args) == 1:
+            i, stop = Card(args[0].suit, Rank.ONE), args[0]
+        else:
+            raise ValueError("Invalid number of arguments")
+
+        while i != stop:
+            yield i
+            i = i.next_card
+
     def __new__(cls, *args, _cache={}):  # noqa
         if _cache.get(args) is not None:
             return _cache[args]

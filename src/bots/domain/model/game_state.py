@@ -4,7 +4,7 @@ from typing import List, Iterable
 
 from bots.domain.model.action import Action
 from bots.domain.model.hand import Hand, HandCard, Slot, DrawId
-from core import Card, all_possible_cards
+from core import Card, all_possible_cards, Rank
 from core.discard import Discard
 from core.stack import Stacks
 
@@ -41,6 +41,9 @@ class RelativeGameState:
             previous_card = previous_card.previous_card
         return False
 
+    def is_already_played(self, card: Card) -> bool:
+        return self.stacks.is_already_played(card)
+
     def is_eventually_playable(self, card: Card) -> bool:
         return not self.is_trash(card)
 
@@ -64,17 +67,6 @@ class RelativeGameState:
 
     def is_playable(self, card: Card) -> bool:
         return self.stacks.is_playable(card)
-
-    def is_playable_over_clued_playable(self, card: Card) -> bool:
-        for clued_playable_card in self.clued_playable_cards:
-            if card.is_playable_over(clued_playable_card):
-                return True
-
-    def is_already_played(self, card: Card) -> bool:
-        return self.stacks.is_already_played(card)
-
-    def is_already_clued(self, card: Card) -> bool:
-        return card in self.clued_cards
 
     def find_not_clued_playable_cards(self) -> Iterable[tuple[RelativePlayerNumber, Slot, HandCard]]:
         for relative_player_id, slot, card in self.find_playable_cards():
@@ -116,6 +108,24 @@ class RelativeGameState:
             for card in hand.cards:
                 if card.draw_id == draw_id:
                     return card
+
+    def find_clued_cards_leading_to(self, card: Card) -> list[tuple[RelativePlayerNumber, Slot, HandCard]] | None:
+        last_card_played = self.stacks.last_card_played_on_stack(card.suit)
+        if last_card_played is None:
+            start = Card(card.suit, Rank.ONE)
+        else:
+            start = last_card_played.next_card
+
+        cards_leading_to = []
+        for searched_card in Card.range(start, card):
+            found_cards = self.find_clued(searched_card)
+            if not found_cards:
+                return
+            cards_leading_to.extend(found_cards)
+        return cards_leading_to
+
+    def find_clued(self, searched_card: Card) -> list[tuple[RelativePlayerNumber, Slot, HandCard]]:
+        return [(relative_player_id, slot, card) for relative_player_id, slot, card in self.find_hand_card(searched_card) if card.is_clued]
 
     @property
     def my_hand(self) -> Hand:

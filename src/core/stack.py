@@ -33,13 +33,29 @@ class Stack:
         return self.rank is not None and self.rank >= rank
 
     @property
-    def played_cards(self) -> Set[Card]:
+    def played_cards(self) -> list[Card]:
         if self.rank is None:
-            return set()
-        return {Card.create(self.suit, Rank.value_of(rank)) for rank in range(1, self.rank.number_value + 1)}
+            return []
+        return list(Card.inclusive_range(Card(self.suit, Rank.ONE), self.last_played_card))
 
     def get_ranks_already_played(self) -> list[Rank]:
         return list(card.rank for card in self.played_cards)
+
+    @property
+    def last_played_card(self) -> Card | None:
+        if self.rank is None:
+            return None
+        return Card(self.suit, self.rank)
+
+    @property
+    def cards_left_to_play(self) -> list[Card]:
+        if self.rank is Rank.FIVE:
+            return []
+
+        if self.rank is None:
+            return list(Card.inclusive_range(Card(self.suit, Rank.ONE), Card(self.suit, Rank.FIVE)))
+
+        return list(Card.inclusive_range(self.last_played_card.next_card, Card(self.suit, Rank.FIVE)))
 
     @property
     def stack_score(self) -> int:
@@ -111,3 +127,9 @@ class Stacks(Sized):
             return self, False
 
         return Stacks(self.stack_by_suit.set(card.suit, new_stacks)), True
+
+    def last_card_played_on_stack(self, suit: Suit) -> Card | None:
+        return self.stack_by_suit[suit].last_played_card
+
+    def cards_left_to_play_on(self, suit: Suit) -> list[Card]:
+        return self.stack_by_suit[suit].cards_left_to_play

@@ -12,8 +12,6 @@ from test.bots.domain.model.game_state_test import RelativeGameStateBuilder
 
 def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_clue_then_clued_card_is_interpreted_as_next_playable():
     clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
-    expected_card = Card(Suit.RED, Rank.FOUR)
-
     game_state = (
         RelativeGameStateBuilder()
         .set_stacks(Stacks.create_from_dict({Suit.RED: Rank.TWO}))
@@ -33,7 +31,7 @@ def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_cl
                 "bob",
                 (
                     HandCard.create_relative_card(0),
-                    HandCard.create_real_card(0, Card(Suit.RED, Rank.THREE), suit_known=True),
+                    HandCard.create_real_card(4, Card(Suit.RED, Rank.THREE), suit_known=True),
                     HandCard.create_relative_card(0),
                 ),
             ),
@@ -45,13 +43,16 @@ def test_given_clue_in_my_hand_and_next_playable_already_clues_when_interpret_cl
     convention = Prompt()
     interpretation = convention.find_interpretation(turn)
 
-    assert interpretation == Interpretation(turn, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={5: {expected_card}})
+    assert interpretation == Interpretation(
+        turn,
+        interpretation_type=InterpretationType.PLAY,
+        explanation=convention.name,
+        notes_on_cards={4: {Card(Suit.RED, Rank.THREE)}, 5: {Card(Suit.RED, Rank.FOUR)}},
+    )
 
 
 def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when_interpret_clue_then_clued_card_is_interpreted_as_next_playable():
     clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
-    expected_card = Card(Suit.RED, Rank.THREE)
-
     game_state = (
         RelativeGameStateBuilder()
         .set_stacks(Stacks.create_from_dict({Suit.RED: Rank.TWO}))
@@ -83,7 +84,12 @@ def test_given_unplayable_clue_in_other_hand_and_same_suit_clued_in_my_hand_when
     convention = Prompt()
     interpretation = convention.find_interpretation(turn)
 
-    assert interpretation == Interpretation(turn, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={4: {expected_card}})
+    assert interpretation == Interpretation(
+        turn,
+        interpretation_type=InterpretationType.PLAY,
+        explanation=convention.name,
+        notes_on_cards={4: {Card(Suit.RED, Rank.THREE)}, 5: {Card(Suit.RED, Rank.FOUR)}},
+    )
 
 
 def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interpreted():
@@ -100,7 +106,7 @@ def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interp
                 "bob",
                 (
                     HandCard.create_relative_card(0),
-                    HandCard.create_real_card(draw_id=4, card=Card(Suit.RED, Rank.THREE), suit_known=True),
+                    HandCard.create_real_card(4, Card(Suit.RED, Rank.THREE), suit_known=True),
                     HandCard.create_relative_card(0),
                 ),
             ),
@@ -121,7 +127,93 @@ def test_given_i_sent_prompt_when_interpret_clue_then_prompt_is_correctly_interp
     interpretation = convention.find_interpretation(turn)
 
     assert interpretation == Interpretation(
-        turn, interpretation_type=InterpretationType.PLAY, explanation=convention.name, notes_on_cards={5: {Card(Suit.RED, Rank.FOUR)}}
+        turn,
+        interpretation_type=InterpretationType.PLAY,
+        explanation=convention.name,
+        notes_on_cards={4: {Card(Suit.RED, Rank.THREE)}, 5: {Card(Suit.RED, Rank.FOUR)}},
+    )
+
+
+def test_given_clue_in_my_hand_and_two_next_playable_already_clues_when_interpret_clue_then_clued_card_is_interpreted_as_next_playable():
+    clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
+    game_state = (
+        RelativeGameStateBuilder()
+        .set_stacks(Stacks.create_from_dict({Suit.RED: Rank.ONE}))
+        .set_my_hand(
+            Hand(
+                "cathy",
+                (
+                    HandCard.create_relative_card(4),
+                    HandCard.create_relative_card(5),
+                    HandCard.create_relative_card(6),
+                ),
+            )
+        )
+        .set_other_player_hands(
+            Hand.create_unknown_hand("alice", 3),
+            Hand(
+                "bob",
+                (
+                    HandCard.create_real_card(1, Card(Suit.RED, Rank.TWO), suit_known=True),
+                    HandCard.create_real_card(2, Card(Suit.RED, Rank.THREE), suit_known=True),
+                    HandCard.create_relative_card(3),
+                ),
+            ),
+        )
+        .build()
+    )
+
+    turn = Turn(game_state, clue)
+
+    convention = Prompt()
+    interpretation = convention.find_interpretation(turn)
+
+    assert interpretation == Interpretation(
+        turn,
+        interpretation_type=InterpretationType.PLAY,
+        explanation=convention.name,
+        notes_on_cards={1: {Card(Suit.RED, Rank.TWO)}, 2: {Card(Suit.RED, Rank.THREE)}, 5: {Card(Suit.RED, Rank.FOUR)}},
+    )
+
+
+def test_given_unplayable_clue_in_other_hand_and_same_suit_two_clued_in_my_hand_when_interpret_clue_then_clued_card_is_interpreted_as_next_playable():
+    clue = SuitClueAction("cathy", frozenset({1}), Suit.RED)
+    game_state = (
+        RelativeGameStateBuilder()
+        .set_stacks(Stacks.create_from_dict({Suit.RED: Rank.ONE}))
+        .set_my_hand(
+            Hand(
+                "bob",
+                (
+                    HandCard.create_relative_card(1, suit=Suit.RED),
+                    HandCard.create_relative_card(2, suit=Suit.RED),
+                    HandCard.create_relative_card(3),
+                ),
+            )
+        )
+        .set_other_player_hands(
+            Hand(
+                "cathy",
+                (
+                    HandCard.create_relative_card(4),
+                    HandCard.create_real_card(5, Card(Suit.RED, Rank.FOUR)),
+                    HandCard.create_relative_card(6),
+                ),
+            ),
+            Hand.create_unknown_hand("alice", 3),
+        )
+        .build()
+    )
+    turn = Turn(game_state, clue)
+
+    convention = Prompt()
+    interpretation = convention.find_interpretation(turn)
+
+    assert interpretation == Interpretation(
+        turn,
+        interpretation_type=InterpretationType.PLAY,
+        explanation=convention.name,
+        notes_on_cards={1: {Card(Suit.RED, Rank.TWO)}, 2: {Card(Suit.RED, Rank.THREE)}, 5: {Card(Suit.RED, Rank.FOUR)}},
     )
 
 
