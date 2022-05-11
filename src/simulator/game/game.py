@@ -3,7 +3,7 @@ import random
 from copy import deepcopy
 from typing import List
 
-from core import Deck
+from core import Deck, Rank
 from core.discard import Discard
 from core.gamerules import get_hand_size
 from core.stack import Stacks
@@ -96,7 +96,10 @@ class Game:
 
         self.current_state, action.success = self.current_state.play(card_to_play.real_card)
 
-        if not action.success:
+        if action.success:
+            if card_to_play.real_card.rank == Rank.FIVE:
+                self.status.clues += 1
+        else:
             self.status.add_strike()
             self.current_state = self.current_state.discard(card_to_play.real_card)
 
