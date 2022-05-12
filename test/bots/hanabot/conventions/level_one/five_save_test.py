@@ -28,7 +28,7 @@ def test_given_five_on_chop_when_clue_then_is_interpreted_as_save():
         )
         .build()
     )
-    turn = Turn(game_state, clue)
+    turn = Turn(game_state, clue, game_state)
 
     convention = FiveSave()
     convention.document = ConventionDocument()
@@ -58,7 +58,7 @@ def test_given_five_not_on_chop_when_clue_then_do_not_interpret():
         )
         .build()
     )
-    turn = Turn(game_state, clue)
+    turn = Turn(game_state, clue, game_state)
 
     convention = FiveSave()
     convention.document = ConventionDocument()

@@ -31,8 +31,11 @@ class Discard(Sized):
         new_discard = Discard(self.discarded_cards.set(card, self.discarded_cards.get(card, 0) + 1))
 
         if card.rank is Rank.FIVE:
-            logger.info("Good job everyone, a five going in the trash! 👏")
+            logger.info("Good job everyone, a five going in the trash!")
         if card.number_of_copies == self.count(card):
-            logger.info(f"Thanks to whoever thrown that {card}, the {card.suit} is screwed. 🎉")
+            logger.info(f"Thanks to whoever thrown that {card}, the {card.suit} is screwed.")
 
         return new_discard
+
+    def __repr__(self):
+        return f"{dict(self.discarded_cards)}"

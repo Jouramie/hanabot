@@ -8,7 +8,7 @@ from bots.domain.decision import Decision, SuitClueDecision
 from bots.domain.model.action import ClueAction
 from bots.domain.model.game_state import RelativeGameState, RelativePlayerNumber, Turn
 from bots.domain.model.hand import Hand, HandCard, Slot
-from bots.hanabot.blackboard import Interpretation
+from bots.hanabot.blackboard import Interpretation, Blackboard
 
 
 @dataclass(frozen=True)
@@ -53,7 +53,7 @@ class ConventionDocument:
     def find_play_clue(
         self,
         playable_cards: Iterable[tuple[RelativePlayerNumber, Slot, HandCard]] | tuple[RelativePlayerNumber, Slot, HandCard],
-        current_game_state: RelativeGameState,
+        blackboard: Blackboard,
     ) -> Iterable[Decision]:
         if isinstance(playable_cards, tuple):
             playable_cards = [playable_cards]
@@ -61,7 +61,7 @@ class ConventionDocument:
         possible_decisions = []
         for playable_card in playable_cards:
             for convention in self.play_conventions:
-                decisions = convention.find_clue(playable_card, current_game_state)
+                decisions = convention.find_clue(playable_card, blackboard)
                 if decisions is not None:
                     possible_decisions.extend(decisions)
 
@@ -91,7 +91,7 @@ class Convention(ABC):
     document: ConventionDocument = field(default_factory=ConventionDocument)
 
     @abstractmethod
-    def find_clue(self, card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[Decision] | None:
+    def find_clue(self, card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], blackboard: Blackboard) -> list[Decision]:
         pass
 
     @abstractmethod

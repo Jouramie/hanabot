@@ -4,12 +4,7 @@ import sys
 from time import sleep
 
 from app.console import start_console_app
-from bots.hanabot import conventions
-from bots.hanabot.hanabot import Hanabot
-from bots.machinabi.machinabi import Machinabi
-from bots.ui.simulator import SimulatorBot
 from context.hanabot_context import HanabotContext
-from simulator.players.cheatingplayer import CheatingPlayer
 
 
 def bootstrap_reading_bot():
@@ -27,34 +22,8 @@ def bootstrap_reading_bot():
         sleep(1)
 
 
-players_names = {
-    "h": "Hanabot",
-    "m": "Machinabi",
-    "c": "CheatingPlayer",
-}
-
-hanabot_players = [
-    SimulatorBot("Alice", Hanabot(conventions.level_one)),
-    SimulatorBot("Bob", Hanabot(conventions.level_one)),
-    SimulatorBot("Cathy", Hanabot(conventions.level_one)),
-    SimulatorBot("Donald", Hanabot(conventions.level_one)),
-]
-machinabi_players = [
-    SimulatorBot("Alice", Machinabi()),
-    SimulatorBot("Bob", Machinabi()),
-    SimulatorBot("Cathy", Machinabi()),
-    SimulatorBot("Donald", Machinabi()),
-]
-cheater_players = [
-    CheatingPlayer(),
-    CheatingPlayer(),
-    CheatingPlayer(),
-    CheatingPlayer(),
-]
-
-
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s", handlers=[logging.FileHandler("logs/hanabot.log", mode="w")])
     logging.getLogger("console").setLevel(logging.INFO)
     logger = logging.getLogger(__name__)
 

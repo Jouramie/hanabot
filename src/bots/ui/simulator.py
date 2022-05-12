@@ -89,15 +89,27 @@ def assemble_simulator_decision(decision: Decision, game: Game) -> SimulatorActi
 def add_recent_turns_to_history(history: GameHistory, game: Game, from_perspective: str, hand_cache: dict[str, Hand]) -> GameHistory:
     if game.history.gamestates:
         turn_to_add_in_history = history.latest_turn_number + 1 if history.turns else 0
-        for action, game_state in zip(game.history.actions[turn_to_add_in_history:], game.history.gamestates[turn_to_add_in_history:]):
-            # TODO see if reversing the clue list optimises the performance
+        for previous_game_state, action, resulting_game_state in zip(
+            game.history.gamestates[turn_to_add_in_history:],
+            game.history.actions[turn_to_add_in_history:],
+            game.history.gamestates[turn_to_add_in_history + 1 :] + [game.current_state],
+        ):
+            # TODO see if reversing the clue list improves the performance
             clue = next((clue for clue in game.history.clues if clue.turn == action.turn), None)
-            history.add_game_state(Turn(assemble_relative_game_state(game_state, from_perspective, hand_cache), assemble_action(action, clue)))
+            previous_relative_game_state = assemble_relative_game_state(previous_game_state, from_perspective, hand_cache)
 
             if clue is not None:
                 hand_cache.pop(clue.receiver_name, None)
             else:
                 hand_cache.pop(action.actor.name, None)
+
+            history.add_game_state(
+                Turn(
+                    previous_relative_game_state,
+                    assemble_action(action, clue),
+                    assemble_relative_game_state(resulting_game_state, from_perspective, hand_cache),
+                )
+            )
 
     return history
 

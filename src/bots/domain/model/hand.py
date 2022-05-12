@@ -52,7 +52,7 @@ class HandCard:
         return self.real_card is not None and self.real_card.matches(suit_or_rank)
 
     def __repr__(self):
-        return f"{self.draw_id} -> {self.real_card if self.real_card is not None else self.possible_cards}"
+        return f"{self.draw_id} -> {self.real_or_fully_known_card if self.real_or_fully_known_card is not None else self.possible_cards}"
 
     def is_known(self, suit_or_rank: Suit | Rank) -> bool:
         return all(card.matches(suit_or_rank) for card in self.possible_cards)
@@ -65,6 +65,12 @@ class HandCard:
     def fully_known_card(self) -> Card | None:
         if self.is_fully_known:
             return next(iter(self.notes_on_cards), None)
+
+    @property
+    def real_or_fully_known_card(self) -> Card | None:
+        if self.is_fully_known:
+            return next(iter(self.notes_on_cards), None)
+        return self.real_card
 
 
 @dataclass(frozen=True)

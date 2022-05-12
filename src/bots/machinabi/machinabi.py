@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Tuple, List, Set
+from typing import Dict, List, Set
 
 from bots.domain.decision import DecisionMaking, DiscardDecision, Decision, ClueDecision, SuitClueDecision, RankClueDecision
 from bots.domain.model.action import ClueAction, RankClueAction, PlayAction
@@ -59,8 +59,7 @@ class Machinabi(DecisionMaking):
             recipient_chop = self.get_player_chop_slot(recipient_hand)
             clue_focus = self.find_potential_clue_focus(recipient_hand, potential_clue.clue, recipient_chop)
             focused_card = recipient_hand[clue_focus]
-            if not self.is_ready_to_play(current_game_state, focused_card.real_card)\
-                    and not self.is_critical(focused_card.real_card):
+            if not self.is_ready_to_play(current_game_state, focused_card.real_card) and not self.is_critical(focused_card.real_card):
                 self.potential_clues.remove(potential_clue)
 
     def get_all_new_cards_touched_by_potential_clue(self, recipient_hand: Hand, clue: ClueDecision) -> set[Card]:
@@ -95,7 +94,7 @@ class Machinabi(DecisionMaking):
         if isinstance(turn.action, DiscardDecision):
             return
         if isinstance(turn.action, ClueAction):
-            self.analyzed_clues.append(self.analyze_given_clue(turn.game_state, turn.action))
+            self.analyzed_clues.append(self.analyze_given_clue(turn.previous_game_state, turn.action))
 
     def analyze_given_clue(self, gamestate: RelativeGameState, clue: ClueAction) -> AnalysedClue:
         recipient_hand = gamestate.find_player_hand(clue.recipient)
@@ -195,7 +194,6 @@ class Machinabi(DecisionMaking):
             break
 
         return False
-
 
     def stall_clue(self, current_game_state: RelativeGameState):
         pass

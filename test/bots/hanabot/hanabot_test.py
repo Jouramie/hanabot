@@ -1,5 +1,3 @@
-from typing import Iterable
-
 from bots.domain.decision import SuitClueDecision, DiscardDecision, PlayDecision
 from bots.domain.model.action import SuitClueAction, RankClueAction
 from bots.domain.model.game_state import GameHistory, Turn
@@ -42,6 +40,15 @@ def test_given_clued_one_when_play_turn_then_clue_next():
             HandCard.create_real_card(2, Card(Suit.RED, Rank.TWO)),
         ),
     )
+    current_game_state = (
+        RelativeGameStateBuilder()
+        .set_my_hand(alice_hand)
+        .set_other_player_hands(
+            update_cards(bob_hand, HandCard.create_real_card(draw_id=13, card=Card(Suit.RED, Rank.ONE), suit_known=True)),
+            cathy_hand,
+        )
+        .build()
+    )
     previous_turn = Turn(
         (
             RelativeGameStateBuilder()
@@ -53,15 +60,7 @@ def test_given_clued_one_when_play_turn_then_clue_next():
             .build()
         ),
         SuitClueAction("bob", frozenset({0}), Suit.RED),
-    )
-    current_game_state = (
-        RelativeGameStateBuilder()
-        .set_my_hand(alice_hand)
-        .set_other_player_hands(
-            update_cards(bob_hand, HandCard.create_real_card(draw_id=13, card=Card(Suit.RED, Rank.ONE), suit_known=True)),
-            cathy_hand,
-        )
-        .build()
+        current_game_state,
     )
 
     alice = Hanabot(level_one)
@@ -101,6 +100,15 @@ def test_given_clued_one_when_play_turn_then_clue_another_one():
             HandCard.create_real_card(2, Card(Suit.YELLOW, Rank.ONE)),
         ),
     )
+    current_game_state = (
+        RelativeGameStateBuilder()
+        .set_my_hand(alice_hand)
+        .set_other_player_hands(
+            update_cards(bob_hand, HandCard.create_real_card(draw_id=13, card=Card(Suit.RED, Rank.ONE), suit_known=True)),
+            cathy_hand,
+        )
+        .build()
+    )
     previous_turn = Turn(
         RelativeGameStateBuilder()
         .set_my_hand(alice_hand)
@@ -110,16 +118,7 @@ def test_given_clued_one_when_play_turn_then_clue_another_one():
         )
         .build(),
         SuitClueAction("bob", frozenset({0}), Suit.RED),
-    )
-
-    current_game_state = (
-        RelativeGameStateBuilder()
-        .set_my_hand(alice_hand)
-        .set_other_player_hands(
-            update_cards(bob_hand, HandCard.create_real_card(draw_id=13, card=Card(Suit.RED, Rank.ONE), suit_known=True)),
-            cathy_hand,
-        )
-        .build()
+        current_game_state,
     )
 
     alice = Hanabot(level_one)
@@ -159,16 +158,6 @@ def test_given_all_playable_already_clued_when_play_turn_then_discard():
             HandCard.create_real_card(2, Card(Suit.YELLOW, Rank.TWO)),
         ),
     )
-    previous_turn = Turn(
-        RelativeGameStateBuilder()
-        .set_my_hand(alice_hand)
-        .set_other_player_hands(
-            bob_hand,
-            cathy_hand,
-        )
-        .build(),
-        SuitClueAction("bob", frozenset({0}), Suit.RED),
-    )
     current_game_state = (
         RelativeGameStateBuilder()
         .set_clue_count(4)
@@ -178,6 +167,17 @@ def test_given_all_playable_already_clued_when_play_turn_then_discard():
             cathy_hand,
         )
         .build()
+    )
+    previous_turn = Turn(
+        RelativeGameStateBuilder()
+        .set_my_hand(alice_hand)
+        .set_other_player_hands(
+            bob_hand,
+            cathy_hand,
+        )
+        .build(),
+        SuitClueAction("bob", frozenset({0}), Suit.RED),
+        current_game_state,
     )
 
     alice = Hanabot(level_one)
@@ -223,6 +223,17 @@ def test_given_card_already_prompted_when_play_turn_then_do_not_prompt_again():
             HandCard.create_real_card(2, Card(Suit.PURPLE, Rank.TWO)),
         ),
     )
+    second_game_state = (
+        RelativeGameStateBuilder()
+        .set_clue_count(7)
+        .set_my_hand(cathy_hand)
+        .set_other_player_hands(
+            update_cards(donald_hand, HandCard.create_real_card(0, Card(Suit.PURPLE, Rank.ONE), suit_known=True)),
+            alice_hand,
+            bob_hand,
+        )
+        .build()
+    )
     first_turn = Turn(
         RelativeGameStateBuilder()
         .set_my_hand(cathy_hand)
@@ -233,18 +244,7 @@ def test_given_card_already_prompted_when_play_turn_then_do_not_prompt_again():
         )
         .build(),
         SuitClueAction("donald", frozenset({3}), Suit.PURPLE),
-    )
-    second_turn = Turn(
-        RelativeGameStateBuilder()
-        .set_clue_count(7)
-        .set_my_hand(cathy_hand)
-        .set_other_player_hands(
-            update_cards(donald_hand, HandCard.create_real_card(0, Card(Suit.PURPLE, Rank.ONE), suit_known=True)),
-            alice_hand,
-            bob_hand,
-        )
-        .build(),
-        SuitClueAction("alice", frozenset({0}), Suit.PURPLE),
+        second_game_state,
     )
     current_game_state = (
         RelativeGameStateBuilder()
@@ -257,6 +257,7 @@ def test_given_card_already_prompted_when_play_turn_then_do_not_prompt_again():
         )
         .build()
     )
+    second_turn = Turn(second_game_state, SuitClueAction("alice", frozenset({0}), Suit.PURPLE), current_game_state)
 
     donald = Hanabot(level_one)
     decision = donald.play_turn(
@@ -304,6 +305,16 @@ def test_given_clue_on_saved_five_when_play_turn_then_play_five():
             HandCard.create_real_card(2, Card(Suit.YELLOW, Rank.ONE)),
         ),
     )
+    current_game_state = (
+        RelativeGameStateBuilder()
+        .set_stacks(stacks)
+        .set_my_hand(alice_hand)
+        .set_other_player_hands(
+            bob_hand,
+            cathy_hand,
+        )
+        .build()
+    )
     previous_turn = Turn(
         RelativeGameStateBuilder()
         .set_stacks(stacks)
@@ -314,16 +325,7 @@ def test_given_clue_on_saved_five_when_play_turn_then_play_five():
         )
         .build(),
         RankClueAction("alice", frozenset({4}), Rank.FIVE),
-    )
-    current_game_state = (
-        RelativeGameStateBuilder()
-        .set_stacks(stacks)
-        .set_my_hand(alice_hand)
-        .set_other_player_hands(
-            bob_hand,
-            cathy_hand,
-        )
-        .build()
+        current_game_state,
     )
 
     alice = Hanabot(level_one)
@@ -364,17 +366,6 @@ def test_given_clue_on_five_on_chop_when_play_turn_then_play_five():
             HandCard.create_real_card(2, Card(Suit.YELLOW, Rank.ONE)),
         ),
     )
-    previous_turn = Turn(
-        RelativeGameStateBuilder()
-        .set_stacks(stacks)
-        .set_my_hand(alice_hand)
-        .set_other_player_hands(
-            bob_hand,
-            cathy_hand,
-        )
-        .build(),
-        RankClueAction("alice", frozenset({4}), Rank.FIVE),
-    )
     current_game_state = (
         RelativeGameStateBuilder()
         .set_stacks(stacks)
@@ -385,6 +376,18 @@ def test_given_clue_on_five_on_chop_when_play_turn_then_play_five():
         )
         .build()
     )
+    previous_turn = Turn(
+        RelativeGameStateBuilder()
+        .set_stacks(stacks)
+        .set_my_hand(alice_hand)
+        .set_other_player_hands(
+            bob_hand,
+            cathy_hand,
+        )
+        .build(),
+        RankClueAction("alice", frozenset({4}), Rank.FIVE),
+        current_game_state,
+    )
 
     alice = Hanabot(level_one)
     decision = alice.play_turn(current_game_state, GameHistory([previous_turn]))
@@ -392,9 +395,7 @@ def test_given_clue_on_five_on_chop_when_play_turn_then_play_five():
     assert decision != PlayDecision(4)
 
 
-def update_cards(hand: Hand, cards: HandCard | Iterable[HandCard]) -> Hand:
-    if isinstance(cards, HandCard):
-        cards = [cards]
+def update_cards(hand: Hand, *cards: HandCard) -> Hand:
     cards_to_update = {card.draw_id: card for card in cards}
     updated_cards = []
     for card in hand.cards:

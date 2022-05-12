@@ -199,12 +199,28 @@ class RelativeGameStateBuilder:
         self.clue_count = 8
         self.strike_count = 0
 
+    @staticmethod
+    def from_game_state(game_state: RelativeGameState) -> RelativeGameStateBuilder:
+        return (
+            RelativeGameStateBuilder()
+            .set_stacks(game_state.stacks)
+            .set_discard(game_state.discard)
+            .set_hands(*game_state.player_hands)
+            .set_turn_number(game_state.turn_number)
+            .set_clue_count(game_state.clue_count)
+            .set_strike_count(game_state.bomb_count)
+        )
+
     def set_stacks(self, stacks: Stacks) -> RelativeGameStateBuilder:
         self.stacks = stacks
         return self
 
     def set_discard(self, discard: Discard) -> RelativeGameStateBuilder:
         self.discard = discard
+        return self
+
+    def set_hands(self, *hands: Hand) -> RelativeGameStateBuilder:
+        self.hands = list(hands)
         return self
 
     def set_my_hand(self, my_hand: Hand) -> RelativeGameStateBuilder:

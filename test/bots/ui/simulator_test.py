@@ -21,10 +21,11 @@ def test_given_cached_hand_when_alice_receives_a_clue_then_bust_alice_cached_han
     action.turn = 0
     game.history.actions = [action]
     game.history.clues = [RankClue(Rank.TWO, "alice", "bob", 0)]
+    game.current_state = gamestate
 
     add_recent_turns_to_history(history, game, "alice", hand_cache)
 
-    assert "alice" not in hand_cache
+    assert hand_cache["alice"] is not cached_hand
 
 
 def test_given_cached_hand_when_alice_plays_then_bust_alice_cached_hand(mocker):
@@ -43,10 +44,11 @@ def test_given_cached_hand_when_alice_plays_then_bust_alice_cached_hand(mocker):
     action.drawId = 0
     action.playedCard = mocker.MagicMock()
     game.history.actions = [action]
+    game.current_state = gamestate
 
     add_recent_turns_to_history(history, game, "alice", hand_cache)
 
-    assert "alice" not in hand_cache
+    assert hand_cache["alice"] is not cached_hand
 
 
 def test_given_cached_hand_when_alice_discards_then_bust_alice_cached_hand(mocker):
@@ -65,10 +67,11 @@ def test_given_cached_hand_when_alice_discards_then_bust_alice_cached_hand(mocke
     action.drawId = 0
     action.discardedCard = mocker.MagicMock()
     game.history.actions = [action]
+    game.current_state = gamestate
 
     add_recent_turns_to_history(history, game, "alice", hand_cache)
 
-    assert "alice" not in hand_cache
+    assert hand_cache["alice"] is not cached_hand
 
 
 def test_given_cached_hand_when_assemble_alice_hand_then_used_cached(mocker):
@@ -87,10 +90,11 @@ def test_given_cached_hand_when_assemble_alice_hand_then_used_cached(mocker):
     action.drawId = 0
     action.discardedCard = mocker.MagicMock()
     game.history.actions = [action]
+    game.current_state = gamestate
 
     add_recent_turns_to_history(history, game, "alice", hand_cache)
 
-    assert history.turns[-1].game_state.my_hand is cached_hand
+    assert history.turns[-1].previous_game_state.my_hand is cached_hand
 
 
 def test_given_not_cached_hand_when_assemble_alice_hand_then_add_hand_to_cache(mocker):

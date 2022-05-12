@@ -2,7 +2,7 @@ from bots.domain.decision import SuitClueDecision
 from bots.domain.model.action import SuitClueAction, RankClueAction
 from bots.domain.model.game_state import Turn
 from bots.domain.model.hand import HandCard, Hand
-from bots.hanabot.blackboard import Interpretation, InterpretationType
+from bots.hanabot.blackboard import Interpretation, InterpretationType, Blackboard
 from bots.hanabot.conventions import PlayClue
 from core import Rank, Card, Suit
 from core.stack import Stacks
@@ -32,7 +32,7 @@ def test_given_one_one_left_to_play_when_find_interpretation_then_only_possible_
         )
         .build()
     )
-    turn = Turn(game_state, clue)
+    turn = Turn(game_state, clue, game_state)
 
     convention = PlayClue()
     interpretation = convention.find_interpretation(turn)
@@ -63,7 +63,7 @@ def test_given_only_multiple_four_playable_when_find_interpretation_then_only_po
         )
         .build()
     )
-    turn = Turn(game_state, clue)
+    turn = Turn(game_state, clue, game_state)
 
     convention = PlayClue()
     interpretation = convention.find_interpretation(turn)
@@ -94,7 +94,7 @@ def test_given_suit_clue_when_find_interpretation_then_find_interpretation():
         )
         .build()
     )
-    turn = Turn(game_state, clue)
+    turn = Turn(game_state, clue, game_state)
 
     convention = PlayClue()
     interpretation = convention.find_interpretation(turn)
@@ -125,7 +125,7 @@ def test_given_suit_clue_on_someone_else_when_find_interpretation_then_do_not_fi
         )
         .build()
     )
-    turn = Turn(game_state, clue)
+    turn = Turn(game_state, clue, game_state)
 
     convention = PlayClue()
     interpretation = convention.find_interpretation(turn)
@@ -156,7 +156,7 @@ def test_given_card_already_clued_when_find_clue_then_clue_while_touching_create
     )
 
     convention = PlayClue()
-    decision = convention.find_clue((2, 2, targeted_card), game_state)
+    decision = convention.find_clue((2, 2, targeted_card), Blackboard(game_state))
 
     assert decision == [SuitClueDecision(Suit.YELLOW, 2)]
 
@@ -183,9 +183,9 @@ def test_given_card_possibly_clued_in_my_hand_when_find_clue_then_do_not_clue():
     )
 
     convention = PlayClue()
-    decision = convention.find_clue((2, 0, targeted_card), game_state)
+    decision = convention.find_clue((2, 0, targeted_card), Blackboard(game_state))
 
-    assert decision is None
+    assert decision == []
 
 
 def test_given_card_possibly_clued_collateral_in_my_hand_when_find_clue_then_do_not_clue():
@@ -211,6 +211,6 @@ def test_given_card_possibly_clued_collateral_in_my_hand_when_find_clue_then_do_
     )
 
     convention = PlayClue()
-    decision = convention.find_clue((2, 2, targeted_card), game_state)
+    decision = convention.find_clue((2, 2, targeted_card), Blackboard(game_state))
 
-    assert decision is None
+    assert decision == []

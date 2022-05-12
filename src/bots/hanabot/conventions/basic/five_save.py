@@ -11,10 +11,11 @@ class FiveSave(Convention):
     def __init__(self):
         super().__init__("five save")
 
-    def find_clue(self, card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[Decision] | None:
+    def find_clue(self, card_to_clue: tuple[RelativePlayerNumber, Slot, HandCard], current_game_state: RelativeGameState) -> list[Decision]:
         relative_player_id, slot, card = card_to_clue
         if card.real_card.rank == Rank.FIVE:
             return [RankClueDecision(Rank.FIVE, relative_player_id)]
+        return []
 
     def find_interpretation(self, turn: Turn) -> Interpretation | None:
         if not isinstance(turn.action, RankClueAction):
@@ -24,7 +25,7 @@ class FiveSave(Convention):
         if rank_clue.rank != Rank.FIVE:
             return None
 
-        touched_hand = turn.game_state.find_player_hand(rank_clue.recipient)
+        touched_hand = turn.previous_game_state.find_player_hand(rank_clue.recipient)
         chop = self.document.find_chop(touched_hand)
         focus = self.document.find_focus(rank_clue, touched_hand)
         if focus is not chop:

@@ -77,11 +77,12 @@ class Hanabot(DecisionMaking):
             if (card.is_fully_known and current_game_state.is_playable(card.fully_known_card)) or (
                 card.is_clued and current_game_state.is_possibly_playable(card)
             ):
+                logger.debug(f"Playing {card}")
                 return PlayDecision(slot)
 
         if current_game_state.can_give_clue():
             playable_cards = current_game_state.find_playable_cards()
-            for possible_decision in self.conventions.find_play_clue(playable_cards, current_game_state):
+            for possible_decision in self.conventions.find_play_clue(playable_cards, self.blackboard):
                 return possible_decision
 
             for relative_player_id, hand in enumerate(current_game_state.other_player_hands, 1):

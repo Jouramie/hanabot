@@ -60,6 +60,7 @@ class Controller:
 
     def play_turn(self) -> GameState:
         player_to_play_name = self.current_game.players[self.current_game.player_turn].name
+        logger.info(f"{player_to_play_name} playing turn {self.current_game.current_state.status.turn}...")
         player_to_play = self.current_players[player_to_play_name]
         action = player_to_play.play_turn(self.current_game)
         self.current_game.play_turn(action)
@@ -99,6 +100,7 @@ class Controller:
         self.draw_last_action()
         self.draw_game_numbers()
         self.draw_stacks()
+        self.draw_discard()
         self.draw_hands()
         self.draw_and_log("-------------------------------")
 
@@ -112,7 +114,7 @@ class Controller:
         deck = str(self.current_game.deck.number_cards())
         score = self.current_game.current_state.score
         score = str(score)
-        turns = str(self.current_game.status.turns_remaining)
+        turns = str(self.current_game.status.turn)
         self.draw_and_log("Clues: " + clues + " | Strikes: " + strikes + " | Score: " + score + " | Turns: " + turns + " | Deck: " + deck)
 
     def draw_stacks(self):
@@ -120,6 +122,10 @@ class Controller:
         for suit, stack in self.current_game.current_state.play_area.stack_by_suit.items():
             stack_string += str(stack) + " | "
         self.draw_and_log(stack_string)
+
+    def draw_discard(self):
+        discard_string = f"Discard: {self.current_game.current_state.discard_pile}"
+        self.draw_and_log(discard_string)
 
     def draw_hands(self):
         self.draw_and_log("")
@@ -151,6 +157,7 @@ class Controller:
             file_destination = f"{PAST_GAMES_FOLDER}/{datetime.now().replace().isoformat().replace(':', '')}.txt"
         os.rename(CURRENT_GAME_FILE, file_destination)
         saved_games = os.listdir(PAST_GAMES_FOLDER)
+        logger.info(f"Writing game {file_destination}")
         if len(saved_games) > MAX_LOGGED_GAMES:
             os.remove(f"{PAST_GAMES_FOLDER}/{sorted(saved_games)[0]}")
 

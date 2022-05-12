@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from functools import cached_property
 from typing import List, Iterable
@@ -98,9 +100,9 @@ class RelativeGameState:
     def find_hand_card(self, searched_card: Card) -> list[tuple[RelativePlayerNumber, Slot, HandCard]]:
         return [
             (relative_player_id, slot, card)
-            for relative_player_id, hand in enumerate(self.other_player_hands, 1)
+            for relative_player_id, hand in enumerate(self.player_hands)
             for slot, card in enumerate(hand.cards)
-            if card.real_card == searched_card
+            if card.real_card == searched_card or card.fully_known_card == searched_card
         ]
 
     def find_card_by_draw_id(self, draw_id: DrawId) -> HandCard | None:
@@ -155,9 +157,11 @@ class RelativeGameState:
         for card in self.discard:
             visible_cards[card] = visible_cards.get(card, 0) + self.discard.count(card)
 
-        for hand in self.other_player_hands:
+        for hand in self.player_hands:
             for card in hand.cards:
-                visible_cards[card.real_card] = visible_cards.get(card.real_card, 0) + 1
+                known_card = card.real_or_fully_known_card
+                if known_card is not None:
+                    visible_cards[known_card] = visible_cards.get(known_card, 0) + 1
 
         return visible_cards
 
@@ -183,8 +187,9 @@ class RelativeGameState:
 
 @dataclass(frozen=True)
 class Turn:
-    game_state: RelativeGameState
+    previous_game_state: RelativeGameState
     action: Action
+    resulting_game_state: RelativeGameState
 
 
 @dataclass(frozen=True)
