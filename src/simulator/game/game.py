@@ -97,7 +97,7 @@ class Game:
         self.current_state, action.success = self.current_state.play(card_to_play.real_card)
 
         if action.success:
-            if card_to_play.real_card.rank == Rank.FIVE:
+            if card_to_play.real_card.rank == Rank.FIVE and self.status.clues < 8:
                 self.status.clues += 1
         else:
             self.status.add_strike()

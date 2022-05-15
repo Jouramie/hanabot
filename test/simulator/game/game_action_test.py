@@ -681,3 +681,21 @@ def test_play_five_should_generate_clue(number_players):
 
     clues_after = game.status.clues
     assert clues_after == clues_before + 1
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_play_five_at_8_clues_should_not_generate_clue(number_players):
+    game = Game(get_player_names(number_players), Deck.starting_with(Card(Suit.RED, Rank.FIVE)))
+    player = game.players[game.player_turn]
+    for played_rank in get_ranks():
+        if played_rank == Rank.FIVE:
+            break
+        game.current_state, _ = game.current_state.play(Card(Suit.RED, played_rank))
+    game.status.clues = 8
+    clues_before = game.status.clues
+
+    action = PlayAction(len(game.players[0].hand) - 1)
+    game.play_turn(action)
+
+    clues_after = game.status.clues
+    assert clues_after == clues_before
