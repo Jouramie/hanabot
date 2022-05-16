@@ -1,6 +1,6 @@
 import pytest
 
-from core import Deck, Card, Suit, Rank
+from core import Deck, Card, Suit, Rank, Variant
 from core.state.gamestate import GameState
 from simulator.game.action import ColorClueAction, RankClueAction, PlayAction, DiscardAction
 from simulator.game.clue import ColorClue, RankClue
@@ -699,3 +699,41 @@ def test_play_five_at_8_clues_should_not_generate_clue(number_players):
 
     clues_after = game.status.clues
     assert clues_after == clues_before
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_playing_the_last_5_should_end_the_game(number_players):
+    game = Game(get_player_names(number_players), Deck.starting_with(Card(Suit.RED, Rank.FIVE)))
+    for played_suit in Variant.NO_VARIANT:
+        for played_rank in get_ranks():
+            if played_suit == Suit.RED and played_rank == Rank.FIVE:
+                continue
+            game.current_state, _ = game.current_state.play(Card(played_suit, played_rank))
+    game.status.clues = 4
+    game.current_state.deck = Deck.empty()
+
+    assert not game.status.is_over
+
+    action = PlayAction(len(game.players[0].hand) - 1)
+    game.play_turn(action)
+
+    assert game.status.is_over
+
+
+@pytest.mark.parametrize("number_players", [number_players for number_players in range(2, 7)])
+def test_discarding_the_last_5_should_end_the_game(number_players):
+    game = Game(get_player_names(number_players), Deck.starting_with(Card(Suit.RED, Rank.FIVE)))
+    for played_suit in Variant.NO_VARIANT:
+        for played_rank in get_ranks():
+            if played_suit == Suit.RED and played_rank == Rank.FIVE:
+                continue
+            game.current_state, _ = game.current_state.play(Card(played_suit, played_rank))
+    game.status.clues = 4
+    game.current_state.deck = Deck.empty()
+
+    assert not game.status.is_over
+
+    action = DiscardAction(len(game.players[0].hand) - 1)
+    game.play_turn(action)
+
+    assert game.status.is_over
