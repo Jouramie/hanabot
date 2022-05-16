@@ -49,28 +49,32 @@ class Machinabi(DecisionMaking):
         for potential_clue in self.potential_clues:
             recipient_hand = current_game_state.player_hands[potential_clue.clue.receiver]
             cards_touched = self.get_all_new_cards_touched_by_potential_clue(recipient_hand, potential_clue.clue)
+            if len(cards_touched) != len(set(cards_touched)):
+                self.potential_clues.remove(potential_clue)
+                continue
             for card_touched in cards_touched:
                 if card_touched in self.cards_touched:
                     self.potential_clues.remove(potential_clue)
+                    break
 
     def remove_all_pointless_focus_potential_clues(self, current_game_state: RelativeGameState):
-        for potential_clue in self.potential_clues:
+        for potential_clue in reversed(self.potential_clues):
             recipient_hand = current_game_state.player_hands[potential_clue.clue.receiver]
             recipient_chop = self.get_player_chop_slot(recipient_hand)
             clue_focus = self.find_potential_clue_focus(recipient_hand, potential_clue.clue, recipient_chop)
             focused_card = recipient_hand[clue_focus]
-            if not self.is_ready_to_play(current_game_state, focused_card.real_card) and not self.is_critical(focused_card.real_card):
+            if not self.is_ready_to_play(current_game_state, focused_card.real_card) and not self.is_useful_save(recipient_hand, recipient_chop, clue_focus, potential_clue):
                 self.potential_clues.remove(potential_clue)
 
-    def get_all_new_cards_touched_by_potential_clue(self, recipient_hand: Hand, clue: ClueDecision) -> set[Card]:
-        cards_touched_by_clue = set()
+    def get_all_new_cards_touched_by_potential_clue(self, recipient_hand: Hand, clue: ClueDecision) -> List[Card]:
+        cards_touched_by_clue = []
         for card in recipient_hand:
             if card.is_clued:
                 continue
             if isinstance(clue, SuitClueDecision) and clue.suit == card.real_card.suit:
-                cards_touched_by_clue.add(card.real_card)
+                cards_touched_by_clue.append(card.real_card)
             if isinstance(clue, RankClueDecision) and clue.rank == card.real_card.rank:
-                cards_touched_by_clue.add(card.real_card)
+                cards_touched_by_clue.append(card.real_card)
         return cards_touched_by_clue
 
     def get_all_slots_touched_by_potential_clue(self, recipient_hand: Hand, clue: ClueDecision) -> set[int]:
@@ -150,7 +154,7 @@ class Machinabi(DecisionMaking):
                 if rank_clue not in potential_decisions:
                     potential_decisions.append(rank_clue)
                 if suit_clue not in potential_decisions:
-                    potential_decisions.append(rank_clue)
+                    potential_decisions.append(suit_clue)
 
         self.potential_clues = []
         for potential_decision in potential_decisions:
@@ -180,6 +184,16 @@ class Machinabi(DecisionMaking):
 
     def is_critical(self, card: Card) -> bool:
         return card.rank == Rank.FIVE
+
+    def is_useful_save(self, recipient_hand: Hand, chop_slot: int, focus_slot: int, potential_clue: PotentialClue) -> bool:
+        focused_card = recipient_hand[focus_slot]
+        if not self.is_critical(focused_card.real_card):
+            return False
+        if chop_slot != focus_slot:
+            return False
+        if focused_card.real_card.rank == Rank.FIVE:
+            return isinstance(potential_clue.clue, RankClueDecision)
+        return True
 
     def is_ready_to_play(self, gamestate: RelativeGameState, card: Card) -> bool:
         if gamestate.stacks.is_already_played(card):

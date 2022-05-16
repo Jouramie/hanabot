@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
@@ -20,11 +22,21 @@ class SuitClueDecision:
     suit: Suit
     receiver: RelativePlayerNumber
 
+    def __eq__(self, other: SuitClueDecision):
+        if not isinstance(other, SuitClueDecision):
+            return False
+        return self.suit == other.suit and self.receiver == other.receiver
+
 
 @dataclass(frozen=True)
 class RankClueDecision:
     rank: Rank
     receiver: RelativePlayerNumber
+
+    def __eq__(self, other: ClueDecision):
+        if not isinstance(other, RankClueDecision):
+            return False
+        return self.rank == other.rank and self.receiver == other.receiver
 
 
 Decision = PlayDecision | DiscardDecision | SuitClueDecision | RankClueDecision
