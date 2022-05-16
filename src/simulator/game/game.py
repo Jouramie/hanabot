@@ -83,7 +83,7 @@ class Game:
         action.turn = self.status.turn
 
         self.history.add_action(action)
-        if self.status.turns_remaining == 0:
+        if self.status.turns_remaining == 0 or not self.can_still_get_points(self.status.turns_remaining):
             self.status.is_over = True
 
     def play_turn_play(self, action: PlayAction):
@@ -174,3 +174,15 @@ class Game:
         for player in self.players:
             if player.name == name:
                 return player
+
+    def can_still_get_points(self, turns_remaining: int) -> bool:
+        for deck_card in self.deck:
+            if self.current_state.play_area.can_play(deck_card):
+                return True
+        for i in range(0, min(turns_remaining, len(self.players))):
+            player_index = (self.player_turn + i) % len(self.players)
+            player = self.players[player_index]
+            for hand_card in player.hand:
+                if self.current_state.play_area.can_play(hand_card.real_card):
+                    return True
+        return False
